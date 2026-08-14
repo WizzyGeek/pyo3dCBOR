@@ -333,6 +333,10 @@ def test_naive_datetime_rejected():
 
 
 def test_datetime_encoding_is_timezone_independent(monkeypatch):
+    # Belt-and-braces regression check, not the primary guard: an aware
+    # datetime's .timestamp() never consults $TZ, so this alone wouldn't
+    # catch a regression -- test_naive_datetime_rejected is what actually
+    # guards against host-timezone-dependent encoding.
     import time as time_mod
 
     dt = datetime.datetime(2023, 2, 8, 12, 0, 0, tzinfo=datetime.timezone.utc)
@@ -386,6 +390,31 @@ def test_encode_deeply_nested_list_raises_instead_of_crashing():
         value = [value]
     with pytest.raises(dcbor.CBORError, match="depth"):
         dcbor.dumps(value)
+
+
+def test_decode_indefinite_length_array_rejected_without_crashing():
+    # dCBOR forbids indefinite-length items (major 4, additional info 31).
+    # The depth pre-scan can't classify this header, so it must safely
+    # defer to the real decoder rather than mis-tracking depth -- and the
+    # real decoder must reject it immediately (major type 4 with invalid
+    # length info), before any recursion, so this can never reach the
+    # stack-overflow case the pre-scan exists to prevent.
+    with pytest.raises(dcbor.CBORError):
+        dcbor.loads(b"\x9f" * 100_000 + b"\xff")
+
+
+def test_decode_indefinite_length_map_rejected_without_crashing():
+    with pytest.raises(dcbor.CBORError):
+        dcbor.loads(b"\xbf" * 100_000 + b"\xff")
+
+
+def test_decode_long_tag_chain_raises_instead_of_crashing():
+    # Each 0xc6 is tag 6 wrapping the next byte; a long run pushes one
+    # depth frame per tag with no length prefix from the wire, unlike
+    # arrays/maps -- worth checking explicitly since it's the one case
+    # where the pre-scan pushes frames unconditionally.
+    with pytest.raises(dcbor.CBORError, match="depth"):
+        dcbor.loads(b"\xc6" * 100_000)
 
 
 def test_moderately_nested_structure_still_round_trips():
