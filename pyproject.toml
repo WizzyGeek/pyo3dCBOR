@@ -1,0 +1,30 @@
+[build-system]
+requires = ["maturin>=1.7,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "dcbor"
+version = "0.1.0"
+description = "Deterministic CBOR (dCBOR) for Python — PyO3 bindings for Blockchain Commons' dcbor Rust crate"
+readme = "README.md"
+license = { text = "BSD-2-Clause-Patent" }
+requires-python = ">=3.9"
+authors = [{ name = "AIdCBOR contributors" }]
+keywords = ["cbor", "dcbor", "encoding", "serialization", "deterministic"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Rust",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: System :: Networking",
+]
+
+[project.urls]
+"Upstream (Rust)" = "https://github.com/BlockchainCommons/bc-dcbor-rust"
+
+[tool.maturin]
+python-source = "python"
+module-name = "dcbor._dcbor"
+features = ["pyo3/extension-module"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,22 @@
+[package]
+name = "dcbor-py"
+version = "0.1.0"
+edition = "2021"
+description = "Python bindings for the Blockchain Commons dcbor (deterministic CBOR) Rust crate"
+license = "BSD-2-Clause-Patent"
+repository = "https://github.com/BlockchainCommons/bc-dcbor-rust"
+
+[lib]
+name = "_dcbor"
+crate-type = ["cdylib"]
+
+[dependencies]
+dcbor = "0.25"
+chrono = { version = "0.4", default-features = true }
+
+[dependencies.pyo3]
+version = "0.29"
+features = ["extension-module"]
+
+[profile.release]
+lto = true
