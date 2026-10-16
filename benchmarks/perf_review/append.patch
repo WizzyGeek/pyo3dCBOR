@@ -1,0 +1,93 @@
+--- a/crates/dcbor/src/map.rs
++++ b/crates/dcbor/src/map.rs
+@@ -221,22 +221,17 @@
+ 
+ impl Map {
+     pub fn cbor_data(&self) -> Vec<u8> {
+-        let pairs: Vec<(Vec<u8>, Vec<u8>)> = self
+-            .0
+-            .iter()
+-            .map(|x| {
+-                let a: Vec<u8> = x.0.0.to_owned();
+-                let cbor: &CBOR = &x.1.value;
+-                let b: Vec<u8> = cbor.to_cbor_data();
+-                (a, b)
+-            })
+-            .collect();
+-        let mut buf = pairs.len().encode_varint(MajorType::Map);
+-        for pair in pairs {
+-            buf.extend(pair.0);
+-            buf.extend(pair.1);
+-        }
+-        buf
++        let mut out = Vec::new();
++        self.append_cbor_data(&mut out);
++        out
++    }
++
++    pub(crate) fn append_cbor_data(&self, out: &mut Vec<u8>) {
++        out.extend(self.0.len().encode_varint(MajorType::Map));
++        for (key, value) in &self.0 {
++            out.extend_from_slice(&key.0);
++            value.value.append_cbor_data(out);
++        }
+     }
+ }
+ 
+--- a/crates/dcbor/src/cbor.rs
++++ b/crates/dcbor/src/cbor.rs
+@@ -319,34 +319,34 @@
+     /// assert_eq!(decoded, cbor);
+     /// ```
+     pub fn to_cbor_data(&self) -> Vec<u8> {
++        let mut out = Vec::new();
++        self.append_cbor_data(&mut out);
++        out
++    }
++
++    pub(crate) fn append_cbor_data(&self, out: &mut Vec<u8>) {
+         match self.as_case() {
+-            CBORCase::Unsigned(x) => x.encode_varint(MajorType::Unsigned),
+-            CBORCase::Negative(x) => x.encode_varint(MajorType::Negative),
++            CBORCase::Unsigned(x) => out.extend(x.encode_varint(MajorType::Unsigned)),
++            CBORCase::Negative(x) => out.extend(x.encode_varint(MajorType::Negative)),
+             CBORCase::ByteString(x) => {
+-                let mut buf = x.len().encode_varint(MajorType::ByteString);
+-                buf.extend(x);
+-                buf
++                out.extend(x.len().encode_varint(MajorType::ByteString));
++                out.extend(x);
+             }
+             CBORCase::Text(x) => {
+                 let nfc = x.nfc().collect::<String>();
+-                let mut buf = nfc.len().encode_varint(MajorType::Text);
+-                buf.extend(nfc.as_bytes());
+-                buf
++                out.extend(nfc.len().encode_varint(MajorType::Text));
++                out.extend(nfc.as_bytes());
+             }
+             CBORCase::Array(x) => {
+-                let mut buf = x.len().encode_varint(MajorType::Array);
+-                for item in x {
+-                    buf.extend(item.to_cbor_data());
+-                }
+-                buf
+-            }
+-            CBORCase::Map(x) => x.cbor_data(),
++                out.extend(x.len().encode_varint(MajorType::Array));
++                for item in x { item.append_cbor_data(out); }
++            }
++            CBORCase::Map(x) => x.append_cbor_data(out),
+             CBORCase::Tagged(tag, item) => {
+-                let mut buf = tag.value().encode_varint(MajorType::Tagged);
+-                buf.extend(item.to_cbor_data());
+-                buf
+-            }
+-            CBORCase::Simple(x) => x.cbor_data(),
++                out.extend(tag.value().encode_varint(MajorType::Tagged));
++                item.append_cbor_data(out);
++            }
++            CBORCase::Simple(x) => out.extend(x.cbor_data()),
+         }
+     }
+ }

@@ -7,6 +7,9 @@ reference implementation.
 
 import datetime
 import math
+import subprocess
+import sys
+import textwrap
 
 import pytest
 
@@ -341,24 +344,26 @@ def test_datetime_encoding_is_timezone_independent(monkeypatch):
 
     dt = datetime.datetime(2023, 2, 8, 12, 0, 0, tzinfo=datetime.timezone.utc)
     encoded_a = dcbor.dumps(dt)
-    monkeypatch.setenv("TZ", "Asia/Tokyo")
-    if hasattr(time_mod, "tzset"):
-        time_mod.tzset()
     try:
-        encoded_b = dcbor.dumps(dt)
+        with monkeypatch.context() as timezone_patch:
+            timezone_patch.setenv("TZ", "Asia/Tokyo")
+            if hasattr(time_mod, "tzset"):
+                time_mod.tzset()
+            encoded_b = dcbor.dumps(dt)
     finally:
-        monkeypatch.delenv("TZ", raising=False)
+        # The context restores the original TZ (including an unset TZ)
+        # before the process-wide timezone state is refreshed.
         if hasattr(time_mod, "tzset"):
             time_mod.tzset()
     assert encoded_a == encoded_b
 
 
-def test_decode_map_with_array_key_raises_cbor_error_not_type_error():
-    # map(1){ [-1]: 1 } -- a valid dCBOR map with an array key, which has
-    # no hashable Python equivalent and so cannot become a dict key.
-    bad = bytes.fromhex("a1") + bytes.fromhex("8120") + bytes.fromhex("01")
-    with pytest.raises(dcbor.CBORError):
-        dcbor.loads(bad)
+def test_decode_map_with_array_key_uses_lossless_map():
+    data = bytes.fromhex("a1812001")  # {[-1]: 1}
+    decoded = dcbor.loads(data)
+    assert isinstance(decoded, dcbor.CBORMap)
+    assert decoded[[-1]] == 1
+    assert dcbor.dumps(decoded) == data
 
 
 def test_huge_int_reports_range_error_not_type_error():
@@ -368,11 +373,14 @@ def test_huge_int_reports_range_error_not_type_error():
         dcbor.dumps(-(2**200))
 
 
-def test_cbor_tag_hash_consistent_with_eq():
+def test_mutable_cbor_tags_are_unhashable():
     a = dcbor.CBORTag(1, "x")
     b = dcbor.CBORTag(1, "x")
     assert a == b
-    assert hash(a) == hash(b)
+    with pytest.raises(TypeError):
+        hash(a)
+    with pytest.raises(TypeError):
+        hash(b)
 
 
 def test_decode_deeply_nested_array_raises_instead_of_crashing():
@@ -382,6 +390,55 @@ def test_decode_deeply_nested_array_raises_instead_of_crashing():
     data = b"\x81" * 100_000 + b"\x00"
     with pytest.raises(dcbor.CBORError, match="depth"):
         dcbor.loads(data)
+
+
+@pytest.mark.parametrize("api", ["loads", "validate", "diagnostic", "diagnostic_flat"])
+def test_map_count_overflow_cannot_bypass_depth_check(api):
+    # Keep native stack exhaustion isolated from the pytest process if this
+    # regresses. Both overflowing counts and the last non-overflowing count
+    # must be safe, whether the deep item is a key or a value.
+    script = textwrap.dedent(r"""
+        import dcbor
+        import sys
+
+        decode = getattr(dcbor, sys.argv[1])
+        for count in (2**63 - 1, 2**63, 2**64 - 1):
+            header = b'\xbb' + count.to_bytes(8, 'big')
+            for wrapper in (b'', b'\x81', b'\xa1\x00', b'\xc6'):
+                for nesting in (b'\x81', b'\xa1\x00', b'\xc6'):
+                    deep = nesting * 100_000 + b'\x00'
+                    for key in (b'', b'\x00'):
+                        try:
+                            decode(wrapper + header + key + deep)
+                        except dcbor.CBORError as exc:
+                            assert 'depth' in str(exc) or 'map item count' in str(exc)
+                        else:
+                            raise AssertionError('unsafe map was accepted')
+    """)
+    result = subprocess.run(
+        [sys.executable, "-c", script, api],
+        capture_output=True, text=True, timeout=30,
+    )
+    assert result.returncode == 0, result.stderr
+
+
+@pytest.mark.parametrize("decode", [dcbor.loads, dcbor.validate, dcbor.diagnostic, dcbor.diagnostic_flat])
+@pytest.mark.parametrize("empty", [b"\x80", b"\xa0"])
+def test_empty_siblings_do_not_accumulate_depth(decode, empty):
+    # Depth is three. Completing each empty child must also close its parent
+    # array, so sibling arrays do not leave spurious frames on the stack.
+    decode(b"\x99\x04\x00" + (b"\x81" + empty) * 1024)
+
+
+@pytest.mark.parametrize("decode", [dcbor.loads, dcbor.validate, dcbor.diagnostic, dcbor.diagnostic_flat])
+@pytest.mark.parametrize("container", [b"\x81", b"\xa1\x00", b"\xc6"])
+@pytest.mark.parametrize("leaf", [b"\x00", b"\x80", b"\xa0"])
+def test_decode_depth_boundary(decode, container, leaf):
+    # An empty container itself contributes a level; a scalar does not.
+    levels = 512 if leaf == b"\x00" else 511
+    decode(container * levels + leaf)
+    with pytest.raises(dcbor.CBORError, match="depth"):
+        decode(container * (levels + 1) + leaf)
 
 
 def test_encode_deeply_nested_list_raises_instead_of_crashing():

@@ -1,9 +1,9 @@
 //! PyO3 bindings exposing Blockchain Commons' `dcbor` (deterministic CBOR)
-//! Rust crate to Python. All encoding/decoding is delegated to the real
-//! `dcbor` crate; this module only converts between Python objects and
-//! `dcbor::CBOR` values.
+//! Rust crate to Python. The bindings convert Python objects, preserve map
+//! key identity, and check resource limits and numeric canonicality before
+//! entering the upstream decoder.
 
-use dcbor::{ByteString, CBOR, CBORCase, Date, Map, Simple, Tag};
+use dcbor::{ByteString, CBOR, CBORCase, Map, Simple, Tag};
 use pyo3::create_exception;
 use pyo3::prelude::*;
 use pyo3::types::{
@@ -11,6 +11,14 @@ use pyo3::types::{
     PyTuple,
 };
 use pyo3::IntoPyObjectExt;
+
+mod encode;
+mod python_types;
+mod key_conversion;
+mod scalars;
+mod wire;
+
+use python_types::{PyCborMap, PyCborTag};
 
 create_exception!(_dcbor, CBORError, pyo3::exceptions::PyException);
 
@@ -28,165 +36,46 @@ fn depth_err() -> PyErr {
     ))
 }
 
-/// Read a CBOR header's "argument" value (the length/count/tag-value/simple
-/// -value encoded by the low 5 bits of the initial byte, per RFC 8949
-/// §3), advancing `pos` past any following bytes it consumes. Used only
-/// for the iterative pre-scan below -- it does not validate canonicality.
-fn read_arg(info: u8, data: &[u8], pos: &mut usize) -> Result<u64, ()> {
-    match info {
-        0..=23 => Ok(info as u64),
-        24 => {
-            let b = *data.get(*pos).ok_or(())?;
-            *pos += 1;
-            Ok(b as u64)
-        }
-        25 => {
-            let b = data.get(*pos..*pos + 2).ok_or(())?;
-            *pos += 2;
-            Ok(u16::from_be_bytes([b[0], b[1]]) as u64)
-        }
-        26 => {
-            let b = data.get(*pos..*pos + 4).ok_or(())?;
-            *pos += 4;
-            Ok(u32::from_be_bytes([b[0], b[1], b[2], b[3]]) as u64)
-        }
-        27 => {
-            let b = data.get(*pos..*pos + 8).ok_or(())?;
-            *pos += 8;
-            Ok(u64::from_be_bytes(b.try_into().map_err(|_| ())?))
-        }
-        _ => Err(()),
-    }
-}
-
-/// Iteratively pre-scan raw dCBOR bytes to bound the maximum container
-/// nesting depth (arrays, maps, tags) *before* handing the data to the
-/// real recursive decoder in the `dcbor` crate. The crate's own decoder
-/// recurses once per nesting level with no depth limit, so adversarial
-/// input (e.g. hundreds of thousands of nested single-element arrays)
-/// can exhaust the stack and crash the process outright -- a crash can't
-/// be caught as a Python exception, so it must be prevented before it
-/// starts. This function does not fully validate the input; malformed
-/// data that isn't caught here is still rejected by the real decoder
-/// afterward. Any parse failure here is treated as "not too deep" and
-/// left for the real decoder to diagnose properly.
-fn check_max_depth(data: &[u8]) -> PyResult<()> {
-    let mut pos: usize = 0;
-    let mut stack: Vec<u64> = Vec::new();
-
-    loop {
-        let Some(&byte) = data.get(pos) else { return Ok(()) };
-        pos += 1;
-        let major = byte >> 5;
-        let info = byte & 0x1f;
-        let Ok(value) = read_arg(info, data, &mut pos) else { return Ok(()) };
-
-        match major {
-            0 | 1 | 7 => {
-                // Leaf: no nested content, nothing more to consume here.
-            }
-            2 | 3 => {
-                let len = value as usize;
-                match pos.checked_add(len) {
-                    Some(end) if end <= data.len() => pos = end,
-                    _ => return Ok(()),
-                }
-            }
-            4 | 5 | 6 => {
-                let remaining = match major {
-                    4 => value,
-                    5 => match value.checked_mul(2) {
-                        Some(n) => n,
-                        None => return Ok(()),
-                    },
-                    _ => 1, // tag: exactly one nested item follows
-                };
-                if (stack.len() as u32) + 1 > MAX_DEPTH {
-                    return Err(depth_err());
-                }
-                if remaining > 0 {
-                    stack.push(remaining);
-                }
-                continue;
-            }
-            _ => return Ok(()),
-        }
-
-        // Just finished a leaf item: close out any container frames it
-        // completed, popping ancestors whose count has now reached zero.
-        loop {
-            match stack.last_mut() {
-                None => return Ok(()), // finished the single top-level item
-                Some(top) => {
-                    *top -= 1;
-                    if *top == 0 {
-                        stack.pop();
-                        continue;
-                    }
-                    break;
-                }
-            }
-        }
-    }
-}
-
-/// A CBOR tagged value (major type 6): a semantic tag number plus an
-/// inner value. Returned by `loads()` for tags dcbor-py does not map to a
-/// richer Python type (e.g. datetimes), and accepted by `dumps()` to
-/// produce arbitrary tagged CBOR.
-#[pyclass(module = "dcbor", name = "CBORTag", skip_from_py_object)]
-pub struct PyCborTag {
-    #[pyo3(get, set)]
-    pub tag: u64,
-    #[pyo3(get, set)]
-    pub value: Py<PyAny>,
-}
-
-#[pymethods]
-impl PyCborTag {
-    #[new]
-    fn new(tag: u64, value: Py<PyAny>) -> Self { PyCborTag { tag, value } }
-
-    fn __repr__(&self, py: Python<'_>) -> PyResult<String> {
-        Ok(format!("CBORTag({}, {})", self.tag, self.value.bind(py).repr()?))
-    }
-
-    fn __eq__(&self, py: Python<'_>, other: &PyCborTag) -> PyResult<bool> {
-        Ok(self.tag == other.tag
-            && self.value.bind(py).eq(other.value.bind(py))?)
-    }
-
-    fn __hash__(&self, py: Python<'_>) -> PyResult<isize> {
-        let value_hash = self.value.bind(py).hash()?;
-        Ok((self.tag as isize).wrapping_mul(1_000_003) ^ value_hash)
-    }
-}
-
-const TAG_DATE: u64 = 1;
-
 /// Convert a Python object into a `dcbor::CBOR` value.
 fn py_to_cbor(py: Python<'_>, obj: &Bound<'_, PyAny>, depth: u32) -> PyResult<CBOR> {
+    py_to_cbor_with_budget(py, obj, depth, &mut encode::EncodeBudget::default())
+}
+
+fn py_to_cbor_key_with_budget(
+    py: Python<'_>, obj: &Bound<'_, PyAny>, depth: u32,
+    budget: &mut encode::EncodeBudget,
+) -> PyResult<CBOR> {
+    let mut key_budget = budget.fork_key();
+    let key = py_to_cbor_with_budget(py, obj, depth, &mut key_budget)?;
+    budget.reserve(key_budget.used())?;
+    Ok(key)
+}
+
+fn py_to_cbor_with_budget(
+    py: Python<'_>, obj: &Bound<'_, PyAny>, depth: u32,
+    budget: &mut encode::EncodeBudget,
+) -> PyResult<CBOR> {
     if depth > MAX_DEPTH {
         return Err(depth_err());
     }
     if obj.is_none() {
-        return Ok(CBOR::from(CBORCase::Simple(Simple::Null)));
+        return budget.scalar(CBOR::from(CBORCase::Simple(Simple::Null)));
     }
     if let Ok(b) = obj.cast::<PyBool>() {
-        return Ok(CBOR::from(b.is_true()));
+        return budget.scalar(CBOR::from(b.is_true()));
     }
     if let Ok(i) = obj.extract::<i64>() {
-        return Ok(CBOR::from(i));
+        return budget.scalar(CBOR::from(i));
     }
     if let Ok(i) = obj.extract::<u64>() {
-        return Ok(CBOR::from(i));
+        return budget.scalar(CBOR::from(i));
     }
     if let Ok(i) = obj.extract::<i128>() {
         // Beyond i64/u64 direct range: dCBOR negatives can reach -(2^64).
         if i < 0 {
             let mag: i128 = -1 - i;
             if let Ok(mag) = u64::try_from(mag) {
-                return Ok(CBOR::from(CBORCase::Negative(mag)));
+                return budget.scalar(CBOR::from(CBORCase::Negative(mag)));
             }
         }
         return Err(CBORError::new_err(
@@ -201,66 +90,94 @@ fn py_to_cbor(py: Python<'_>, obj: &Bound<'_, PyAny>, depth: u32) -> PyResult<CB
         ));
     }
     if let Ok(f) = obj.cast::<PyFloat>() {
-        return Ok(CBOR::from(f.value()));
+        return budget.scalar(CBOR::from(f.value()));
     }
     if let Ok(s) = obj.cast::<PyString>() {
-        return Ok(CBOR::from(s.to_string()));
+        return budget.text(s);
     }
     if let Ok(b) = obj.cast::<PyBytes>() {
+        budget.bytes(b.as_bytes().len())?;
         return Ok(CBOR::from(ByteString::new(b.as_bytes().to_vec())));
     }
     if let Ok(b) = obj.cast::<PyByteArray>() {
+        budget.bytes(b.len())?;
         return Ok(CBOR::from(ByteString::new(unsafe { b.as_bytes() }.to_vec())));
     }
-    // datetime.datetime -> tag 1 (epoch date). Naive datetimes are
-    // rejected rather than silently encoded using the host's local
-    // timezone, which would make encoding non-deterministic across
-    // machines -- unacceptable for a canonical format.
-    {
-        let datetime_mod = py.import("datetime")?;
-        let datetime_cls = datetime_mod.getattr("datetime")?;
-        if obj.is_instance(&datetime_cls)? {
-            let tzinfo = obj.getattr("tzinfo")?;
-            if tzinfo.is_none() {
-                return Err(CBORError::new_err(
-                    "naive datetime.datetime (no tzinfo) cannot be encoded \
-                     deterministically; attach a timezone (e.g. \
-                     datetime.timezone.utc) first",
-                ));
-            }
-            let ts = obj.call_method0("timestamp")?;
-            let secs: f64 = ts.extract()?;
-            return Ok(CBOR::from(Date::from_timestamp(secs)));
+    if let Some(value) = scalars::encode_datetime(py, obj)? {
+        // Datetime contributes an implicit tag just like explicit CBORTag.
+        if depth == MAX_DEPTH {
+            return Err(depth_err());
         }
+        return budget.scalar(value);
     }
     if let Ok(tag_obj) = obj.extract::<PyRef<'_, PyCborTag>>() {
-        let inner = py_to_cbor(py, tag_obj.value.bind(py), depth + 1)?;
+        if depth == MAX_DEPTH {
+            return Err(depth_err());
+        }
+        budget.header(tag_obj.tag)?;
+        let inner = py_to_cbor_with_budget(py, tag_obj.value.bind(py), depth + 1, budget)?;
         return Ok(CBOR::from(CBORCase::Tagged(
             Tag::with_value(tag_obj.tag),
             inner,
         )));
     }
     if let Ok(list) = obj.cast::<PyList>() {
-        let mut items = Vec::with_capacity(list.len());
+        if depth == MAX_DEPTH {
+            return Err(depth_err());
+        }
+        budget.header(list.len() as u64)?;
+        let mut items = if budget.in_key() { Vec::new() } else { Vec::with_capacity(list.len()) };
         for item in list.iter() {
-            items.push(py_to_cbor(py, &item, depth + 1)?);
+            items.push(py_to_cbor_with_budget(py, &item, depth + 1, budget)?);
         }
         return Ok(CBOR::from(items));
     }
     if let Ok(tuple) = obj.cast::<PyTuple>() {
-        let mut items = Vec::with_capacity(tuple.len());
+        if depth == MAX_DEPTH {
+            return Err(depth_err());
+        }
+        budget.header(tuple.len() as u64)?;
+        let mut items = if budget.in_key() { Vec::new() } else { Vec::with_capacity(tuple.len()) };
         for item in tuple.iter() {
-            items.push(py_to_cbor(py, &item, depth + 1)?);
+            items.push(py_to_cbor_with_budget(py, &item, depth + 1, budget)?);
         }
         return Ok(CBOR::from(items));
     }
+    if let Ok(map) = obj.extract::<PyRef<'_, PyCborMap>>() {
+        return map.to_cbor_with_budget(depth, budget);
+    }
     if let Ok(dict) = obj.cast::<PyDict>() {
-        let mut map = Map::new();
-        for (k, v) in dict.iter() {
-            let key_cbor = py_to_cbor(py, &k, depth + 1)?;
-            let val_cbor = py_to_cbor(py, &v, depth + 1)?;
-            map.insert(key_cbor, val_cbor);
+        if depth == MAX_DEPTH {
+            return Err(depth_err());
         }
+        // Retain candidate entries ourselves until replacement is resolved.
+        // Upstream Map has no remove operation; delaying insertion lets an old
+        // value and its cache be dropped before converting its replacement.
+        let mut entries = std::collections::BTreeMap::<Vec<u8>, (CBOR, CBOR, usize)>::new();
+        budget.header(0)?;
+        for (k, v) in dict.iter() {
+            // Canonical identity is known only after conversion. Convert once
+            // with an independently bounded key context, preserving callbacks.
+            let mut candidate_budget = budget.fork_key();
+            let key_cbor = py_to_cbor_with_budget(py, &k, depth + 1, &mut candidate_budget)?;
+            let encoded = key_cbor.to_cbor_data();
+            let old_count = entries.len();
+            if let Some((old_key, old_value, old_cost)) = entries.remove(&encoded) {
+                drop((old_key, old_value));
+                budget.release(old_cost);
+            } else {
+                budget.wire_bytes(encode::header_len((old_count + 1) as u64)
+                    - encode::header_len(old_count as u64))?;
+            }
+            let before = budget.used();
+            budget.reserve(candidate_budget.used())?;
+            let val_cbor = py_to_cbor_with_budget(py, &v, depth + 1, budget)?;
+            let cost = budget.used() - before;
+            entries.insert(encoded, (key_cbor, val_cbor, cost));
+        }
+        let mut map = Map::new();
+        for (_, (key, value, _)) in entries { map.insert(key, value); }
+
         return Ok(CBOR::from(map));
     }
     Err(CBORError::new_err(format!(
@@ -289,43 +206,10 @@ fn cbor_to_py(py: Python<'_>, cbor: &CBOR, depth: u32) -> PyResult<Py<PyAny>> {
             }
             list.into_py_any(py)
         }
-        CBORCase::Map(map) => {
-            let dict = PyDict::new(py);
-            for (k, v) in map.iter() {
-                let key = cbor_to_py(py, k, depth + 1)?;
-                let value = cbor_to_py(py, v, depth + 1)?;
-                dict.set_item(&key, value).map_err(|e| {
-                    if e.is_instance_of::<pyo3::exceptions::PyTypeError>(py) {
-                        let type_name = key
-                            .bind(py)
-                            .get_type()
-                            .name()
-                            .map(|n| n.to_string())
-                            .unwrap_or_else(|_| "?".to_string());
-                        CBORError::new_err(format!(
-                            "dCBOR map has a key of type '{type_name}' that \
-                             has no Python-hashable equivalent (e.g. an \
-                             array or map key); cannot represent as a \
-                             Python dict"
-                        ))
-                    } else {
-                        e
-                    }
-                })?;
-            }
-            dict.into_py_any(py)
-        }
+        CBORCase::Map(map) => python_types::map_to_python(py, map, depth),
         CBORCase::Tagged(tag, item) => {
-            if tag.value() == TAG_DATE {
-                if let Ok(date) = Date::try_from(cbor.clone()) {
-                    let datetime_mod = py.import("datetime")?;
-                    let timezone = datetime_mod.getattr("timezone")?;
-                    let utc = timezone.getattr("utc")?;
-                    let datetime_cls = datetime_mod.getattr("datetime")?;
-                    let dt = datetime_cls
-                        .call_method1("fromtimestamp", (date.timestamp(), utc))?;
-                    return dt.into_py_any(py);
-                }
+            if let Some(value) = scalars::decode_datetime(py, cbor)? {
+                return Ok(value);
             }
             let inner = cbor_to_py(py, item, depth + 1)?;
             let tagged = PyCborTag { tag: tag.value(), value: inner };
@@ -343,23 +227,25 @@ fn cbor_to_py(py: Python<'_>, cbor: &CBOR, depth: u32) -> PyResult<Py<PyAny>> {
 /// Encode a Python object as deterministic CBOR (dCBOR) bytes.
 ///
 /// Supported types: `None`, `bool`, `int` (fitting in [-2**64, 2**64-1]),
-/// `float`, `str`, `bytes`/`bytearray`, `list`/`tuple`, `dict`,
+/// `float`, `str`, `bytes`/`bytearray`, `list`/`tuple`, `dict`/`CBORMap`,
 /// timezone-aware `datetime.datetime` (encoded as CBOR tag 1), and
 /// `dcbor.CBORTag` for arbitrary tagged values.
 #[pyfunction]
 fn dumps(py: Python<'_>, obj: &Bound<'_, PyAny>) -> PyResult<Py<PyBytes>> {
     let cbor = py_to_cbor(py, obj, 0)?;
-    Ok(PyBytes::new(py, &cbor.to_cbor_data()).unbind())
+    let data = cbor.to_cbor_data();
+    wire::preflight(&data)?;
+    Ok(PyBytes::new(py, &data).unbind())
 }
 
 /// Decode dCBOR bytes into a Python object.
 ///
-/// Raises `dcbor.CBORError` if `data` is not valid, well-formed dCBOR
-/// (including violations of dCBOR's deterministic-encoding rules), or if
-/// a decoded map contains a key type with no Python-hashable equivalent.
+/// Raises `dcbor.CBORError` for malformed or noncanonical data, unsupported
+/// numeric dates, excessive depth, or excessive encoded map-key storage.
+/// Maps requiring keys that Python dicts cannot distinguish use `CBORMap`.
 #[pyfunction]
 fn loads(py: Python<'_>, data: &[u8]) -> PyResult<Py<PyAny>> {
-    check_max_depth(data)?;
+    wire::preflight(data)?;
     let cbor = CBOR::try_from_data(data).map_err(cbor_err)?;
     cbor_to_py(py, &cbor, 0)
 }
@@ -367,7 +253,7 @@ fn loads(py: Python<'_>, data: &[u8]) -> PyResult<Py<PyAny>> {
 /// Return the CBOR diagnostic-notation string for the given dCBOR bytes.
 #[pyfunction(name = "diagnostic")]
 fn diagnostic_str(data: &[u8]) -> PyResult<String> {
-    check_max_depth(data)?;
+    wire::preflight(data)?;
     let cbor = CBOR::try_from_data(data).map_err(cbor_err)?;
     Ok(cbor.diagnostic())
 }
@@ -376,7 +262,7 @@ fn diagnostic_str(data: &[u8]) -> PyResult<String> {
 /// dCBOR bytes.
 #[pyfunction(name = "diagnostic_flat")]
 fn diagnostic_flat_str(data: &[u8]) -> PyResult<String> {
-    check_max_depth(data)?;
+    wire::preflight(data)?;
     let cbor = CBOR::try_from_data(data).map_err(cbor_err)?;
     Ok(cbor.diagnostic_flat())
 }
@@ -385,7 +271,7 @@ fn diagnostic_flat_str(data: &[u8]) -> PyResult<String> {
 /// Python object; returns the number of bytes consumed.
 #[pyfunction]
 fn validate(data: &[u8]) -> PyResult<usize> {
-    check_max_depth(data)?;
+    wire::preflight(data)?;
     CBOR::try_from_data(data).map_err(cbor_err)?;
     Ok(data.len())
 }
@@ -395,6 +281,7 @@ fn _dcbor(py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add("__doc__", "Native PyO3 bindings for the dcbor Rust crate.")?;
     m.add("CBORError", py.get_type::<CBORError>())?;
     m.add_class::<PyCborTag>()?;
+    m.add_class::<PyCborMap>()?;
     m.add_function(wrap_pyfunction!(dumps, m)?)?;
     m.add_function(wrap_pyfunction!(loads, m)?)?;
     m.add_function(wrap_pyfunction!(diagnostic_str, m)?)?;

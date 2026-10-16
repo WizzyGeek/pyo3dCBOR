@@ -1,0 +1,15 @@
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -86,10 +86,10 @@
+         return scalars::encode_text(s);
+     }
+     if let Ok(b) = obj.cast::<PyBytes>() {
+-        return Ok(CBOR::from(ByteString::new(b.as_bytes().to_vec())));
++        return Ok(CBOR::from(CBORCase::ByteString(ByteString::new(b.as_bytes()))));
+     }
+     if let Ok(b) = obj.cast::<PyByteArray>() {
+-        return Ok(CBOR::from(ByteString::new(unsafe { b.as_bytes() }.to_vec())));
++        return Ok(CBOR::from(CBORCase::ByteString(ByteString::new(unsafe { b.as_bytes() }))));
+     }
+     if let Some(value) = scalars::encode_datetime(py, obj)? {
+         // Datetime contributes an implicit tag just like explicit CBORTag.

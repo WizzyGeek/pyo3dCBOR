@@ -1,0 +1,25 @@
+--- a/src/scalars.rs
++++ b/src/scalars.rs
+@@ -21,7 +21,7 @@
+     // Upstream normalizes only when serializing. Store canonical text here
+     // so cache-budget lengths match the actual wire bytes, even when NFC
+     // expands or contracts the original UTF-8 representation.
+-    Ok(CBORCase::Text(value.nfc().collect()).into())
++    Ok(CBORCase::Text(if value.is_ascii() { value.to_owned() } else { value.nfc().collect() }).into())
+ }
+ 
+ pub(crate) fn encode_datetime(
+--- a/crates/dcbor/src/cbor.rs
++++ b/crates/dcbor/src/cbor.rs
+@@ -328,6 +328,11 @@
+                 buf
+             }
+             CBORCase::Text(x) => {
++                if x.is_ascii() {
++                    let mut buf = x.len().encode_varint(MajorType::Text);
++                    buf.extend(x.as_bytes());
++                    return buf;
++                }
+                 let nfc = x.nfc().collect::<String>();
+                 let mut buf = nfc.len().encode_varint(MajorType::Text);
+                 buf.extend(nfc.as_bytes());

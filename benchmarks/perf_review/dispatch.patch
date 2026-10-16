@@ -1,0 +1,82 @@
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -54,30 +54,41 @@
+     if let Ok(b) = obj.cast::<PyBool>() {
+         return Ok(CBOR::from(b.is_true()));
+     }
+-    if let Ok(i) = obj.extract::<i64>() {
+-        return Ok(CBOR::from(i));
+-    }
+-    if let Ok(i) = obj.extract::<u64>() {
+-        return Ok(CBOR::from(i));
+-    }
+-    if let Ok(i) = obj.extract::<i128>() {
+-        // Beyond i64/u64 direct range: dCBOR negatives can reach -(2^64).
+-        if i < 0 {
+-            let mag: i128 = -1 - i;
+-            if let Ok(mag) = u64::try_from(mag) {
+-                return Ok(CBOR::from(CBORCase::Negative(mag)));
++    // Keep the old numeric protocol for subclasses and custom objects.
++    let needs_integer_probe = obj.cast::<PyInt>().is_ok() || !(
++        obj.is_exact_instance_of::<PyFloat>()
++        || obj.is_exact_instance_of::<PyString>()
++        || obj.is_exact_instance_of::<PyBytes>()
++        || obj.is_exact_instance_of::<PyByteArray>()
++        || obj.is_exact_instance_of::<PyList>()
++        || obj.is_exact_instance_of::<PyTuple>()
++        || obj.is_exact_instance_of::<PyDict>());
++    if needs_integer_probe {
++        if let Ok(i) = obj.extract::<i64>() {
++            return Ok(CBOR::from(i));
++        }
++        if let Ok(i) = obj.extract::<u64>() {
++            return Ok(CBOR::from(i));
++        }
++        if let Ok(i) = obj.extract::<i128>() {
++            // Beyond i64/u64 direct range: dCBOR negatives can reach -(2^64).
++            if i < 0 {
++                let mag: i128 = -1 - i;
++                if let Ok(mag) = u64::try_from(mag) {
++                    return Ok(CBOR::from(CBORCase::Negative(mag)));
++                }
+             }
+-        }
+-        return Err(CBORError::new_err(
+-            "integer out of range for dCBOR (must fit in [-2^64, 2^64-1])",
+-        ));
+-    }
+-    if obj.cast::<PyInt>().is_ok() {
+-        // A Python int that didn't fit in i128 either: still an
+-        // out-of-range integer, not an unsupported type.
+-        return Err(CBORError::new_err(
+-            "integer out of range for dCBOR (must fit in [-2^64, 2^64-1])",
+-        ));
++            return Err(CBORError::new_err(
++                "integer out of range for dCBOR (must fit in [-2^64, 2^64-1])",
++            ));
++        }
++        if obj.cast::<PyInt>().is_ok() {
++            // A Python int that didn't fit in i128 either: still an
++            // out-of-range integer, not an unsupported type.
++            return Err(CBORError::new_err(
++                "integer out of range for dCBOR (must fit in [-2^64, 2^64-1])",
++            ));
++        }
+     }
+     if let Ok(f) = obj.cast::<PyFloat>() {
+         return Ok(CBOR::from(f.value()));
+--- a/src/scalars.rs
++++ b/src/scalars.rs
+@@ -28,6 +28,12 @@
+     py: Python<'_>,
+     obj: &Bound<'_, PyAny>,
+ ) -> PyResult<Option<CBOR>> {
++    if obj.is_exact_instance_of::<pyo3::types::PyList>()
++        || obj.is_exact_instance_of::<pyo3::types::PyTuple>()
++        || obj.is_exact_instance_of::<pyo3::types::PyDict>()
++    {
++        return Ok(None);
++    }
+     let datetime_mod = py.import("datetime")?;
+     if !obj.is_instance(&datetime_mod.getattr("datetime")?)? {
+         return Ok(None);

@@ -67,8 +67,6 @@ checksum = "460fbee9c2c2f33933d720630a6a0bac33ba7053db5344fac858d4b8952d77d5"
 [[package]]
 name = "dcbor"
 version = "0.25.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fcf662b6347d10dd5ab7370287b76923eb88818d46434de8c424b091523f5e54"
 dependencies = [
  "chrono",
  "half",
@@ -85,6 +83,7 @@ dependencies = [
  "chrono",
  "dcbor",
  "pyo3",
+ "unicode-normalization",
 ]
 
 [[package]]

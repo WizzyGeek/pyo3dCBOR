@@ -1,0 +1,37 @@
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -86,10 +86,10 @@
+         return scalars::encode_text(s);
+     }
+     if let Ok(b) = obj.cast::<PyBytes>() {
+-        return Ok(CBOR::from(ByteString::new(b.as_bytes().to_vec())));
++        return Ok(CBOR::from(ByteString::new(b.as_bytes())));
+     }
+     if let Ok(b) = obj.cast::<PyByteArray>() {
+-        return Ok(CBOR::from(ByteString::new(unsafe { b.as_bytes() }.to_vec())));
++        return Ok(CBOR::from(ByteString::new(unsafe { b.as_bytes() })));
+     }
+     if let Some(value) = scalars::encode_datetime(py, obj)? {
+         // Datetime contributes an implicit tag just like explicit CBORTag.
+--- a/crates/dcbor/src/map.rs
++++ b/crates/dcbor/src/map.rs
+@@ -241,7 +241,7 @@
+ }
+ 
+ impl From<Map> for CBOR {
+-    fn from(value: Map) -> Self { CBORCase::Map(value.clone()).into() }
++    fn from(value: Map) -> Self { CBORCase::Map(value).into() }
+ }
+ 
+ impl From<&Map> for CBOR {
+--- a/crates/dcbor/src/string.rs
++++ b/crates/dcbor/src/string.rs
+@@ -50,7 +50,7 @@
+ }
+ 
+ impl From<String> for CBOR {
+-    fn from(value: String) -> Self { CBORCase::Text(value.clone()).into() }
++    fn from(value: String) -> Self { CBORCase::Text(value).into() }
+ }
+ 
+ impl TryFrom<CBOR> for String {
