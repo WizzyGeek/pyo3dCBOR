@@ -1,7 +1,7 @@
 # FEAT_002: Versioned release workflow
 
-**Status:** Owner-approved scope is being implemented on
-`feat/002-versioned-release` (2026-10-18).
+**Status:** Implementation is merged on `master`; release behavior still awaits
+versioned release validation and owner sign-off.
 
 ## Owner-approved scope
 

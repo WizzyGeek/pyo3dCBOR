@@ -3,7 +3,7 @@
 `dcbor` provides Python bindings for [Blockchain Commons' Rust `dcbor`
 crate](https://github.com/BlockchainCommons/bc-dcbor-rust). It encodes and
 decodes deterministic CBOR (dCBOR), applying shortest-form integer and float
-encodings, NFC text normalization, canonical map-key ordering, and validation
+encodings, NFC text normalization, bytewise-lexicographic map-key ordering, and validation
 of canonical input. The codec implements RFC 8949 deterministic encoding with
 the dCBOR application profile.
 
@@ -33,6 +33,63 @@ assert dcbor.loads(data) == {"a": [1, 2, 3], "b": 2, "c": None}
 print(dcbor.diagnostic(data))
 # {"a": [1, 2, 3], "b": 2, "c": null}
 ```
+
+## Evidence at a glance
+
+This project targets RFC 8949 deterministic encoding with the dCBOR profile in
+[draft-mcnally-deterministic-cbor-18 §2.5](https://www.ietf.org/archive/id/draft-mcnally-deterministic-cbor-18.html#section-2.5).
+The tests provide evidence for that documented profile; they are not an
+external certification. One explicit compatibility exception for large
+negative integer input is described in [Numeric compatibility target](#numeric-compatibility-target).
+A source-based survey of dCBOR implementations, generic CBOR libraries, and
+related formats is in the [competitive landscape](docs/competitive-landscape.md).
+
+The independent [wire-vector tests](tests/test_spec_conformance.py) cover
+numeric forms, malformed and noncanonical inputs, Unicode NFC, map ordering,
+and duplicate keys. The [numeric oracle](tests/test_numeric_oracle.py),
+[wire-safety tests](tests/test_wire_safety.py),
+[datetime/depth tests](tests/test_datetime_depth.py), and
+[key-identity tests](tests/test_key_identity.py) cover additional numeric,
+resource-limit, date, and key-identity behavior. CI runs CPython 3.9–3.14; the
+full suite, including exhaustive cases, runs on CPython 3.14, while other
+versions omit only tests marked `exhaustive`. Pull requests build reduced
+Linux wheels for CPython 3.12–3.14. Manual and release builds validate 42
+wheels: six Python versions across seven platform/architecture combinations,
+as defined by the [build workflow](.github/workflows/ci.yml) and
+[distribution checker](scripts/ci.py).
+
+The chart compares compact UTF-8 JSON bytes with dCBOR wire bytes for the same
+six JSON-compatible fixtures. It reports serialized payload size, not memory
+use. In the recorded CPython 3.14.7 run, dCBOR used 33 vs 52 bytes for a small
+record, 84 vs 122 for a nested document, 1,122 vs 1,537 for repeated Unicode
+strings, 686 vs 901 for a numeric array, and 5,669 vs 8,442 for a 128-record
+collection. For compact scientific-notation floats, JSON used 15 bytes and
+dCBOR used 19 (+26.67%). The other five fixtures favored dCBOR by 23.86% to
+36.54%. This mix includes a result unfavorable to dCBOR and is still too narrow
+to establish a general size advantage.
+
+![Grouped bars show compact JSON and dCBOR payload bytes for six equivalent fixtures, including compact scientific notation where JSON is smaller.](.github/assets/graphs/encoded-size.svg)
+
+The [fixture definitions, raw measurements, environment, hashes, and graph
+generator](benchmarks/encoded_size/README.md) let readers reproduce this chart.
+The raw report records source-worktree status and generator, extension, and
+chart hashes.
+The separate [competitor wire-size report](benchmarks/wire_size/README.md)
+compares dCBOR with `cbor2` and `cborx` default and canonical modes; its current
+[machine-readable report](benchmarks/wire_size/results.json) and
+[stable graph](.github/assets/graphs/wire-size.svg) contain completed
+measurements for six JSON-compatible fixtures.
+The [latency methodology](benchmarks/latency/README.md) uses the same codecs
+and fixtures for encode, decode, and round-trip speed. Its current
+[machine-readable report](benchmarks/latency/results.json) records nine fresh
+process samples per operation and the
+[stable graph](.github/assets/graphs/latency.svg) includes slow results as
+well as wins. These results describe one host; they do not support a general
+speed ranking. PostgreSQL JSONB is a database storage and query alternative;
+the [competitive landscape](docs/competitive-landscape.md)
+explains why it needs a separate database benchmark. The
+[benchmark index](benchmarks/README.md) links to reports and reproduction
+instructions.
 
 ### Supported types
 
@@ -151,6 +208,9 @@ maturin develop
 pytest
 ```
 
+For coding-agent build, test, and release guidance, see the
+[agent workflow](docs/agent-workflow.md).
+
 The full numeric-oracle and binary16 exhaustive cases run on CPython 3.14/Linux.
 Other interpreter and wheel jobs run the rest of the suite, including the
 independent conformance and safety tests. The source distribution runs the full
@@ -163,12 +223,14 @@ Current performance follow-ups are recorded in
 
 ## CI and releases
 
-The [GitHub Actions workflow](.github/workflows/ci.yml) runs on pull requests,
-pushes to `master`/`main`, `v*` tags, and manual dispatches. Its stages are:
+The [build workflow](.github/workflows/ci.yml) runs on pull requests, pushes to
+`master`/`main`, manual dispatches, and reusable workflow calls. A separate
+[release workflow](.github/workflows/release.yml) starts on version-tag pushes
+and uses that build workflow for a full matrix if a matching validated bundle
+is unavailable. The build workflow:
 
 1. Check that Python and Cargo package versions agree with the public
-   `dcbor.__version__`. On tags, also require an exact `vX.Y.Z` match before
-   starting builds.
+   `dcbor.__version__`.
 2. Run the vendored Rust codec tests once with `--locked`, using the committed
    `crates/dcbor/Cargo.lock` (separate from the binding's root lockfile).
 3. Build the extension on CPython 3.9–3.14. Run the full suite on CPython
@@ -179,12 +241,13 @@ pushes to `master`/`main`, `v*` tags, and manual dispatches. Its stages are:
    Wheel tests exclude only tests marked `exhaustive`; all remaining conformance
    and safety tests run on every wheel.
    Routine branch pushes and pull requests build reduced Linux wheels for
-   CPython 3.12–3.14 using pinned x86_64 build images. Manual dispatches and tags
-   build the full platform matrix using upstream images. Reusable callers
-   request full coverage by default; pull-request callers remain reduced.
-6. Check distribution metadata, require all 42 wheels, and generate `SHA256SUMS`.
-7. For version-tag pushes, publish a GitHub Release containing the tested wheels,
-   source archive, and checksums. Ordinary CI runs retain downloadable artifacts.
+   CPython 3.12–3.14 using pinned x86_64 build images. Manual dispatches and
+   release builds use the full platform matrix; reusable callers request full
+   coverage by default, while pull-request callers remain reduced.
+6. For full-matrix builds, check distribution metadata, require all 42 wheels,
+   generate `SHA256SUMS` and build provenance, and upload a versioned
+   `release-vX.Y.Z` artifact. The tag-triggered release workflow validates and
+   publishes the release assets.
 
 | Platform | Architecture | Build environment | Python versions |
 | --- | --- | --- | --- |
@@ -198,10 +261,12 @@ cibuildwheel; macOS and Windows use native runner images because their toolchain
 require those operating systems. Rust is pinned to 1.90.0 in the workflow and Linux
 container setup. Update both together. Dependabot checks action updates weekly.
 Compiler jobs are limited to two; wheel jobs fan out by platform and interpreter.
-The workflow starts with a small Ubuntu change-detection job. If a push or pull
-request changes only Markdown files, the test, build, and release jobs are
-skipped; skipped job checks report success. Manual dispatches and tag pushes
-always run the full matrix.
+The build workflow starts with a small Ubuntu change-detection job. If a push or
+pull request changes only Markdown files, the test and build jobs are skipped;
+skipped job checks report success. Manual dispatches run the full matrix. The
+release workflow requires stable `vX.Y.Z` tags and publishes a GitHub Release
+after validating its complete bundle; see the
+[release guide](docs/releasing.md) for its assets and retry behavior.
 
 Separate [maintenance checks](maintenance/README.md) cover build/release tools
 in a path-filtered workflow. They do not run in the build pipeline or ship in
@@ -213,21 +278,10 @@ The patched `crates/dcbor` sources and license must be committed with the projec
 Do not replace them with the unpatched registry crate. The sdist includes this
 dependency and the Python tests so packaging failures are caught before release.
 
-To release, update `version` in `pyproject.toml` and `Cargo.toml`, update
-`__version__` in `python/dcbor/__init__.py`, refresh `Cargo.lock` with
-`cargo check`, commit and push the tested changes, then push the matching tag:
-
-```sh
-git tag v0.1.0
-git push origin v0.1.0
-```
-
-The release job uses GitHub's built-in `GITHUB_TOKEN` with `contents: write`;
-no personal token or PyPI credentials are needed. Releases are published to
-GitHub Releases. PyPI publication is not configured. Release tags support stable
-versions only; an existing release causes publication to fail instead of
-overwriting its assets. To retry after publication succeeded, manage that release
-explicitly rather than rerunning its publishing step.
+For the initial `v0.1.0` release and later patch releases, see the
+[release guide](docs/releasing.md). It covers version updates, tag creation,
+bundle reuse or full-build fallback, release assets, retries, and GitHub-only
+publication.
 
 For a lightweight local check on an 8 GB machine:
 
@@ -237,8 +291,9 @@ python -m pytest -q
 maturin sdist --out dist
 ```
 
-Leave the full platform matrix to Actions. The final `release-bundle` artifact
-is retained for 30 days, with individual build artifacts retained for 14 days.
+Leave the full platform matrix to Actions. The versioned `release-vX.Y.Z`
+artifact is retained for 30 days, with individual build artifacts retained for
+14 days.
 
 ## License
 
