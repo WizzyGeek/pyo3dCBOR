@@ -134,7 +134,7 @@ jobs:
 
   sdist:
     name: Build and test source distribution
-    needs: [changes, test, rust]
+    needs: [changes, metadata]
     if: needs.changes.outputs.code_changed == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 25
@@ -254,7 +254,7 @@ jobs:
   distributions:
     name: Validate complete release bundle
     if: github.event_name != 'pull_request' && needs.changes.outputs.code_changed == 'true'
-    needs: [changes, sdist, wheels, macos-wheels]
+    needs: [changes, test, rust, sdist, wheels, macos-wheels]
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
