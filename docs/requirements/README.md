@@ -35,7 +35,6 @@ work.
 ## Current items
 
 - Features:
-  - [FEAT_001: CI environment and pipeline speedups](FEAT_001_ci_environment_speedups.md)
   - [FEAT_002: Versioned release and bundle workflow](FEAT_002_versioned_release_workflow.md)
   - [FEAT_003: Evidence-focused README for human readers](FEAT_003_evidence_focused_readme.md)
 - Bugs: none

@@ -1,5 +1,21 @@
 # FEAT_001 Linux image trial — 2026-10-18
 
+## Owner-scope closeout — 2026-10-18
+
+FEAT_001 is signed off for the owner-revised scope: maintain digest-pinned
+x86_64 glibc and musl images for reduced Linux CI to keep that build environment
+reproducible; use upstream images for full matrices, including ARM wheel builds;
+and retain the sdist parallelism, release-bundle gates, and pull-request macOS
+exclusion. The publisher and selector contain only the two x86_64 images, and
+the maintenance suite passed 85 checks on the signed-off revision.
+
+This closeout does not claim a speed or cost improvement. The original five-run
+performance target, native caching, broader image adoption, and associated cost
+measurements were deferred by the owner’s scope decision. The 42-wheel hosted
+trial below is compatibility evidence from the earlier four-image prototype;
+the current matrix and image policy are covered by the planner and maintenance
+checks, but the latest hosted run did not execute the product wheel matrix.
+
 Subsequent owner decision: keep maintained images only for routine reduced
 Linux CI for reproducibility. Full manual/reusable/tag matrices use upstream
 images, and the trial's `linux_images` input is removed. The report below records
