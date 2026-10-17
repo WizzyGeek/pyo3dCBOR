@@ -40,12 +40,8 @@ def test_sdist_runs_after_metadata_without_waiting_for_test_jobs():
     workflow = WORKFLOW.read_text()
 
     assert job_needs(workflow, "sdist") == ["changes", "metadata"]
-    assert job_needs(workflow, "wheels") == [
-        "changes", "test", "rust", "sdist"
-    ]
-    assert job_needs(workflow, "macos-wheels") == [
-        "changes", "test", "rust", "sdist"
-    ]
+    assert job_needs(workflow, "wheels") == ["changes", "sdist"]
+    assert job_needs(workflow, "macos-wheels") == ["changes", "sdist"]
 
 
 def test_release_bundle_waits_for_all_required_jobs_and_preserves_skips():

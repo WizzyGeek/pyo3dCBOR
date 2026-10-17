@@ -164,7 +164,7 @@ jobs:
 
   wheels:
     name: Wheels on ${{ matrix.os }} for ${{ matrix.python }}
-    needs: [changes, test, rust, sdist]
+    needs: [changes, sdist]
     if: needs.changes.outputs.code_changed == 'true'
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
@@ -211,7 +211,7 @@ jobs:
   macos-wheels:
     name: Wheels on ${{ matrix.os }} for ${{ matrix.python }}
     if: (github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call' || (github.event_name == 'push' && github.ref_type == 'tag')) && needs.changes.outputs.code_changed == 'true'
-    needs: [changes, test, rust, sdist]
+    needs: [changes, sdist]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
     strategy:
