@@ -1,5 +1,138 @@
 # dCBOR specification and test review
 
+## Current-tree and performance proposal review — 2026-10-17
+
+**The reviewed Python wire-format changes pass. Numeric-preflight delegation
+is approved from a specification perspective, with the structural/resource
+checks retained. One inherited Rust extraction API defect was found separately.**
+
+Read `PERF_REVIEW.md`, the current binding sources, the vendored float/ASCII
+changes and provenance, the new regression tests, and the packaging/CI files.
+Compared the vendor's `src/` and `tests/` files directly with the cached published
+`dcbor-0.25.2.crate`: the only differences are `src/float.rs`, `src/cbor.rs`,
+and `tests/encode.rs`, consistent with `crates/dcbor/PATCHES.md`.
+
+### Verified current implementation
+
+- The installed build and a fresh isolated release build each passed the original
+  **1,556 Python tests**. The independently built release binary has the same
+  SHA-256 as the installed extension:
+  `f2e7962974826f267cf78b551db06b46016ed347aa130866212a1469e121ef97`.
+- Added only `tests/test_numeric_oracle.py`, with two parameterized tests checking
+  **47,648 binary32/binary64 patterns** against Python `struct` and independent
+  integer serialization. Every exponent field and both signs are covered with
+  six boundary significands, plus 10,000 seeded patterns per width. These check
+  exact encoding, decoded numeric type/value, diagnostics and rejection of
+  nonpreferred raw inputs on all four reader APIs. Together with the existing
+  exhaustive binary16 test, this covers **113,184 IEEE patterns**.
+- The expanded current Python suite passed: **1,558 passed in 8.73 seconds**.
+- The vendored codec passed **89 unit/integration tests and 92 doctests** with
+  the production `multithreaded` feature, **181 total**. An initial doctest run
+  encountered temporary-filesystem quota errors; rerunning the doctests with a
+  workspace-backed temporary directory and one test thread passed all 92.
+- Built an sdist from the isolated current snapshot, checked hashes of all 60
+  required runtime-source/test/license/provenance files, and confirmed that it
+  contains no extension binaries or Python bytecode. Built a release wheel from
+  the extracted sdist, loaded it from a separate package directory, and passed
+  the expanded **1,558-test suite in 8.98 seconds** against that wheel.
+- Package version validation passed. No runtime source or dependency-config
+  changes occurred in the shared checkout during these checks.
+
+The exact-builtin dispatch preserves the pre-existing subclass/custom numeric
+protocol path. ASCII is already NFC; ordinary conversion, active-key accounting
+and vendored serialization retain the non-ASCII normalization path. The bounded
+text reuse cache holds a reference to immutable Python string storage and charges
+each encoded occurrence. Composite lookup probes now enter an active key context.
+The relevant identity, normalization, depth, replacement and memory-limit tests
+all passed. No new Python conformance regression was identified in those changes.
+
+These are local CPython 3.14/Linux checks. The proposed cross-platform CI matrix
+was inspected but was not executed by this reviewer. No new performance speedup
+claim is made here; performance measurements remain in `PERF_REVIEW.md`.
+
+### Response to performance proposal 4
+
+Applied `benchmarks/perf_review/numeric_preflight.patch` only to the isolated
+snapshot. The candidate passed **1,558 Python tests in 9.43 seconds**, including
+the independent numeric oracle and the existing exhaustive binary16 test.
+
+The source-level reason delegation is safe is specific: `decode_cbor_internal`
+calls `validate_canonical_f16`, `validate_canonical_f32` or
+`validate_canonical_f64` on the original payload **before** converting that
+payload into a `CBOR`. The patched validators reject integral values within the
+chosen reduction interval, wider-than-needed encodings and noncanonical NaNs.
+For binary16, the NaN check also preserves the exact required payload bits.
+All four public readers call this decoder after structural preflight.
+
+The production change may remove the per-float construction/serialization
+comparison. Keep argument/truncation parsing, container/map-count overflow
+checks, depth enforcement, aggregate key-cache accounting and complete-input
+checks. Retain the pinned patched codec and the conformance tests. Remove the
+unused `dcbor::CBOR` import, `half_to_f64` helper and `start` local as part of the
+implementation; the experimental patch leaves those behind. Rejection wording
+can change when the decoder becomes the rejecting layer.
+
+This is approval to proceed with that narrow optimization. It is not an
+implementation change: shared `src/wire.rs` and the installed extension were
+left unchanged by this review.
+
+### Separate finding: inherited Rust negative-integer extraction defect
+
+The public Rust `TryFrom<CBOR>` floating extraction paths have an inherited
+correctness defect in `crates/dcbor/src/float.rs`:
+
+- Lines 161–163: converting `CBORCase::Negative(n)` to `f32` returns the positive
+  encoded magnitude `n`, omitting CBOR's `-1 - n` transformation. A compiled
+  standalone probe returns `Ok(0.0)` for integer `-1`, `Ok(1.0)` for `-2`, and
+  `Ok(16.0)` for `-17`.
+- Lines 106–108: `f64` extraction first requires the encoded magnitude to be
+  exactly representable as `f64`. This incorrectly returns `OutOfRange` for
+  integer `-9007199254740994` (`-(2**53 + 2)`), although the signed integer itself
+  is exactly representable. Its encoded magnitude, `9007199254740993`, is not.
+
+Both conversion implementations are byte-for-byte unchanged from the published
+crate. This is not introduced by the local reduction/ASCII patch, and Python's
+decoder reads negative integers directly instead of calling these traits.
+It therefore does not invalidate the Python test results or the delegation
+approval. It is a separate Rust API follow-up for the developing agent.
+
+Suggested regression assertions for the vendored Rust suite:
+
+```rust
+assert_eq!(f32::try_from(CBOR::from(-1i64)).unwrap(), -1.0);
+assert_eq!(f32::try_from(CBOR::from(-2i64)).unwrap(), -2.0);
+assert_eq!(f32::try_from(CBOR::from(-17i64)).unwrap(), -17.0);
+assert_eq!(
+    f64::try_from(CBOR::from(-9_007_199_254_740_994i64)).unwrap(),
+    -9_007_199_254_740_994.0,
+);
+```
+
+Convert the actual signed integer in integer arithmetic before testing whether
+it is exactly representable in the requested floating type. Do not make the
+encoded unsigned magnitude the representability criterion. No runtime fix was
+applied as part of this independent review.
+
+### Copyable current handoff
+
+```text
+Current Python wire paths pass independent review: 1,558 Python tests and
+181 vendored Rust tests pass, and a release wheel rebuilt from the sdist passes
+the same expanded Python suite. Added test_numeric_oracle.py checks 47,648
+binary32/binary64 patterns independently; existing binary16 coverage remains.
+
+Spec review approves numeric-preflight delegation to the patched decoder.
+The isolated proposal passes all 1,558 tests. Keep structural/depth/key-cache
+checks, the pinned patched codec and conformance tests; remove the unused CBOR
+import, half_to_f64 helper and start local. Production wire.rs is unchanged.
+
+Separate inherited Rust API bug: f32::try_from(CBOR::from(-1i64)) returns 0.0
+(-2 returns 1.0), and f64 extraction rejects exact integer -(2**53 + 2).
+These TryFrom implementations are unchanged upstream and unused by the Python
+decoder. Please fix them separately with direct Rust regression tests and
+record the additional vendor change in PATCHES.md. Details in SPEC_REVIEW.md.
+```
+
 ## Independent reviewer follow-up — 2026-10-17
 
 Read the PM resolution, the patched `crates/dcbor/src/float.rs`,

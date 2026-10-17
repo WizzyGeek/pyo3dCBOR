@@ -45,9 +45,10 @@ fn py_to_cbor_key_with_budget(
     py: Python<'_>, obj: &Bound<'_, PyAny>, depth: u32,
     budget: &mut encode::EncodeBudget,
 ) -> PyResult<CBOR> {
+    let before = budget.used();
     let mut key_budget = budget.fork_key();
     let key = py_to_cbor_with_budget(py, obj, depth, &mut key_budget)?;
-    budget.reserve(key_budget.used())?;
+    budget.reserve(key_budget.used() - before)?;
     Ok(key)
 }
 
@@ -64,30 +65,44 @@ fn py_to_cbor_with_budget(
     if let Ok(b) = obj.cast::<PyBool>() {
         return budget.scalar(CBOR::from(b.is_true()));
     }
-    if let Ok(i) = obj.extract::<i64>() {
-        return budget.scalar(CBOR::from(i));
-    }
-    if let Ok(i) = obj.extract::<u64>() {
-        return budget.scalar(CBOR::from(i));
-    }
-    if let Ok(i) = obj.extract::<i128>() {
-        // Beyond i64/u64 direct range: dCBOR negatives can reach -(2^64).
-        if i < 0 {
-            let mag: i128 = -1 - i;
-            if let Ok(mag) = u64::try_from(mag) {
-                return budget.scalar(CBOR::from(CBORCase::Negative(mag)));
-            }
+    // Exact builtin nonintegers cannot implement Python's integer protocol.
+    // Keep probing subclasses and custom objects so their `__index__`
+    // behavior, including its precedence over their builtin base, is
+    // unchanged.
+    let needs_integer_probe = obj.cast::<PyInt>().is_ok()
+        || !(obj.is_exact_instance_of::<PyFloat>()
+            || obj.is_exact_instance_of::<PyString>()
+            || obj.is_exact_instance_of::<PyBytes>()
+            || obj.is_exact_instance_of::<PyByteArray>()
+            || obj.is_exact_instance_of::<PyList>()
+            || obj.is_exact_instance_of::<PyTuple>()
+            || obj.is_exact_instance_of::<PyDict>());
+    if needs_integer_probe {
+        if let Ok(i) = obj.extract::<i64>() {
+            return budget.scalar(CBOR::from(i));
         }
-        return Err(CBORError::new_err(
-            "integer out of range for dCBOR (must fit in [-2^64, 2^64-1])",
-        ));
-    }
-    if obj.cast::<PyInt>().is_ok() {
-        // A Python int that didn't fit in i128 either: still an
-        // out-of-range integer, not an unsupported type.
-        return Err(CBORError::new_err(
-            "integer out of range for dCBOR (must fit in [-2^64, 2^64-1])",
-        ));
+        if let Ok(i) = obj.extract::<u64>() {
+            return budget.scalar(CBOR::from(i));
+        }
+        if let Ok(i) = obj.extract::<i128>() {
+            // Beyond i64/u64 direct range: dCBOR negatives can reach -(2^64).
+            if i < 0 {
+                let mag: i128 = -1 - i;
+                if let Ok(mag) = u64::try_from(mag) {
+                    return budget.scalar(CBOR::from(CBORCase::Negative(mag)));
+                }
+            }
+            return Err(CBORError::new_err(
+                "integer out of range for dCBOR (must fit in [-2^64, 2^64-1])",
+            ));
+        }
+        if obj.cast::<PyInt>().is_ok() {
+            // A Python int that didn't fit in i128 either: still an
+            // out-of-range integer, not an unsupported type.
+            return Err(CBORError::new_err(
+                "integer out of range for dCBOR (must fit in [-2^64, 2^64-1])",
+            ));
+        }
     }
     if let Ok(f) = obj.cast::<PyFloat>() {
         return budget.scalar(CBOR::from(f.value()));
@@ -158,8 +173,10 @@ fn py_to_cbor_with_budget(
         for (k, v) in dict.iter() {
             // Canonical identity is known only after conversion. Convert once
             // with an independently bounded key context, preserving callbacks.
+            let candidate_base = budget.used();
             let mut candidate_budget = budget.fork_key();
             let key_cbor = py_to_cbor_with_budget(py, &k, depth + 1, &mut candidate_budget)?;
+            let candidate_cost = candidate_budget.used() - candidate_base;
             let encoded = key_cbor.to_cbor_data();
             let old_count = entries.len();
             if let Some((old_key, old_value, old_cost)) = entries.remove(&encoded) {
@@ -170,7 +187,7 @@ fn py_to_cbor_with_budget(
                     - encode::header_len(old_count as u64))?;
             }
             let before = budget.used();
-            budget.reserve(candidate_budget.used())?;
+            budget.reserve(candidate_cost)?;
             let val_cbor = py_to_cbor_with_budget(py, &v, depth + 1, budget)?;
             let cost = budget.used() - before;
             entries.insert(encoded, (key_cbor, val_cbor, cost));

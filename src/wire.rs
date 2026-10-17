@@ -1,6 +1,5 @@
 //! Iterative wire checks performed before entering the recursive upstream decoder.
 use crate::{depth_err, CBORError, MAX_DEPTH};
-use dcbor::CBOR;
 use pyo3::prelude::*;
 
 /// Maximum sum of encoded map-key lengths, including keys inside other keys.
@@ -35,19 +34,6 @@ fn argument(info: u8, data: &[u8], pos: &mut usize) -> PyResult<u64> {
     Ok(value)
 }
 
-fn half_to_f64(bits: u16) -> f64 {
-    let sign = if bits & 0x8000 == 0 { 1.0 } else { -1.0 };
-    let exponent = (bits >> 10) & 31;
-    let fraction = bits & 1023;
-    match exponent {
-        0 => sign * f64::from(fraction) * 2f64.powi(-24),
-        31 if fraction == 0 => sign * f64::INFINITY,
-        31 => f64::NAN,
-        _ => sign * (1.0 + f64::from(fraction) / 1024.0)
-            * 2f64.powi(i32::from(exponent) - 15),
-    }
-}
-
 pub(crate) fn preflight(data: &[u8]) -> PyResult<()> {
     preflight_at_depth(data, 0)
 }
@@ -63,29 +49,15 @@ pub(crate) fn preflight_key_cache_bytes(data: &[u8], depth: u32) -> PyResult<usi
     let mut stack: Vec<Frame> = Vec::new();
     let mut key_cache_bytes = 0usize;
     loop {
-        let start = pos;
         let byte = *data.get(pos).ok_or_else(malformed)?;
         pos += 1;
         let major = byte >> 5;
         let info = byte & 31;
         let value = argument(info, data, &mut pos)?;
         match major {
-            0 | 1 => (),
-            7 => {
-                let number = match info {
-                    25 => Some(half_to_f64(value as u16)),
-                    26 => Some(f32::from_bits(value as u32) as f64),
-                    27 => Some(f64::from_bits(value)),
-                    _ => None,
-                };
-                if let Some(number) = number {
-                    // Compare BEFORE upstream decoding: that decoder can alter
-                    // some noncanonical integral floats during reduction.
-                    if CBOR::from(number).to_cbor_data() != data[start..pos] {
-                        return Err(CBORError::new_err("noncanonical dCBOR numeric encoding"));
-                    }
-                }
-            }
+            // Numeric canonicality for major type 7 is enforced by the
+            // patched decoder after this structural/resource scan succeeds.
+            0 | 1 | 7 => (),
             2 | 3 => {
                 let length = usize::try_from(value).map_err(|_| malformed())?;
                 pos = pos.checked_add(length).filter(|end| *end <= data.len())

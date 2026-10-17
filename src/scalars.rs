@@ -2,7 +2,7 @@
 //! `dcbor::Date`, whose constructor panics for unsupported timestamps.
 use dcbor::{CBORCase, Simple, Tag, CBOR};
 use pyo3::prelude::*;
-use pyo3::types::PyString;
+use pyo3::types::{PyDict, PyList, PyString, PyTuple};
 use pyo3::IntoPyObjectExt;
 use unicode_normalization::UnicodeNormalization;
 
@@ -21,13 +21,27 @@ pub(crate) fn encode_text(text: &Bound<'_, PyString>) -> PyResult<CBOR> {
     // Upstream normalizes only when serializing. Store canonical text here
     // so cache-budget lengths match the actual wire bytes, even when NFC
     // expands or contracts the original UTF-8 representation.
-    Ok(CBORCase::Text(value.nfc().collect()).into())
+    let normalized = if value.is_ascii() {
+        value.to_owned()
+    } else {
+        value.nfc().collect()
+    };
+    Ok(CBORCase::Text(normalized).into())
 }
 
 pub(crate) fn encode_datetime(
     py: Python<'_>,
     obj: &Bound<'_, PyAny>,
 ) -> PyResult<Option<CBOR>> {
+    // Exact builtin containers cannot be datetime instances. Avoid importing
+    // datetime for the common recursive-container path while preserving the
+    // existing instance checks for subclasses and custom objects.
+    if obj.is_exact_instance_of::<PyList>()
+        || obj.is_exact_instance_of::<PyTuple>()
+        || obj.is_exact_instance_of::<PyDict>()
+    {
+        return Ok(None);
+    }
     let datetime_mod = py.import("datetime")?;
     if !obj.is_instance(&datetime_mod.getattr("datetime")?)? {
         return Ok(None);

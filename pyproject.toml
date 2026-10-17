@@ -25,6 +25,35 @@ classifiers = [
 python-source = "python"
 module-name = "dcbor._dcbor"
 features = ["pyo3/extension-module"]
+locked = true
+include = [
+    { path = "tests/**/*.py", format = "sdist" },
+    { path = "crates/dcbor/PATCHES.md", format = "sdist" },
+    { path = "crates/dcbor/SECURITY-REVIEW.md", format = "sdist" },
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.cibuildwheel]
+# Regular CPython only: no implicit additions when new interpreters appear.
+build = "cp39-* cp310-* cp311-* cp312-* cp313-* cp314-*"
+archs = ["native"]
+build-frontend = "build"
+test-requires = ["pytest>=8,<9"]
+test-command = "python -m pytest {project}/tests -q"
+
+[tool.cibuildwheel.environment]
+CARGO_BUILD_JOBS = "2"
+
+[tool.cibuildwheel.linux]
+# cibuildwheel resolves these image families to versioned images.
+manylinux-x86_64-image = "manylinux_2_28"
+manylinux-aarch64-image = "manylinux_2_28"
+musllinux-x86_64-image = "musllinux_1_2"
+musllinux-aarch64-image = "musllinux_1_2"
+before-all = "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o /tmp/rustup-init.sh && sh /tmp/rustup-init.sh -y --profile minimal --default-toolchain 1.90.0"
+environment = { PATH = "$HOME/.cargo/bin:$PATH", CARGO_BUILD_JOBS = "2" }
+
+[tool.cibuildwheel.macos]
+environment = { MACOSX_DEPLOYMENT_TARGET = "11.0", CARGO_BUILD_JOBS = "2" }

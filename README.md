@@ -137,9 +137,10 @@ represented in dCBOR (unsupported Python types, out-of-range integers) raise
 - **Datetime precision.** Fractional epoch timestamps use floating-point
   seconds. Microseconds far from the Unix epoch may lose precision, and
   decoded timestamps are limited to Python's datetime resolution and range.
-- **Verified interpreter.** This has been built and tested against
-  CPython 3.14 in this environment. PyO3 0.29 supports building against
-  CPython 3.9–3.14, but only 3.14 has actually been exercised here.
+- **Interpreter coverage.** CI targets regular CPython 3.9–3.14. Free-threaded
+  CPython and alternative interpreters are not currently in the build matrix.
+  Local verification has used CPython 3.14; cross-platform results are reported
+  by GitHub Actions.
 
 ## Development
 
@@ -149,6 +150,65 @@ pip install maturin pytest
 maturin develop
 pytest
 ```
+
+## CI and releases
+
+The [GitHub Actions workflow](.github/workflows/ci.yml) runs on pull requests,
+pushes to `master`/`main`, `v*` tags, and manual dispatches. Its stages are:
+
+1. Check that Python and Cargo package versions agree. On tags, also require
+   an exact `vX.Y.Z` match before starting builds.
+2. Build the extension and run the full test suite on CPython 3.9–3.14.
+3. Create an sdist and verify it installs and passes tests.
+4. Build release wheels **from that sdist**, then install and test every wheel
+   in an isolated environment using [cibuildwheel](https://cibuildwheel.pypa.io/).
+5. Check distribution metadata, require all 42 wheels, and generate `SHA256SUMS`.
+6. For version-tag pushes, publish a GitHub Release containing the tested wheels,
+   source archive, and checksums. Ordinary CI runs retain downloadable artifacts.
+
+| Platform | Architecture | Build environment | Python versions |
+| --- | --- | --- | --- |
+| Linux glibc 2.28+ | x86_64, aarch64 | manylinux_2_28 Docker images | 3.9–3.14 |
+| Linux musl 1.2+ | x86_64, aarch64 | musllinux_1_2 Docker images | 3.9–3.14 |
+| macOS 11+ | Intel, Apple Silicon | Native GitHub macOS runner images | 3.9–3.14 |
+| Windows | x64 | Windows 2022 runner image with MSVC | 3.9–3.14 |
+
+ARM builds run on native ARM runners. Linux packaging images are selected by
+cibuildwheel; macOS and Windows use native runner images because their toolchains
+require those operating systems. Rust is pinned to 1.90.0 in the workflow and Linux
+container setup. Update both together. Dependabot checks action updates weekly.
+Compiler jobs are limited to two, and at most three wheel jobs run concurrently.
+
+The patched `crates/dcbor` sources and license must be committed with the project.
+Do not replace them with the unpatched registry crate. The sdist includes this
+dependency and the Python tests so packaging failures are caught before release.
+
+To release, update `version` in both `pyproject.toml` and `Cargo.toml`, refresh
+`Cargo.lock` with `cargo check`, commit and push the tested changes, then push
+the matching tag:
+
+```sh
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+The release job uses GitHub's built-in `GITHUB_TOKEN` with `contents: write`;
+no personal token or PyPI credentials are needed. Releases are published to
+GitHub Releases. PyPI publication is not configured. Release tags support stable
+versions only; an existing release causes publication to fail instead of
+overwriting its assets. To retry after publication succeeded, manage that release
+explicitly rather than rerunning its publishing step.
+
+For a lightweight local check on an 8 GB machine:
+
+```sh
+CARGO_BUILD_JOBS=2 maturin develop --release --locked
+python -m pytest -q
+maturin sdist --out dist
+```
+
+Leave the full platform matrix to Actions. The final `release-bundle` artifact
+is retained for 30 days, with individual build artifacts retained for 14 days.
 
 ## License
 

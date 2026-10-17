@@ -3,7 +3,7 @@ use dcbor::{CBOR, Map};
 use pyo3::prelude::*;
 use pyo3::types::{PyDict, PyList, PyTuple};
 use pyo3::{IntoPyObjectExt, PyTraverseError, PyVisit};
-use crate::{cbor_to_py, py_to_cbor, CBORError};
+use crate::{cbor_to_py, CBORError};
 use crate::key_conversion::cbor_key_to_py;
 
 #[pyclass(module = "dcbor", name = "CBORTag", skip_from_py_object)]
@@ -93,7 +93,8 @@ impl PyCborMap {
     fn __len__(&self) -> usize { self.map.len() }
 
     fn __getitem__(&self, py: Python<'_>, key: &Bound<'_, PyAny>) -> PyResult<Py<PyAny>> {
-        let canonical_key = py_to_cbor(py, key, 1)?;
+        let mut budget = crate::encode::EncodeBudget::default();
+        let canonical_key = crate::py_to_cbor_key_with_budget(py, key, 1, &mut budget)?;
         match self.map.get::<CBOR, CBOR>(canonical_key) {
             Some(value) => cbor_to_py(py, &value, 1),
             None => Err(pyo3::exceptions::PyKeyError::new_err(key.clone().unbind())),
@@ -101,7 +102,8 @@ impl PyCborMap {
     }
 
     fn __contains__(&self, py: Python<'_>, key: &Bound<'_, PyAny>) -> PyResult<bool> {
-        let canonical_key = py_to_cbor(py, key, 1)?;
+        let mut budget = crate::encode::EncodeBudget::default();
+        let canonical_key = crate::py_to_cbor_key_with_budget(py, key, 1, &mut budget)?;
         Ok(self.map.contains_key(canonical_key))
     }
 

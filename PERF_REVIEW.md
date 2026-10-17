@@ -1,5 +1,88 @@
 # Performance proposals for PM
 
+## Spec response on numeric preflight — 2026-10-17
+
+**Proposal 4 is approved from a specification perspective.** The spec reviewer
+applied only `numeric_preflight.patch` to an isolated current-tree release build
+and passed **1,558 Python tests**, including new independent checks of **47,648
+binary32/binary64 patterns** and the existing exhaustive binary16 test.
+
+The patched decoder validates each original float payload before conversion or
+reduction for all three widths. All four reader APIs enter that decoder. Keep
+the structural/truncation, map-count overflow, depth and aggregate key-cache
+checks, and retain the pinned patched codec. Remove the now-unused `CBOR`
+import, `half_to_f64` helper and `start` local in the production implementation.
+Error wording may change. No shared runtime file was modified for this review.
+
+Full evidence and a separate inherited Rust floating-extraction API finding are
+recorded in `SPEC_REVIEW.md`. That finding does not affect the Python decoder
+or this delegation decision. The cross-platform CI matrix and performance gains
+were not rerun as part of the specification check.
+
+## P1 response reviewed — 2026-10-17
+
+**P1 addressed. No performance blocker identified in this follow-up.** Read
+`/tmp/dcbor-perf-p1-response.md`, inspected the implementation and new regressions,
+and verified all eight handoff fingerprints against the current files, including
+the installed extension. Exact-type dispatch preserves the custom/subclass
+numeric path; ASCII handling covers ordinary text, active key-budget conversion
+and vendored serialization. Vendor provenance records the change.
+
+Recomputed both comparisons from the PM's raw measurements; all 44 workload/run
+wire hashes agree. [Preserved current-tree results](benchmarks/perf_review/p1_results.json):
+
+| Combined P1 workload | Measured speedup |
+| --- | ---: |
+| 4,096 fractional floats, `dumps` | 5.14–5.26× |
+| 1,024 singleton lists, `dumps` | 5.88–5.90× |
+| 1,024 ASCII strings × 48 bytes, `dumps` | 15.25–15.45× |
+| 1,024 ASCII-key dictionary entries, `dumps` | 2.14–2.20× |
+| 1,024 pairs, `CBORMap` construction | 2.46–2.56× |
+
+Integer encoding costs about 1–2% more; fallback-map encoding costs about 1–5%
+more in the supplied passes. Keep those controls in subsequent measurements.
+These combined, current-tree results supersede the original P1 estimates below.
+
+Reran the new dispatch/ASCII tests: **43 passed in 0.04 s**. The PM reports
+**1,556 Python tests, 181 vendored Rust tests and 319 independent focused tests
+passing**; those broader suites were not rerun in this follow-up. No runtime
+changes were made by this review.
+
+**Next PM opportunity:** avoid discarded Python materialization after a map
+requires `CBORMap`, while retaining eager date validation and key identity.
+Shared-buffer serialization remains separate; numeric-preflight delegation
+still needs the planned spec review. A wholesale redesign remains unnecessary.
+
+## Architecture follow-up — 2026-10-17
+
+**No wholesale redesign yet. Remove unnecessary construction first.**
+Current decoding is `wire checks → owned Rust tree → Python objects`;
+encoding is `Python objects → owned Rust tree → temporary vectors → Python bytes`.
+The intermediate tree is a convenience, not a requirement of the format.
+
+| Choice | Opportunity | Work / recommendation |
+| --- | --- | --- |
+| Existing dispatch + ASCII fast paths | Remove routine work within the current design | Implemented; current results and verification above. |
+| Stop constructing discarded Python objects | `map_to_python` still converts every key/value after choosing `CBORMap`, then discards them | Small–medium; first new experiment. Keep eager validation, especially invalid dates, using a validation traversal instead of materializing whole Python containers. Preserve key identity and fresh accessor results. |
+| Validation without a Rust tree | `validate()` constructs and immediately drops a full `CBOR` tree | Medium; strongest focused architecture candidate for validation-heavy workloads. Use a shared parser with validation/materialization modes. Existing preflight alone is insufficient: it lacks full UTF-8/NFC, map ordering/duplicate and other canonical checks. |
+| Direct Python-to-output writer | Avoid Rust tree allocation on encoding; maps still need canonical key encoding and sorting | Medium–large; defer until smaller changes are measured. Must preserve normalization, replacement/callback behavior and live key-budget accounting. Shared-buffer serialization is the cheaper intermediate step. |
+| Lazy / zero-copy decoding | An opt-in view could retain immutable input bytes and expose byte-string ranges as `memoryview`; create Python values only when accessed | Larger API change; useful when callers inspect little of large messages. Ordinary `loads()` promises Python containers and owned `bytes`; those results require materialization. Full validation still needs an eager scan to preserve rejection timing. Do not retain a borrowed slice without its owner. |
+| Vectorization | Bulk byte copying and ASCII checks suit contiguous data; mixed CBOR values and boxed Python lists do not | Prefer bulk operations already available in Rust. Consider a typed-buffer API only with a demonstrated numeric-array workload; canonical float reduction makes generic fixed-width packing incorrect. |
+
+With P1 implemented, measure allocation avoided in fallback-map decoding next.
+Choose a validation-only parser if validation dominates;
+choose a view API only if consumers routinely skip most payload data. Lazy
+iteration alone will not remove the full tree currently built by `loads()`.
+These architecture candidates are source-based proposals, with no new speedup
+measurements or runtime changes in this follow-up.
+
+**Benchmark freshness:** the current tree has newer key-budget, text-reuse and
+dictionary-conversion code than the snapshot measured below. Those figures
+remain historical evidence; rebase experimental patches and rerun before PM
+uses them as current estimates.
+
+## Original measured review
+
 Reviewed 2026-10-17. **Recommendation: prioritize Python dispatch and the ASCII
 normalization fast path.** Independent prototypes delivered roughly 6–7× faster
 float/list encoding and 3–3.5× faster ASCII-array encoding on the workloads below.

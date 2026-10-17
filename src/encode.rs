@@ -3,13 +3,37 @@ use crate::{depth_err, CBORError, MAX_DEPTH};
 use dcbor::{CBOR, CBORCase, Map};
 use pyo3::prelude::*;
 use pyo3::types::PyString;
+use std::cell::RefCell;
+use std::collections::HashMap;
+use std::rc::Rc;
 use unicode_normalization::UnicodeNormalization;
 
+const TEXT_REUSE_CACHE_BYTES: usize = 2 * 1024 * 1024;
+
 #[derive(Default)]
+struct TextReuseCache {
+    bytes: usize,
+    values: HashMap<usize, (Py<PyString>, CBOR)>,
+}
+
 pub(crate) struct EncodeBudget {
     key_bytes: usize,
     /// Every byte of the current subtree is retained in each enclosing key.
     active_keys: usize,
+    /// Python strings are immutable. Sharing their normalized CBOR value keeps
+    /// repeated references from multiplying the non-cache representation while
+    /// each map's encoded-key cache is still charged independently.
+    texts: Rc<RefCell<TextReuseCache>>,
+}
+
+impl Default for EncodeBudget {
+    fn default() -> Self {
+        Self {
+            key_bytes: 0,
+            active_keys: 0,
+            texts: Rc::new(RefCell::new(TextReuseCache::default())),
+        }
+    }
 }
 
 fn budget_error() -> PyErr {
@@ -20,7 +44,13 @@ impl EncodeBudget {
     pub(crate) fn used(&self) -> usize { self.key_bytes }
     pub(crate) fn in_key(&self) -> bool { self.active_keys != 0 }
     pub(crate) fn fork_key(&self) -> Self {
-        Self { key_bytes: 0, active_keys: self.active_keys + 1 }
+        // Keep the parent's live charge in the fork so constructing a
+        // candidate key cannot temporarily exceed the process-wide limit.
+        Self {
+            key_bytes: self.key_bytes,
+            active_keys: self.active_keys + 1,
+            texts: Rc::clone(&self.texts),
+        }
     }
     pub(crate) fn release(&mut self, amount: usize) { self.key_bytes -= amount; }
     pub(crate) fn reserve(&mut self, amount: usize) -> PyResult<()> {
@@ -45,17 +75,45 @@ impl EncodeBudget {
 
     pub(crate) fn text(&mut self, text: &Bound<'_, PyString>) -> PyResult<CBOR> {
         if !self.in_key() { return crate::scalars::encode_text(text); }
+        let identity = text.as_ptr() as usize;
+        let cached = self.texts.borrow().values.get(&identity)
+            .filter(|(source, _)| source.bind(text.py()).is(text))
+            .map(|(_, cbor)| cbor.clone());
+        if let Some(cbor) = cached {
+            self.wire_bytes(encoded_len(&cbor)?)?;
+            return Ok(cbor);
+        }
         let value = text.to_str().map_err(|_| CBORError::new_err(
             "Python string contains surrogate code points that cannot be encoded as CBOR UTF-8 text"))?;
-        let mut normalized = String::new();
-        self.header(0)?;
-        for ch in value.nfc() {
-            let old_length = normalized.len();
-            let new_length = add(old_length, ch.len_utf8())?;
-            self.wire_bytes(ch.len_utf8() + header_len(new_length as u64) - header_len(old_length as u64))?;
-            normalized.push(ch);
+        let normalized = if value.is_ascii() {
+            self.bytes(value.len())?;
+            value.to_owned()
+        } else {
+            let mut normalized = String::new();
+            self.header(0)?;
+            for ch in value.nfc() {
+                let old_length = normalized.len();
+                let new_length = add(old_length, ch.len_utf8())?;
+                self.wire_bytes(ch.len_utf8() + header_len(new_length as u64)
+                    - header_len(old_length as u64))?;
+                normalized.push(ch);
+            }
+            normalized
+        };
+        let cbor: CBOR = CBORCase::Text(normalized).into();
+        let size = encoded_len(&cbor)?;
+        if size <= TEXT_REUSE_CACHE_BYTES {
+            let mut cache = self.texts.borrow_mut();
+            if cache.bytes.saturating_add(size) > TEXT_REUSE_CACHE_BYTES {
+                cache.values.clear();
+                cache.bytes = 0;
+            }
+            cache
+                .values
+                .insert(identity, (text.clone().unbind(), cbor.clone()));
+            cache.bytes += size;
         }
-        Ok(CBORCase::Text(normalized).into())
+        Ok(cbor)
     }
 
     /// Charge every expanded wire occurrence before cloning retained caches.

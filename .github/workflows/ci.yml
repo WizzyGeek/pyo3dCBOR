@@ -1,0 +1,194 @@
+name: Build, test, and release
+
+on:
+  push:
+    branches: [master, main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wheels-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
+
+env:
+  CARGO_BUILD_JOBS: '2'
+  RUST_VERSION: '1.90.0'
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  metadata:
+    name: Check package and release versions
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+      - run: python scripts/ci.py versions
+        env:
+          RELEASE_TAG: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || '' }}
+
+  test:
+    name: Test Python ${{ matrix.python }}
+    needs: metadata
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Select Rust toolchain
+        run: rustup toolchain install "$RUST_VERSION" --profile minimal --no-self-update
+      - name: Build and install extension for tests
+        run: |
+          python -m pip install 'maturin>=1.7,<2' 'pytest>=8,<9'
+          maturin build --locked --out test-wheels
+          python -m pip install --no-deps test-wheels/*.whl
+        env:
+          RUSTUP_TOOLCHAIN: ${{ env.RUST_VERSION }}
+      - run: python -m pytest -q
+
+  sdist:
+    name: Build and test source distribution
+    needs: test
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+      - name: Select Rust toolchain
+        run: rustup toolchain install "$RUST_VERSION" --profile minimal --no-self-update
+      - name: Package source and rebuild it in isolation
+        run: |
+          python -m pip install 'build>=1,<2' 'pytest>=8,<9'
+          python -m build --sdist --outdir dist
+          python -m pip install --no-deps dist/*.tar.gz
+          python -m pytest -q
+        env:
+          RUSTUP_TOOLCHAIN: ${{ env.RUST_VERSION }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sdist
+          path: dist/*.tar.gz
+          if-no-files-found: error
+          retention-days: 14
+
+  wheels:
+    name: Wheels on ${{ matrix.os }}
+    needs: sdist
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        os: [ubuntu-24.04, ubuntu-24.04-arm, macos-15-intel, macos-14, windows-2022]
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+      - uses: actions/download-artifact@v4
+        with:
+          name: sdist
+          path: dist
+      - name: Select native Rust toolchain
+        if: runner.os != 'Linux'
+        run: rustup toolchain install "$RUST_VERSION" --profile minimal --no-self-update
+      - name: Locate source archive
+        id: source
+        run: |
+          archives=(dist/*.tar.gz)
+          test "${#archives[@]}" -eq 1
+          echo "path=${archives[0]}" >> "$GITHUB_OUTPUT"
+      - name: Build, repair, and test every wheel from the source archive
+        uses: pypa/cibuildwheel@v4.3.1
+        with:
+          package-dir: ${{ steps.source.outputs.path }}
+          output-dir: wheelhouse
+        env:
+          RUSTUP_TOOLCHAIN: ${{ env.RUST_VERSION }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheels-${{ matrix.os }}
+          path: wheelhouse/*.whl
+          if-no-files-found: error
+          retention-days: 14
+
+  distributions:
+    name: Validate complete release bundle
+    needs: [sdist, wheels]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: wheels-*
+          path: dist
+          merge-multiple: true
+      - uses: actions/download-artifact@v4
+        with:
+          name: sdist
+          path: dist
+      - run: |
+          python -m pip install 'twine>=6,<7' 'packaging>=24'
+          python -m twine check --strict dist/*
+          python scripts/ci.py distributions dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-bundle
+          path: dist/*
+          if-no-files-found: error
+          retention-days: 30
+
+  release:
+    name: Publish GitHub Release
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    needs: distributions
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-bundle
+          path: dist
+      - name: Publish tested assets
+        run: |
+          gh release create "$RELEASE_TAG" dist/* \
+            --repo "$GH_REPO" --verify-tag --generate-notes \
+            --title "dcbor $RELEASE_TAG"
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
