@@ -1,7 +1,8 @@
 # FEAT_001: CI environment and pipeline speedups
 
-**Status:** Proposed; research and tradeoffs documented, implementation not
-started.
+**Status:** sdist/test parallelization implemented; Linux image publishing
+prototype implemented but not yet published or consumed; native caching
+deferred pending baseline evidence.
 
 ## Problem
 
@@ -94,6 +95,64 @@ substitute for dependency and vulnerability review.
 Image builds and GHCR storage have cost and maintenance of their own. Price
 refresh jobs, image retention, and transfer time against the current per-job
 setup. Ensure image generation does not consume expensive macOS runner time.
+
+### Prototype status
+
+The initial Linux prototype is isolated from the consuming CI workflow:
+
+- `containers/linux/Dockerfile.manylinux` and
+  `containers/linux/Dockerfile.musllinux` extend the corresponding upstream
+  Pypa image and add only Rust 1.90.0, its target for the native architecture,
+  and the existing `CARGO_BUILD_JOBS=2` setting.
+- `.github/workflows/publish-linux-images.yml` builds and validates all four
+  libc/architecture combinations on native x86_64 and ARM64 runners. Each
+  matrix job validates its image before publishing that variant; digest
+  collection succeeds only after all four variants publish. The workflow
+  requests `packages: write` only in the publisher job, links the container
+  package to this repository, reuses existing versioned tags rather than
+  intentionally overwriting them, and collects the pushed image digests.
+- The workflow uses the versioned Pypa base tag `2026.10.16-1`; custom tags
+  include the libc family, architecture, Rust version, base-image version, and
+  source commit. Each base-image reference also pins its resolved manifest
+  digest. Publication reuses an existing versioned tag instead of intentionally
+  overwriting it and does not create `latest` or other mutable aliases. Since a
+  registry tag is still a name rather than a content guarantee, consumers must
+  use the published digest, not the tag alone, as the immutable reference.
+
+The four image definitions were built and their runtime checks passed locally
+on an x86_64 host; aarch64 images ran under emulation. This verifies the selected
+upstream environments, Rust targets, auditwheel policy/architecture variables,
+and CPython build interpreters, but is not a substitute for native ARM CI or
+building/testing dcbor wheels with cibuildwheel.
+
+The publishing workflow has not yet run, so no GHCR image digests exist to
+consume. Do not change `pyproject.toml` to reference an unverified tag or a
+placeholder digest. Once the workflow has published and its four digest
+outputs have been reviewed, CI integration can consume those exact digests in
+a separate change. The image build checks in the publishing workflow are not
+a substitute for testing cibuildwheel consumption across all four pairs.
+
+### Native runner baseline
+
+Recent Actions history does not yet meet the five-successful-run comparison
+required before adopting caching. Of 11 inspected workflow runs, only one was
+fully successful. Under the current workflow arrangement, there are two
+successful macOS job samples per architecture and one successful Windows job
+sample. The latest fully green run recorded job durations of 6m20s on
+`macos-15-intel`, 3m38s on `macos-14` (ARM64), and 6m24s on `windows-2022`;
+the Rust toolchain-install steps took approximately 12s, 8s, and 13s,
+respectively. An earlier push added one successful sample for each macOS
+runner (6m20s Intel, 3m14s ARM64) but its Windows wheel job failed. Older
+pull-request macOS jobs used a different matrix arrangement and are not
+comparable.
+
+The workflow has no Cargo cache hit/miss instrumentation. Available Actions
+data did not provide usable billed-minute values. These observations are
+insufficient to show a net benefit from caching, so native toolchain/cache
+changes remain deferred. Preserve the macOS pull-request exclusion and collect
+at least five comparable successful runs per affected runner before deciding
+whether to prototype them. Sources: [latest green run](https://github.com/WizzyGeek/pyo3dCBOR/actions/runs/39042322877)
+and [earlier push run](https://github.com/WizzyGeek/pyo3dCBOR/actions/runs/39041088716).
 
 ### macOS and Windows setup
 

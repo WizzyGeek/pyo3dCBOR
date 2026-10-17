@@ -1,0 +1,23 @@
+ARG BASE_IMAGE=quay.io/pypa/musllinux_1_2_x86_64:2026.10.16-1@sha256:915d73c75b4551f98fd7b12de655ef2e27419a6441ea07472b6e25e0d868d18d
+FROM ${BASE_IMAGE}
+
+LABEL org.opencontainers.image.source="https://github.com/WizzyGeek/pyo3dCBOR"
+
+ARG RUST_VERSION=1.90.0
+ARG RUST_TARGET
+
+ENV RUSTUP_HOME=/root/.rustup \
+    CARGO_HOME=/root/.cargo \
+    CARGO_BUILD_JOBS=2 \
+    RUSTUP_TOOLCHAIN=${RUST_VERSION} \
+    PATH=/root/.cargo/bin:${PATH}
+
+RUN set -eu; \
+    test -n "${RUST_TARGET}"; \
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
+      -o /root/rustup-init.sh; \
+    sh /root/rustup-init.sh -y --no-modify-path --profile minimal \
+      --default-toolchain "${RUST_VERSION}"; \
+    rm /root/rustup-init.sh; \
+    rustup target add "${RUST_TARGET}" --toolchain "${RUST_VERSION}"; \
+    rustc --version | grep -Eq "^rustc ${RUST_VERSION}([[:space:]]|$)"

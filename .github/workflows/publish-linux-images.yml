@@ -1,0 +1,198 @@
+name: Publish Linux build images
+
+on:
+  push:
+    branches: [master, main]
+    paths:
+      - ".github/workflows/publish-linux-images.yml"
+      - "containers/linux/**"
+      - "tests/test_ci_linux_images.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: linux-images-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+    name: ${{ matrix.family }} ${{ matrix.arch }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - family: manylinux_2_28
+            arch: x86_64
+            runner: ubuntu-24.04
+            platform: linux/amd64
+            policy: manylinux_2_28
+            rust_target: x86_64-unknown-linux-gnu
+            dockerfile: containers/linux/Dockerfile.manylinux
+            base_image: quay.io/pypa/manylinux_2_28_x86_64:2026.10.16-1@sha256:1e7b8460ad8fb3fb0fbe1cd818845159ac896b4fd17452d56e892c291f3b97a8
+          - family: manylinux_2_28
+            arch: aarch64
+            runner: ubuntu-24.04-arm
+            platform: linux/arm64
+            policy: manylinux_2_28
+            rust_target: aarch64-unknown-linux-gnu
+            dockerfile: containers/linux/Dockerfile.manylinux
+            base_image: quay.io/pypa/manylinux_2_28_aarch64:2026.10.16-1@sha256:b873ffc316ffe8a154e3dc4872871de2ebd170db4876c8bbd983d42ff320001e
+          - family: musllinux_1_2
+            arch: x86_64
+            runner: ubuntu-24.04
+            platform: linux/amd64
+            policy: musllinux_1_2
+            rust_target: x86_64-unknown-linux-musl
+            dockerfile: containers/linux/Dockerfile.musllinux
+            base_image: quay.io/pypa/musllinux_1_2_x86_64:2026.10.16-1@sha256:915d73c75b4551f98fd7b12de655ef2e27419a6441ea07472b6e25e0d868d18d
+          - family: musllinux_1_2
+            arch: aarch64
+            runner: ubuntu-24.04-arm
+            platform: linux/arm64
+            policy: musllinux_1_2
+            rust_target: aarch64-unknown-linux-musl
+            dockerfile: containers/linux/Dockerfile.musllinux
+            base_image: quay.io/pypa/musllinux_1_2_aarch64:2026.10.16-1@sha256:75a9ccd28ccc0abda65e462133f6e324943354e4e4936b51ba7c2ddc98352f86
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Build and validate the local image
+        env:
+          ARCH: ${{ matrix.arch }}
+          BASE_IMAGE: ${{ matrix.base_image }}
+          DOCKERFILE: ${{ matrix.dockerfile }}
+          EXPECTED_POLICY: ${{ matrix.policy }}
+          PLATFORM: ${{ matrix.platform }}
+          RUST_TARGET: ${{ matrix.rust_target }}
+        run: |
+          set -euo pipefail
+          local_image="linux-image-check:${{ matrix.family }}-${ARCH}"
+          docker buildx build \
+            --platform "$PLATFORM" \
+            --build-arg "BASE_IMAGE=$BASE_IMAGE" \
+            --build-arg RUST_VERSION=1.90.0 \
+            --build-arg "RUST_TARGET=$RUST_TARGET" \
+            --file "$DOCKERFILE" \
+            --tag "$local_image" \
+            --load \
+            .
+          docker run --rm \
+            --env ARCH \
+            --env EXPECTED_POLICY \
+            --env RUST_TARGET \
+            "$local_image" \
+            bash -euo pipefail -c '
+              test "$(uname -m)" = "$ARCH"
+              test "$AUDITWHEEL_ARCH" = "$ARCH"
+              test "$AUDITWHEEL_POLICY" = "$EXPECTED_POLICY"
+              test "$CARGO_BUILD_JOBS" = "2"
+              rustc --version | grep -Eq "^rustc 1\\.90\\.0([[:space:]]|$)"
+              rustup target list --installed | grep -Fx "$RUST_TARGET"
+              command -v auditwheel
+              for python in cp39 cp310 cp311 cp312 cp313 cp314; do
+                test -x "/opt/python/${python}-${python}/bin/python"
+              done
+            '
+      - name: Log in to GHCR with the job token
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          printf '%s' "$GH_TOKEN" |
+            docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+      - name: Publish versioned image and record digest
+        id: publish
+        env:
+          ARCH: ${{ matrix.arch }}
+          BASE_IMAGE: ${{ matrix.base_image }}
+          DOCKERFILE: ${{ matrix.dockerfile }}
+          FAMILY: ${{ matrix.family }}
+          PLATFORM: ${{ matrix.platform }}
+          RUST_TARGET: ${{ matrix.rust_target }}
+        run: |
+          set -euo pipefail
+          image="ghcr.io/${GITHUB_REPOSITORY,,}"
+          base_tag="${BASE_IMAGE%%@*}"
+          base_version="${base_tag##*:}"
+          tag="linux-${FAMILY}-${ARCH}-rust-1.90.0-base-${base_version}-${GITHUB_SHA}"
+
+          if existing="$(docker buildx imagetools inspect "${image}:${tag}" 2>/dev/null)"; then
+            digest="$(awk '$1 == "Digest:" { print $2; exit }' <<< "$existing")"
+            echo "Reusing the existing versioned image tag ${image}:${tag}"
+          else
+            docker buildx build \
+              --platform "$PLATFORM" \
+              --build-arg "BASE_IMAGE=$BASE_IMAGE" \
+              --build-arg RUST_VERSION=1.90.0 \
+              --build-arg "RUST_TARGET=$RUST_TARGET" \
+              --file "$DOCKERFILE" \
+              --tag "${image}:${tag}" \
+              --metadata-file build-metadata.json \
+              --push \
+              .
+
+            digest="$(jq -r '."containerimage.digest" // empty' build-metadata.json)"
+          fi
+          if [[ ! "$digest" =~ ^sha256:[0-9a-f]{64}$ ]]; then
+            echo "Could not obtain a valid digest for ${image}:${tag}" >&2
+            exit 1
+          fi
+
+          jq -n \
+            --arg family "$FAMILY" \
+            --arg arch "$ARCH" \
+            --arg image "$image" \
+            --arg tag "$tag" \
+            --arg digest "$digest" \
+            '{family: $family, arch: $arch, image: $image, tag: $tag, digest: $digest}' \
+            > image-digest.json
+          printf 'image=%s\n' "$image" >> "$GITHUB_OUTPUT"
+          printf 'tag=%s\n' "$tag" >> "$GITHUB_OUTPUT"
+          printf 'digest=%s\n' "$digest" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: digest-${{ matrix.family }}-${{ matrix.arch }}
+          path: image-digest.json
+          if-no-files-found: error
+          retention-days: 14
+
+  collect-digests:
+    name: Collect published image digests
+    needs: publish
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      contents: read
+    outputs:
+      image_digests: ${{ steps.collect.outputs.image_digests }}
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: digest-*
+          path: digests
+      - name: Expose every digest-pinned image reference
+        id: collect
+        run: |
+          set -euo pipefail
+          files=(digests/digest-*/image-digest.json)
+          test "${#files[@]}" -eq 4
+          images="$(jq -cs 'sort_by(.family, .arch)' "${files[@]}")"
+          printf 'image_digests=%s\n' "$images" >> "$GITHUB_OUTPUT"
+          {
+            echo "## Published Linux build images"
+            echo
+            echo "| Family | Architecture | Digest-pinned reference | Versioned tag |"
+            echo "| --- | --- | --- | --- |"
+            jq -r '.[] | "| \(.family) | \(.arch) | `\(.image)@\(.digest)` | `\(.tag)` |"' \
+              <<< "$images"
+          } >> "$GITHUB_STEP_SUMMARY"
