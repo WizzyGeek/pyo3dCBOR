@@ -54,17 +54,53 @@ def test_release_bundle_waits_for_all_required_jobs_and_preserves_skips():
     assert job_needs(workflow, "distributions") == [
         "changes", "test", "rust", "sdist", "wheels", "macos-wheels"
     ]
-    skip_condition = (
-        "github.event_name != 'pull_request' && "
+    full_coverage_condition = (
+        "(github.event_name == 'workflow_dispatch' || "
+        "github.event_name == 'workflow_call' || "
+        "(github.event_name == 'push' && github.ref_type == 'tag')) && "
         "needs.changes.outputs.code_changed == 'true'"
     )
     assert re.search(
-        rf"^    if: {re.escape(skip_condition)}$",
+        rf"^    if: {re.escape(full_coverage_condition)}$",
         job_block(workflow, "macos-wheels"),
         re.MULTILINE,
     )
     assert re.search(
-        rf"^    if: {re.escape(skip_condition)}$",
+        rf"^    if: {re.escape(full_coverage_condition)}$",
         job_block(workflow, "distributions"),
         re.MULTILINE,
     )
+
+
+def test_ordinary_wheel_runs_use_reduced_linux_python_matrix():
+    workflow = WORKFLOW.read_text()
+    wheels = job_block(workflow, "wheels")
+
+    assert re.search(r"^  workflow_call:$", workflow, re.MULTILINE)
+    assert (
+        "fromJSON('[\"ubuntu-24.04\",\"ubuntu-24.04-arm\",\"windows-2022\"]') "
+        "|| fromJSON('[\"ubuntu-latest\"]')"
+    ) in wheels
+    assert (
+        "fromJSON('[\"cp39\",\"cp310\",\"cp311\",\"cp312\",\"cp313\",\"cp314\"]') "
+        "|| fromJSON('[\"cp312\",\"cp313\",\"cp314\"]')"
+    ) in wheels
+    assert "CIBW_BUILD: ${{ matrix.python }}-*" in wheels
+    assert "name: wheels-${{ matrix.os }}-${{ matrix.python }}" in wheels
+    assert "max-parallel:" not in wheels
+
+
+def test_full_wheel_events_build_all_platforms_and_validate_distributions():
+    workflow = WORKFLOW.read_text()
+    full_matrix_condition = (
+        "github.event_name == 'workflow_dispatch' || "
+        "github.event_name == 'workflow_call' || "
+        "(github.event_name == 'push' && github.ref_type == 'tag')"
+    )
+
+    for job in ("wheels", "macos-wheels"):
+        assert full_matrix_condition in job_block(workflow, job)
+    assert full_matrix_condition in job_block(workflow, "distributions")
+    assert job_needs(workflow, "distributions") == [
+        "changes", "test", "rust", "sdist", "wheels", "macos-wheels"
+    ]

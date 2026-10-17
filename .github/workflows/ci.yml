@@ -6,6 +6,7 @@ on:
     tags: ['v*']
   pull_request:
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
@@ -162,16 +163,16 @@ jobs:
           retention-days: 14
 
   wheels:
-    name: Wheels on ${{ matrix.os }}
+    name: Wheels on ${{ matrix.os }} for ${{ matrix.python }}
     needs: [changes, test, rust, sdist]
     if: needs.changes.outputs.code_changed == 'true'
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
     strategy:
       fail-fast: false
-      max-parallel: 3
       matrix:
-        os: [ubuntu-24.04, ubuntu-24.04-arm, windows-2022]
+        os: ${{ (github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call' || (github.event_name == 'push' && github.ref_type == 'tag')) && fromJSON('["ubuntu-24.04","ubuntu-24.04-arm","windows-2022"]') || fromJSON('["ubuntu-latest"]') }}
+        python: ${{ (github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call' || (github.event_name == 'push' && github.ref_type == 'tag')) && fromJSON('["cp39","cp310","cp311","cp312","cp313","cp314"]') || fromJSON('["cp312","cp313","cp314"]') }}
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -199,24 +200,25 @@ jobs:
           output-dir: wheelhouse
         env:
           RUSTUP_TOOLCHAIN: ${{ env.RUST_VERSION }}
+          CIBW_BUILD: ${{ matrix.python }}-*
       - uses: actions/upload-artifact@v7
         with:
-          name: wheels-${{ matrix.os }}
+          name: wheels-${{ matrix.os }}-${{ matrix.python }}
           path: wheelhouse/*.whl
           if-no-files-found: error
           retention-days: 14
 
   macos-wheels:
-    name: Wheels on ${{ matrix.os }}
-    if: github.event_name != 'pull_request' && needs.changes.outputs.code_changed == 'true'
+    name: Wheels on ${{ matrix.os }} for ${{ matrix.python }}
+    if: (github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call' || (github.event_name == 'push' && github.ref_type == 'tag')) && needs.changes.outputs.code_changed == 'true'
     needs: [changes, test, rust, sdist]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
     strategy:
       fail-fast: false
-      max-parallel: 2
       matrix:
         os: [macos-15-intel, macos-14]
+        python: ['cp39', 'cp310', 'cp311', 'cp312', 'cp313', 'cp314']
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -243,16 +245,17 @@ jobs:
           output-dir: wheelhouse
         env:
           RUSTUP_TOOLCHAIN: ${{ env.RUST_VERSION }}
+          CIBW_BUILD: ${{ matrix.python }}-*
       - uses: actions/upload-artifact@v7
         with:
-          name: wheels-${{ matrix.os }}
+          name: wheels-${{ matrix.os }}-${{ matrix.python }}
           path: wheelhouse/*.whl
           if-no-files-found: error
           retention-days: 14
 
   distributions:
     name: Validate complete release bundle
-    if: github.event_name != 'pull_request' && needs.changes.outputs.code_changed == 'true'
+    if: (github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call' || (github.event_name == 'push' && github.ref_type == 'tag')) && needs.changes.outputs.code_changed == 'true'
     needs: [changes, test, rust, sdist, wheels, macos-wheels]
     runs-on: ubuntu-24.04
     timeout-minutes: 10
