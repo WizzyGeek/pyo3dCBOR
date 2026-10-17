@@ -1,4 +1,4 @@
-"""Select opt-in, digest-pinned Linux images; upstream remains the rollback."""
+"""Configure digest-pinned images for reduced CI; full CI uses upstream images."""
 
 import argparse
 import json

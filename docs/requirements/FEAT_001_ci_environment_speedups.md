@@ -1,9 +1,10 @@
 # FEAT_001: CI environment and pipeline speedups
 
 **Status:** sdist/test parallelization implemented; Linux images published and
-opt-in consumption passed the full hosted 42-wheel matrix. A setup-speed win has
-not been demonstrated. Native caching and default adoption remain deferred
-pending comparable measurements and cost evidence.
+compatibility passed the full hosted 42-wheel matrix. The owner chose maintained
+images only for reduced CI for reproducibility; full matrices retain upstream
+images. A setup-speed win has not been demonstrated. Native caching and broader
+adoption remain deferred pending comparable measurements and cost evidence.
 
 ## Problem
 
@@ -135,12 +136,14 @@ manifest access, digest hashes, architectures and configuration were checked
 on 2026-10-18. Runtime and all 42 wheel builds subsequently passed in
 [trial run 39060344953](https://github.com/WizzyGeek/pyo3dCBOR/actions/runs/39060344953).
 
-The consuming workflow now supports opt-in `linux_images=maintained` on a manual
-full-matrix run, retaining upstream defaults and an explicit rollback. See
+The initial opt-in full-matrix trial is complete. The owner then selected a
+narrower policy: maintained images for reduced Linux CI only, with full manual,
+reusable, and release-tag builds retaining upstream defaults. The trial input
+and repository-variable override have been removed. See
 [`containers/linux/README.md`](../../containers/linux/README.md) for validation,
 publisher hardening, promotion criteria, and measurement limits. The
 [trial report](../ci-linux-image-trial.md) records exact job samples and the
-successful bundle gate. Default adoption remains deferred: this is one run with
+successful bundle gate. Broader adoption remains deferred: this is one run with
 a changed matrix and has not demonstrated a setup-speed or cost benefit.
 
 ### Native runner baseline

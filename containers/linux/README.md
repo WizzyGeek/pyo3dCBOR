@@ -1,7 +1,9 @@
 # Maintained Linux wheel environments
 
-The upstream cibuildwheel images remain the default until a maintained-image
-trial passes the full wheel matrix and its timing/cost evidence is reviewed.
+Routine reduced Linux runs (PRs and branch pushes, CPython 3.12–3.14 on x86_64)
+use the maintained, digest-pinned images for a fixed build environment. Full
+manual, reusable, and release-tag matrices keep the existing upstream images.
+This is a reproducibility choice, not a claim of faster setup.
 
 `images.json` records all four reviewed image references by **registry manifest
 digest**, plus the publisher source commit and Actions run. These are not the
@@ -17,27 +19,27 @@ The subsequent full trial passed all 42 wheels using these images. See the
 [trial report](../../docs/ci-linux-image-trial.md) for evidence and measurements.
 The trial establishes compatibility; it has not established a setup-speed win.
 
-## Trial and rollback
+## Consumption policy and rollback
 
-Dispatch `ci.yml` on the reviewed branch with `linux_images=maintained` to run
-the full 42-wheel matrix. The Linux jobs select the four exact digest references,
-pull and validate the two images for their native architecture, and then build
-and test wheels from the tested sdist. Their summaries record mode and digests;
-pull/validation logs include timestamps. Image access is anonymous; no package
-write permission or login is needed in the consuming workflow.
+The image mode uses the same event condition as the full/reduced wheel matrix.
+Reduced jobs select the two pinned x86_64 libc images, pull and validate each,
+and then build and test wheels from the tested sdist. Their summaries record
+mode and digests; pull/validation logs include timestamps. Image access is
+anonymous; no package write permission or login is needed in the consumer.
+ARM pins remain recorded as provenance from the successful compatibility trial;
+the full ARM matrix uses upstream images under the current policy.
 
 Maintained mode replaces cibuildwheel's Rust bootstrap with the shared
 `validate-image.sh`; it does not reinstall the toolchain. macOS and Windows
 keep their existing native setup. `upstream` mode leaves the image selectors
 and Rust installer in `pyproject.toml` unchanged.
 
-Manual/reusable workflows accept an explicit `linux_images` input, defaulting
-to `upstream`. Ordinary runs may select maintained mode using repository variable
-`DCBOR_LINUX_IMAGES=maintained`, **only after** a successful trial and review.
-Rollback that variable to `upstream` (or delete it), or explicitly dispatch with
-`linux_images=upstream`. Rollback does not alter source or distribution metadata.
-Do not silently fall back after a maintained-image verification failure; that
-would hide a broken trial and invalidate timing measurements.
+There is no input or repository-variable override that enables maintained images
+for full builds. To roll back reduced CI, change its `IMAGE_MODE` to `upstream`
+in the selection step. The image/installer defaults in `pyproject.toml` remain
+available, so rollback does not alter codec source or distribution metadata.
+Do not silently fall back after an image-verification failure; reduced CI should
+fail visibly if its pinned build environment is unavailable or invalid.
 
 ## Publisher guarantees and limits
 
@@ -58,7 +60,8 @@ run and anonymous access/runtime checks; never promote artifact ZIP hashes.
 
 The first trial's pull/validation, first-build, and whole-run times are recorded
 in the report. Compare like-for-like matrices and source revisions over
-at least five successful runs per affected architecture. Record billed minutes,
+at least five successful runs per affected architecture before claiming a
+performance benefit or expanding consumption. Record billed minutes,
 registry/image refresh cost, and cache telemetry where available. An isolated
 successful run establishes compatibility, not the proposed 20% speedup or net
 cost improvement. No native caching change is part of this experiment.

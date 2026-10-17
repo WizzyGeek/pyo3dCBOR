@@ -6,18 +6,7 @@ on:
     tags: ['v*']
   pull_request:
   workflow_dispatch:
-    inputs:
-      linux_images:
-        description: Linux build images (upstream is the rollback)
-        type: choice
-        options: [upstream, maintained]
-        default: upstream
   workflow_call:
-    inputs:
-      linux_images:
-        description: Linux build images (upstream or maintained)
-        type: string
-        default: upstream
 
 permissions:
   contents: read
@@ -207,7 +196,8 @@ jobs:
       - name: Select Linux image mode
         if: runner.os == 'Linux'
         env:
-          IMAGE_MODE: ${{ inputs.linux_images || vars.DCBOR_LINUX_IMAGES || 'upstream' }}
+          # Match the full/reduced matrix condition: full runs stay upstream.
+          IMAGE_MODE: ${{ (github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call' || (github.event_name == 'push' && github.ref_type == 'tag')) && 'upstream' || 'maintained' }}
         run: |
           python scripts/ci_linux_images.py "$IMAGE_MODE" >> "$GITHUB_ENV"
           echo "Linux image mode: $IMAGE_MODE" >> "$GITHUB_STEP_SUMMARY"

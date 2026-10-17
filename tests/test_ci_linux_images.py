@@ -197,10 +197,18 @@ def test_upstream_mode_leaves_project_image_and_bootstrap_defaults_intact():
         SELECTOR["image_environment"]("typo", image_manifest())
 
 
-def test_image_consumption_is_opt_in_and_validates_each_pulled_digest():
+def test_images_only_apply_to_reduced_matrix_and_validate_each_pulled_digest():
     workflow = (ROOT / ".github/workflows/ci.yml").read_text()
-    assert "options: [upstream, maintained]" in workflow
-    assert "inputs.linux_images || vars.DCBOR_LINUX_IMAGES || 'upstream'" in workflow
+    full_condition = (
+        "github.event_name == 'workflow_dispatch' || "
+        "github.event_name == 'workflow_call' || "
+        "(github.event_name == 'push' && github.ref_type == 'tag')"
+    )
+    # Image selection and the full matrix must agree on the event boundary.
+    assert f"IMAGE_MODE: ${{{{ ({full_condition}) && 'upstream' || 'maintained' }}}}" in workflow
+    assert f"os: ${{{{ ({full_condition}) && fromJSON(" in workflow
+    assert "inputs.linux_images" not in workflow
+    assert "DCBOR_LINUX_IMAGES" not in workflow
     assert "python scripts/ci_linux_images.py" in workflow
     assert 'docker pull "$image"' in workflow
     assert '"$image" bash /validate-image.sh "$family" "$(uname -m)"' in workflow

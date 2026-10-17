@@ -1,5 +1,10 @@
 # FEAT_001 Linux image trial — 2026-10-18
 
+Subsequent owner decision: keep maintained images only for routine reduced
+Linux CI for reproducibility. Full manual/reusable/tag matrices use upstream
+images, and the trial's `linux_images` input is removed. The report below records
+the historical full-matrix compatibility experiment and its measurements.
+
 ## Result
 
 [Run 39060344953](https://github.com/WizzyGeek/pyo3dCBOR/actions/runs/39060344953)
@@ -79,10 +84,11 @@ retain the same fail-closed runtime validator in `before_all`, avoiding the
 redundant up-front preflight. Measure that against upstream mode using the same
 matrix/source, without adding routine macOS executions.
 
-Maintained mode remains opt-in; upstream mode is the rollback. Keep FEAT_001
-open pending repeated comparable measurements, cost/cache evidence, and review
-of newly hardened publisher output. One successful compatibility run does not
-satisfy the five-comparable-run adoption threshold.
+At the time of this trial, maintained mode remained opt-in. The owner subsequently
+chose to use it only for reduced CI for reproducibility, keeping full matrices on
+upstream images. Performance acceptance remains open pending repeated comparable
+measurements, cost/cache evidence, and review of newly hardened publisher output.
+One successful run does not satisfy the five-comparable-run performance threshold.
 
 ## Reproducing the evidence
 
