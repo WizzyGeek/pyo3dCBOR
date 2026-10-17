@@ -210,7 +210,7 @@ jobs:
   macos-wheels:
     name: Wheels on ${{ matrix.os }}
     if: github.event_name != 'pull_request' && needs.changes.outputs.code_changed == 'true'
-    needs: [changes, sdist]
+    needs: [changes, test, rust, sdist]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
     strategy:
