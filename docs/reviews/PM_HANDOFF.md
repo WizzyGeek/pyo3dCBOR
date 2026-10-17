@@ -45,10 +45,17 @@ Sol xhigh reviewer. No substantive finding remains open from that review.
 
 ## Pending work
 
-The DevOps-agent handoff is at `/tmp/dcbor-devops-agent-handoff.md`. The owner
-requested that its path be recorded only: it has not been opened or processed.
-The owner plans to resume in about four hours and permits GitHub Copilot Luna
-to continue work. Preserve this deferred handoff for resumption.
+The DevOps-agent handoff at `/tmp/dcbor-devops-agent-handoff.md` has now been
+reviewed. Local verification and the hosted matrix were resumed from the current
+`master` head. The current GitHub Actions run passed metadata/version guards,
+the vendored Rust tests, all six Python-version jobs, the sdist, Linux x86_64
+and ARM, and both macOS wheel jobs. The Windows wheel job failed because
+cibuildwheel passed the single-quoted pytest marker literally, causing pytest
+to treat `exhaustive'` as a path. The marker is now double-quoted in
+`pyproject.toml`; the 1,603-test non-exhaustive command passes locally. Commit
+and push the correction, then rerun the hosted matrix and confirm Windows plus
+release-bundle validation pass before considering CI closed. Do not publish a
+release as part of this follow-up.
 
 Review fixes were committed as `6d218a9`, followed by the patch-whitespace and
 CI-input guard correction in `b9ad3ed`. The full Python suite still passes
