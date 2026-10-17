@@ -1,15 +1,68 @@
 # Local dcbor 0.25.2 patch
 
+Maintainer: **WizzyGeek** ([@WizzyGeek](https://github.com/WizzyGeek)), the
+owner of [this repository](https://github.com/WizzyGeek/pyo3dCBOR), is
+responsible for refreshing this vendor, reviewing upstream changes, and
+maintaining the local patch.
+
 This directory vendors the published `dcbor` 0.25.2 crate from crates.io,
 corresponding to upstream revision
 `c76a15a3729b5753824d0b08b95a08d7c7d8998d` in
 <https://github.com/BlockchainCommons/bc-dcbor-rust>.
+The crates.io archive SHA-256 is
+`fcf662b6347d10dd5ab7370287b76923eb88818d46434de8c424b091523f5e54`.
 The original BSD-2-Clause-Patent license is retained in `LICENSE.md`.
 
 The parent depends on this directory directly so source distributions include
 the patched codec. Its package file list excludes the registry-generated
 `Cargo.toml.orig` and `.cargo_vcs_info.json` inputs to allow Cargo to repackage
-the crate; the upstream revision is recorded above.
+the crate; the upstream revision and archive checksum are recorded above. The
+vendored `Cargo.lock` is kept under version control for its standalone locked
+test job. These local packaging changes, as well as the runtime/test changes,
+are recorded in [`local.patch`](local.patch). The Python source archive omits
+the upstream `README.md`, which contains unrelated fundraising material, and
+`SECURITY-REVIEW.md`; it retains the license and local patch provenance.
+
+The checked vendor scope is the crate manifest and lockfile, `.gitignore`, the
+license, and every file under `src/`, `tests/`, and `examples/`. Upstream project
+process documents and registry metadata are not part of this maintained scope.
+
+## Refresh and verification
+
+The repeatable, non-destructive check downloads the pinned archive only when
+it is not already in Cargo's registry cache, checks its checksum and upstream
+revision, applies `local.patch` to a temporary extraction, and compares the
+maintained vendor scope with this directory. It then runs the Rust crate tests with a
+temporary Cargo target directory, leaving the vendored sources and lockfile
+untouched:
+
+```sh
+python3 scripts/vendor_dcbor.py verify --tests
+```
+
+To review the complete local diff against the pinned crates.io archive without
+writing files:
+
+```sh
+python3 scripts/vendor_dcbor.py diff
+```
+
+When changing a local patch, edit the vendored files, inspect the diff, then
+regenerate only the patch artifact and rerun verification:
+
+```sh
+python3 scripts/vendor_dcbor.py diff
+python3 scripts/vendor_dcbor.py update-patch
+python3 scripts/vendor_dcbor.py verify --tests
+```
+
+For an upstream refresh, select and review a new crates.io release and its
+matching upstream Git revision, then update the version, archive checksum,
+revision, and archive URL pins in `scripts/vendor_dcbor.py`. Refresh the vendor
+tree from that archive, reapply the retained local changes, regenerate
+`local.patch`, and run the verification command above. Keep the refresh in a
+reviewable change so upstream drift and project-specific patch changes can be
+checked independently.
 
 The upstream runtime source modifications are:
 

@@ -9,7 +9,7 @@ description = "Deterministic CBOR (dCBOR) for Python — PyO3 bindings for Block
 readme = "README.md"
 license = { text = "BSD-2-Clause-Patent" }
 requires-python = ">=3.9"
-authors = [{ name = "AIdCBOR contributors" }]
+maintainers = [{ name = "WizzyGeek" }]
 keywords = ["cbor", "dcbor", "encoding", "serialization", "deterministic"]
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -19,6 +19,8 @@ classifiers = [
 ]
 
 [project.urls]
+"Source" = "https://github.com/WizzyGeek/pyo3dCBOR"
+"Issues" = "https://github.com/WizzyGeek/pyo3dCBOR/issues"
 "Upstream (Rust)" = "https://github.com/BlockchainCommons/bc-dcbor-rust"
 
 [tool.maturin]
@@ -29,12 +31,15 @@ locked = true
 include = [
     { path = "scripts/**/*.py", format = "sdist" },
     { path = "tests/**/*.py", format = "sdist" },
+    { path = "pytest.ini", format = "sdist" },
+    { path = "crates/dcbor/Cargo.toml", format = "sdist" },
+    { path = "crates/dcbor/Cargo.toml.orig", format = "sdist" },
+    { path = "crates/dcbor/src/**/*.rs", format = "sdist" },
+    { path = "crates/dcbor/LICENSE.md", format = "sdist" },
     { path = "crates/dcbor/PATCHES.md", format = "sdist" },
-    { path = "crates/dcbor/SECURITY-REVIEW.md", format = "sdist" },
+    { path = "crates/dcbor/local.patch", format = "sdist" },
 ]
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
+exclude = ["crates/dcbor/SECURITY-REVIEW.md", "crates/dcbor/README.md"]
 
 [tool.cibuildwheel]
 # Regular CPython only: no implicit additions when new interpreters appear.
@@ -42,7 +47,7 @@ build = "cp39-* cp310-* cp311-* cp312-* cp313-* cp314-*"
 archs = ["native"]
 build-frontend = "build"
 test-requires = ["pytest>=8,<9"]
-test-command = "python -m pytest {project}/tests -q"
+test-command = "python -m pytest {project}/tests -q -m 'not exhaustive'"
 
 [tool.cibuildwheel.environment]
 CARGO_BUILD_JOBS = "2"

@@ -16,28 +16,30 @@ class IndexValue:
 
 
 @pytest.mark.parametrize(
-    ("value", "expected_calls"),
+    "value",
     [
-        (7, 1),
-        (-7, 1),
-        (2**63, 2),
-        (-(2**63) - 1, 3),
+        7,
+        -7,
+        2**63,
+        -(2**63) - 1,
+        -(2**64),
+        2**64 - 1,
     ],
 )
-def test_custom_index_preserves_integer_width_probes(value, expected_calls):
+def test_custom_index_is_called_once_for_in_range_integers(value):
     candidate = IndexValue(value)
 
     assert dcbor.dumps(candidate) == dcbor.dumps(value)
-    assert candidate.calls == expected_calls
+    assert candidate.calls == 1
 
 
-@pytest.mark.parametrize("value", [2**64, -(2**64) - 1, 2**100])
+@pytest.mark.parametrize("value", [2**64, -(2**64) - 1, 2**100, 2**200])
 def test_custom_index_out_of_range_is_still_an_integer_error(value):
     candidate = IndexValue(value)
 
     with pytest.raises(dcbor.CBORError, match="integer out of range"):
         dcbor.dumps(candidate)
-    assert candidate.calls == 3
+    assert candidate.calls == 1
 
 
 @pytest.mark.parametrize("error", [ValueError("bad index"), RuntimeError("boom")])
@@ -53,7 +55,38 @@ def test_custom_index_errors_preserve_existing_fallback(error):
 
     with pytest.raises(dcbor.CBORError, match="not dCBOR serializable"):
         dcbor.dumps(candidate)
-    assert candidate.calls == 3
+    assert candidate.calls == 1
+
+
+def test_custom_index_must_return_an_integer():
+    class InvalidIndex:
+        calls = 0
+
+        def __index__(self):
+            type(self).calls += 1
+            return "7"
+
+    candidate = InvalidIndex()
+
+    with pytest.raises(dcbor.CBORError, match="not dCBOR serializable"):
+        dcbor.dumps(candidate)
+    assert InvalidIndex.calls == 1
+
+
+def test_stateful_index_result_is_observed_once():
+    class ChangingIndex:
+        calls = 0
+
+        def __index__(self):
+            type(self).calls += 1
+            return 2**63 if type(self).calls == 1 else 8
+
+    candidate = ChangingIndex()
+    expected = bytes.fromhex("1b8000000000000000")
+
+    assert dcbor.dumps(candidate) == expected
+    assert dcbor.dumps(2**63) == expected
+    assert ChangingIndex.calls == 1
 
 
 def test_int_subclass_uses_its_stored_integer_without_calling_override():
@@ -91,6 +124,29 @@ def test_builtin_subclass_index_protocol_keeps_precedence(base, value):
     candidate = Subclass(value)
 
     assert dcbor.dumps(candidate) == dcbor.dumps(9)
+    assert Subclass.calls == 1
+
+
+@pytest.mark.parametrize(
+    ("base", "value"),
+    [
+        (float, 1.5),
+        (str, "text"),
+        (bytes, b"bytes"),
+        (bytearray, bytearray(b"bytes")),
+    ],
+)
+def test_builtin_subclass_failing_index_falls_back_to_native_encoding(base, value):
+    class Subclass(base):
+        calls = 0
+
+        def __index__(self):
+            type(self).calls += 1
+            raise ValueError("bad index")
+
+    candidate = Subclass(value)
+
+    assert dcbor.loads(dcbor.dumps(candidate)) == dcbor.loads(dcbor.dumps(value))
     assert Subclass.calls == 1
 
 

@@ -19,15 +19,21 @@ affects_build = runpy.run_path(str(SCRIPT))["affects_build"]
     "crates/dcbor/rust-toolchain.toml",
     ".cargo/config", ".cargo/config.toml",
     "crates/dcbor/.cargo/config", "crates/dcbor/.cargo/config.toml",
+    "crates/dcbor/Cargo.toml.orig", "crates/dcbor/local.patch",
+    "crates/dcbor/.cargo_vcs_info.json", "crates/dcbor/archive.sha256",
     "src/lib.rs", "build.rs", "python/dcbor/__init__.pyi",
-    "tests/test_dcbor.py", "scripts/ci_paths.py", ".github/workflows/ci.yml",
+    "python/dcbor/py.typed", "pytest.ini",
+    "tests/test_dcbor.py", "scripts/ci_paths.py", "scripts/vendor_dcbor.py",
+    ".github/workflows/ci.yml",
 ])
 def test_build_inputs_trigger_ci(path):
     assert affects_build([path])
 
 
 @pytest.mark.parametrize("path", [
-    "README.md", "docs/build.md", "PERF_REVIEW.md", "",
+    "README.md", "docs/build.md", "crates/dcbor/PATCHES.md",
+    "docs/reviews/PERF_REVIEW.md", "docs/reviews/SPEC_REVIEW.md",
+    "docs/allocation-plan.md", "",
     "docs/Cargo.toml.md", "docs/rust-toolchain.toml.txt",
 ])
 def test_docs_only_changes_skip_ci(path):

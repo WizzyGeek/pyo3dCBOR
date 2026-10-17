@@ -1,5 +1,9 @@
 # dCBOR specification and test review
 
+> Historical internal review record. The status and verification statements
+> below describe the reviewed worktree on their recorded dates; they are not a
+> live report of the current branch.
+
 ## Independent verification of PM follow-up — 2026-10-17
 
 Reviewed `/tmp/dcbor-spec-followup-response.md` and independently verified all
@@ -52,7 +56,7 @@ The inherited Rust extraction bug is fixed separately. Negative major-type-1
 arguments are converted to their signed `-1 - n` value in `i128` before exact
 `f32`/`f64` cast-back checks. Direct tests cover `-1`, `-2`, `-17`, the
 binary32 and binary64 consecutive-integer boundaries, and the explicit
-`-2**64` endpoint. `crates/dcbor/PATCHES.md` records this additional divergence
+`-2**64` endpoint. `../../crates/dcbor/PATCHES.md` records this additional divergence
 from published `dcbor` 0.25.2. The vendored codec passes **90 unit/integration
 tests and 92 doctests (182 total)** with the production feature set.
 
@@ -67,11 +71,14 @@ finding are closed.
 is approved from a specification perspective, with the structural/resource
 checks retained. One inherited Rust extraction API defect was found separately.**
 
-Read `PERF_REVIEW.md`, the current binding sources, the vendored float/ASCII
+Read [`PERF_REVIEW.md`](PERF_REVIEW.md), the current binding sources, the vendored float/ASCII
 changes and provenance, the new regression tests, and the packaging/CI files.
-Compared the vendor's `src/` and `tests/` files directly with the cached published
-`dcbor-0.25.2.crate`: the only differences are `src/float.rs`, `src/cbor.rs`,
-and `tests/encode.rs`, consistent with `crates/dcbor/PATCHES.md`.
+Compared the vendor's `../../crates/dcbor/src/` and
+`../../crates/dcbor/tests/` files directly with the cached published
+`dcbor-0.25.2.crate`: the only differences are
+`../../crates/dcbor/src/float.rs`, `../../crates/dcbor/src/cbor.rs`, and
+`../../crates/dcbor/tests/encode.rs`, consistent with
+`../../crates/dcbor/PATCHES.md`.
 
 ### Verified current implementation
 
@@ -79,7 +86,7 @@ and `tests/encode.rs`, consistent with `crates/dcbor/PATCHES.md`.
   **1,556 Python tests**. The independently built release binary has the same
   SHA-256 as the installed extension:
   `f2e7962974826f267cf78b551db06b46016ed347aa130866212a1469e121ef97`.
-- Added only `tests/test_numeric_oracle.py`, with two parameterized tests checking
+- Added only `../../tests/test_numeric_oracle.py`, with two parameterized tests checking
   **47,648 binary32/binary64 patterns** against Python `struct` and independent
   integer serialization. Every exponent field and both signs are covered with
   six boundary significands, plus 10,000 seeded patterns per width. These check
@@ -109,11 +116,12 @@ all passed. No new Python conformance regression was identified in those changes
 
 These are local CPython 3.14/Linux checks. The proposed cross-platform CI matrix
 was inspected but was not executed by this reviewer. No new performance speedup
-claim is made here; performance measurements remain in `PERF_REVIEW.md`.
+claim is made here; performance measurements remain in
+[`PERF_REVIEW.md`](PERF_REVIEW.md).
 
 ### Response to performance proposal 4
 
-Applied `benchmarks/perf_review/numeric_preflight.patch` only to the isolated
+Applied `../../benchmarks/perf_review/numeric_preflight.patch` only to the isolated
 snapshot. The candidate passed **1,558 Python tests in 9.43 seconds**, including
 the independent numeric oracle and the existing exhaustive binary16 test.
 
@@ -134,13 +142,13 @@ implementation; the experimental patch leaves those behind. Rejection wording
 can change when the decoder becomes the rejecting layer.
 
 This is approval to proceed with that narrow optimization. It is not an
-implementation change: shared `src/wire.rs` and the installed extension were
+implementation change: shared `../../src/wire.rs` and the installed extension were
 left unchanged by this review.
 
 ### Separate finding: inherited Rust negative-integer extraction defect
 
 The public Rust `TryFrom<CBOR>` floating extraction paths have an inherited
-correctness defect in `crates/dcbor/src/float.rs`:
+correctness defect in `../../crates/dcbor/src/float.rs`:
 
 - Lines 161–163: converting `CBORCase::Negative(n)` to `f32` returns the positive
   encoded magnitude `n`, omitting CBOR's `-1 - n` transformation. A compiled
@@ -196,8 +204,8 @@ record the additional vendor change in PATCHES.md. Details in SPEC_REVIEW.md.
 
 ## Independent reviewer follow-up — 2026-10-17
 
-Read the PM resolution, the patched `crates/dcbor/src/float.rs`,
-`crates/dcbor/PATCHES.md`, the numeric compatibility policy in the README,
+Read the PM resolution, the patched `../../crates/dcbor/src/float.rs`,
+`../../crates/dcbor/PATCHES.md`, the numeric compatibility policy in `../../README.md`,
 and the added numeric-boundary and timezone-isolation tests.
 
 The original float-reduction finding and timezone-test isolation issue are
@@ -219,7 +227,7 @@ Verification rerun by this reviewer:
   patched Rust codec. Encoding, decoding, validation, both diagnostics and
   rejection of nonpreferred raw encodings agreed with that oracle.
 - The installed Python extension was newer than all checked runtime Rust
-  sources in `src/` and `crates/dcbor/src/`.
+  sources in `../../src/` and `../../crates/dcbor/src/`.
 
 These reruns verify the installed Python build and the Rust test suite;
 the PM's separate debug/release and distribution-build checks are reported
@@ -236,7 +244,7 @@ was identified in this follow-up.
 
 The findings below describe the original reviewed state. The numeric mismatch
 has now been fixed in a locally included `dcbor` 0.25.2 codec; provenance and
-the narrow runtime patch are documented in `crates/dcbor/PATCHES.md`.
+the narrow runtime patch are documented in `../../crates/dcbor/PATCHES.md`.
 Construction, serialization, validation, map keys, and diagnostics share the
 draft-18 float-reduction interval `[-2**63, 2**64)`. The timezone test restores
 both the original `TZ` environment and the process timezone state.
@@ -260,7 +268,7 @@ Reviewed on 2026-10-17 against [draft-mcnally-deterministic-cbor-18](https://dat
 
 The pre-existing suite passed: **409 passed**. It provides substantial regression coverage for the Python bindings and their resource limits, but does not establish complete specification conformance.
 
-Added `tests/test_spec_conformance.py`: **998 collected cases**, including one test that checks every binary16 bit pattern against an independent IEEE-754 oracle. Full suite result: **35 failed, 1372 passed in 2.27 seconds**. Every failure concerns the same negative floating-point reduction boundary. Failures remain ordinary assertions rather than skips or expected failures so that the developing agent can use them as acceptance criteria.
+Added `../../tests/test_spec_conformance.py`: **998 collected cases**, including one test that checks every binary16 bit pattern against an independent IEEE-754 oracle. Full suite result: **35 failed, 1372 passed in 2.27 seconds**. Every failure concerns the same negative floating-point reduction boundary. Failures remain ordinary assertions rather than skips or expected failures so that the developing agent can use them as acceptance criteria.
 
 Only this report and the new test file were added by this review. Existing implementation and test files were left unchanged. The installed extension was newer than every Rust source file at review time; the results were not from an obviously stale build. `git diff --check` passed.
 
@@ -287,15 +295,15 @@ assert dcbor.dumps(-float(2**64)).hex() == "fadf800000"  # currently fails
 assert dcbor.loads(bytes.fromhex("fadf800000")) == -float(2**64)  # currently raises
 ```
 
-The relevant local paths are `src/lib.rs`'s `PyFloat` conversion and `src/wire.rs`'s comparison with `CBOR::from(number).to_cbor_data()`. Both rely on the same upstream conversion behavior.
+The relevant local paths are `../../src/lib.rs`'s `PyFloat` conversion and `../../src/wire.rs`'s comparison with `CBOR::from(number).to_cbor_data()`. Both rely on the same upstream conversion behavior.
 
-The locally installed `dcbor` 0.25.2 source deliberately supports the wider reduction interval: its `src/float.rs` converts negative `f64` through `i128` and an unsigned magnitude, and its `tests/encode.rs` explicitly expects the larger negative values to become integers. This is a mismatch between the pinned draft and the dependency's tested behavior, rather than evidence that only this binding introduced the rule.
+The locally installed `dcbor` 0.25.2 source deliberately supports the wider reduction interval: its `../../crates/dcbor/src/float.rs` converts negative `f64` through `i128` and an unsigned magnitude, and its `../../crates/dcbor/tests/encode.rs` explicitly expects the larger negative values to become integers. This is a mismatch between the pinned draft and the dependency's tested behavior, rather than evidence that only this binding introduced the rule.
 
 A fix must address encoding, preflight, upstream decoding, map-key serialization, and diagnostics consistently. Simply relaxing preflight is insufficient: upstream decoding converts float payloads again, and upstream serialization can reduce a `Simple::Float` again. Preserve the existing guards against malformed input and incorrectly reduced floats.
 
 ## 2. Integer range needs a specification decision
 
-`tests/test_dcbor.py::test_integer_extreme_range` requires the integer `-2**64` to work, matching the README and full CBOR major-type-1 range. However, draft-18 Appendix A, Table 4 lists `3b8000000000000000` and `3bffffffffffffffff` as invalid. Current readers accept both.
+`../../tests/test_dcbor.py::test_integer_extreme_range` requires the integer `-2**64` to work, matching the README and full CBOR major-type-1 range. However, draft-18 Appendix A, Table 4 lists `3b8000000000000000` and `3bffffffffffffffff` as invalid. Current readers accept both.
 
 The normative section 2.5 states the reduction interval for floating-point inputs, without an equivalent explicit prohibition on already-integer major-type-1 values below `-2**63`. Section 3 also describes `number` as covering the full basic CBOR numeric space. Therefore the draft is internally unclear about those integer encodings.
 
@@ -348,7 +356,7 @@ but the normative text does not clearly prohibit them. Existing integer-range
 tests and README allow -2**64. Pin the intended target and resolve this ambiguity
 before changing that API; the new tests deliberately do not enforce either side.
 
-Please read SPEC_REVIEW.md for reproductions, affected paths, coverage gaps and
+Please read docs/reviews/SPEC_REVIEW.md for reproductions, affected paths, coverage gaps and
 the small existing TZ-test isolation issue. I changed no implementation files
 and left the conformance failures visible for the developing agent to resolve.
 ```

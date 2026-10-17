@@ -108,7 +108,12 @@ jobs:
           python -m pip install --no-deps test-wheels/*.whl
         env:
           RUSTUP_TOOLCHAIN: ${{ env.RUST_VERSION }}
-      - run: python -m pytest -q
+      - name: Run exhaustive suite on the representative interpreter
+        if: matrix.python == '3.14'
+        run: python -m pytest -q
+      - name: Run cross-interpreter suite
+        if: matrix.python != '3.14'
+        run: python -m pytest -q -m "not exhaustive"
 
   rust:
     name: Test vendored Rust codec

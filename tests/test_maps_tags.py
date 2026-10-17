@@ -92,6 +92,7 @@ y = dcbor.CBORTag(100, None)
 x.value = x
 y.value = y
 try:
+    assert x == x
     hash(x)
 except TypeError:
     pass
@@ -101,8 +102,12 @@ try:
     x == y
 except RecursionError:
     pass
+else:
+    raise AssertionError('comparison of distinct cyclic tags must raise RecursionError')
 """
-    result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
+    result = subprocess.run(
+        [sys.executable, "-c", code], capture_output=True, text=True, timeout=10
+    )
     assert result.returncode == 0, result.stderr
 
 

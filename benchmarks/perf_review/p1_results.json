@@ -1,6 +1,6 @@
 {
   "review_date": "2026-10-17",
-  "source_response": "/tmp/dcbor-perf-p1-response.md",
+  "source_response": null,
   "verified_fingerprints": {
     "src/lib.rs": "7b5758dab622a2fe47df4c8833292e8d040838bc1735f62fba624a36c28dd5fc",
     "src/scalars.rs": "1e9ebfe3f24ad1f8567e074aa27a00404368c574909b3eb02b90dfd7fb47d9ca",
@@ -14,7 +14,7 @@
   "runs": {
     "baseline": {
       "label": "round4_baseline",
-      "extension": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+      "extension": null,
       "extension_sha256": "1da8cb598dd87bb29de48ca92271c24061ca8d1c246129b038b386df9a2dda93",
       "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
       "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
@@ -579,7 +579,7 @@
     },
     "p1": {
       "label": "p1_combined",
-      "extension": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+      "extension": null,
       "extension_sha256": "f2e7962974826f267cf78b551db06b46016ed347aa130866212a1469e121ef97",
       "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
       "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
@@ -1144,7 +1144,7 @@
     },
     "baseline_repeat": {
       "label": "round4_baseline_repeat",
-      "extension": "/tmp/dcbor-perf-baseline.wGESSx/target/release/lib_dcbor.so",
+      "extension": null,
       "extension_sha256": "767b59d335fcf99f927854694702fa549b3cfb8546aebc8c6e68e2381903e78f",
       "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
       "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
@@ -1709,7 +1709,7 @@
     },
     "p1_repeat": {
       "label": "p1_combined_repeat",
-      "extension": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+      "extension": null,
       "extension_sha256": "f2e7962974826f267cf78b551db06b46016ed347aa130866212a1469e121ef97",
       "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
       "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
@@ -2272,5 +2272,6 @@
         "iterations": 32
       }
     }
-  }
+  },
+  "provenance_note": "The temporary review handoff and extension files are not retained. Raw timings, wire hashes, source fingerprints, and extension SHA-256 values remain as recorded."
 }

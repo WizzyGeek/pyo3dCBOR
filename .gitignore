@@ -18,6 +18,7 @@ __pycache__/
 !/crates/dcbor/README.md
 !/crates/dcbor/LICENSE.md
 !/crates/dcbor/PATCHES.md
+!/crates/dcbor/local.patch
 !/crates/dcbor/SECURITY-REVIEW.md
 !/crates/dcbor/src/
 !/crates/dcbor/tests/

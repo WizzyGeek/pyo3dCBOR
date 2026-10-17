@@ -58,6 +58,7 @@ def _patterns(width, exponent_bits, fraction_bits):
         yield rng.getrandbits(width)
 
 
+@pytest.mark.exhaustive
 @pytest.mark.parametrize("width,code,header,exponent_bits,fraction_bits", (
     (32, "f", 0xFA, 8, 23),
     (64, "d", 0xFB, 11, 52),

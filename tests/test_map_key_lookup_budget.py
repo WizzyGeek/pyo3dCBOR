@@ -1,57 +1,48 @@
 """CBORMap lookup probes obey the same canonical-key resource limits."""
 
-import subprocess
-import sys
-import textwrap
-
 import dcbor
 import pytest
+from _subprocess_utils import (
+    linux_address_space_limit_available,
+    run_address_space_limited,
+)
 
 
 LIMIT = 16 * 1024 * 1024
 
 
-@pytest.mark.skipif(sys.platform != "linux", reason="requires Linux address-space accounting")
+@pytest.mark.skipif(
+    not linux_address_space_limit_available(),
+    reason="requires /proc VmSize and resource.RLIMIT_AS to cap allocations",
+)
 @pytest.mark.parametrize("shape", ["tuple", "list"])
 @pytest.mark.parametrize("operation", ["contains", "getitem", "get"])
 def test_oversized_composite_lookup_rejects_before_allocator_abort(shape, operation):
-    script = textwrap.dedent(
-        r'''
-        import resource
-        from pathlib import Path
-
-        import dcbor
-
-        mapping = dcbor.CBORMap([(0, "present")])
-        chunk = b"x" * (256 * 1024)
-        key = (chunk,) * 512 if SHAPE == "tuple" else [chunk] * 512
-
-        baseline = int(next(
-            line for line in Path("/proc/self/status").read_text().splitlines()
-            if line.startswith("VmSize:")
-        ).split()[1]) * 1024
-        _, hard = resource.getrlimit(resource.RLIMIT_AS)
-        ceiling = baseline + 64 * 1024 * 1024
-        if hard != resource.RLIM_INFINITY:
-            ceiling = min(ceiling, hard)
-        resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
-        resource.setrlimit(resource.RLIMIT_AS, (ceiling, hard))
-
-        try:
-            if OPERATION == "contains":
-                _ = key in mapping
-            elif OPERATION == "getitem":
-                mapping[key]
-            else:
-                mapping.get(key)
-        except dcbor.CBORError as exc:
-            assert "map key cache" in str(exc), str(exc)
-        else:
-            raise AssertionError("oversized lookup probe was accepted")
-        '''
-    ).replace("SHAPE", repr(shape)).replace("OPERATION", repr(operation))
-    result = subprocess.run(
-        [sys.executable, "-c", script], capture_output=True, text=True, timeout=30
+    prepare = f'''
+import dcbor
+mapping = dcbor.CBORMap([(0, "present")])
+chunk = b"x" * (256 * 1024)
+key = (chunk,) * 512 if {shape!r} == "tuple" else [chunk] * 512
+'''
+    script = f'''
+try:
+    if {operation!r} == "contains":
+        _ = key in mapping
+    elif {operation!r} == "getitem":
+        mapping[key]
+    else:
+        mapping.get(key)
+except dcbor.CBORError as exc:
+    assert "map key cache" in str(exc), str(exc)
+else:
+    raise AssertionError("oversized lookup probe was accepted")
+'''
+    result = run_address_space_limited(
+        script,
+        prepare=prepare,
+        memory_headroom=64 * 1024 * 1024,
+        timeout=30,
+        disable_core=True,
     )
     assert result.returncode == 0, (result.returncode, result.stderr)
 

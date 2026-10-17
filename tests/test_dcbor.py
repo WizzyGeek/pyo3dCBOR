@@ -324,9 +324,9 @@ def test_cbor_error_is_exception_subclass():
 # Determinism
 # ---------------------------------------------------------------------------
 
-def test_same_value_always_encodes_identically():
+def test_nested_value_matches_fixed_canonical_encoding():
     value = {"z": [1, 2, {"nested": True}], "a": None, "m": 3.0}
-    assert dcbor.dumps(value) == dcbor.dumps(value)
+    assert dcbor.dumps(value).hex() == "a36161f6616d03617a830102a1666e6573746564f5"
 
 
 def test_naive_datetime_rejected():
@@ -336,13 +336,15 @@ def test_naive_datetime_rejected():
 
 
 def test_datetime_encoding_is_timezone_independent(monkeypatch):
-    # Belt-and-braces regression check, not the primary guard: an aware
-    # datetime's .timestamp() never consults $TZ, so this alone wouldn't
-    # catch a regression -- test_naive_datetime_rejected is what actually
-    # guards against host-timezone-dependent encoding.
+    # The literal wire vector checks that the datetime's explicit UTC offset
+    # is honored; the same bytes must result under a different host timezone.
     import time as time_mod
 
-    dt = datetime.datetime(2023, 2, 8, 12, 0, 0, tzinfo=datetime.timezone.utc)
+    dt = datetime.datetime(
+        2023, 2, 8, 12, 0, 0,
+        tzinfo=datetime.timezone(datetime.timedelta(hours=5, minutes=30)),
+    )
+    expected = bytes.fromhex("c11a63e34168")
     encoded_a = dcbor.dumps(dt)
     try:
         with monkeypatch.context() as timezone_patch:
@@ -355,7 +357,8 @@ def test_datetime_encoding_is_timezone_independent(monkeypatch):
         # before the process-wide timezone state is refreshed.
         if hasattr(time_mod, "tzset"):
             time_mod.tzset()
-    assert encoded_a == encoded_b
+    assert encoded_a == expected
+    assert encoded_b == expected
 
 
 def test_decode_map_with_array_key_uses_lossless_map():
@@ -490,4 +493,6 @@ def test_round_trip_is_lossless_for_deeply_nested_structures():
         "none": None,
         "float": 1.5,
     }
+    for _ in range(400):
+        value = [value]
     assert dcbor.loads(dcbor.dumps(value)) == value

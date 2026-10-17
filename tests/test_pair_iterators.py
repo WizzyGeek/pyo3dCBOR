@@ -4,6 +4,10 @@ import sys
 
 import dcbor
 import pytest
+from _subprocess_utils import (
+    linux_address_space_limit_available,
+    run_address_space_limited,
+)
 
 
 @pytest.mark.parametrize("length", [0, 1, 3, 4, 100])
@@ -83,24 +87,18 @@ assert entry.reads == 3
     assert result.returncode == 0, result.stderr
 
 
-def test_true_infinite_generator_is_rejected_in_subprocess():
+@pytest.mark.skipif(
+    not linux_address_space_limit_available(),
+    reason="requires /proc VmSize and resource.RLIMIT_AS to cap allocations",
+)
+def test_true_infinite_generator_is_rejected_in_memory_limited_subprocess():
     # itertools.repeat has no side effects and no finite length to inspect.
     # Limit virtual memory so a regressed implementation cannot exhaust host RAM.
-    code = """
+    prepare = """
 import dcbor
 import itertools
-try:
-    import resource
-    from pathlib import Path
-    size = int(next(line for line in Path('/proc/self/status').read_text().splitlines()
-                    if line.startswith('VmSize:')).split()[1]) * 1024
-    _, hard = resource.getrlimit(resource.RLIMIT_AS)
-    cap = size + 64 * 1024 * 1024
-    if hard != resource.RLIM_INFINITY:
-        cap = min(cap, hard)
-    resource.setrlimit(resource.RLIMIT_AS, (cap, hard))
-except (ImportError, FileNotFoundError):
-    pass
+"""
+    code = """
 try:
     dcbor.CBORMap([itertools.repeat(None)])
 except ValueError as exc:
@@ -108,7 +106,7 @@ except ValueError as exc:
 else:
     raise AssertionError('infinite malformed entry was accepted')
 """
-    result = subprocess.run(
-        [sys.executable, "-c", code], capture_output=True, text=True, timeout=10
+    result = run_address_space_limited(
+        code, prepare=prepare, memory_headroom=64 * 1024 * 1024, timeout=10
     )
     assert result.returncode == 0, result.stderr

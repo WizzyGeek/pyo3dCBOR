@@ -1,31 +1,25 @@
 """Regression oracles for early composite-key budget and replacement accounting."""
-import subprocess
-import platform
-import sys
-import textwrap
-
 import dcbor
 import pytest
+from _subprocess_utils import (
+    linux_address_space_limit_available,
+    run_address_space_limited,
+)
 
 
 @pytest.mark.parametrize("operation", ["dumps", "constructor_tuple", "constructor_list"])
+@pytest.mark.skipif(
+    not linux_address_space_limit_available(),
+    reason="requires /proc VmSize and resource.RLIMIT_AS to cap allocations",
+)
 def test_composite_key_budget_rejects_before_large_materialization(operation):
-    if platform.system() != "Linux":
-        pytest.skip("VmSize/RLIMIT_AS allocation regression is Linux specific")
-    code = r'''
+    prepare = r'''
 import dcbor
-import resource
-from pathlib import Path
 chunk = b'x' * (256 * 1024)
 key = (chunk,) * 512
 source = {key: 0}
-baseline = int(next(line for line in Path('/proc/self/status').read_text().splitlines()
-                    if line.startswith('VmSize:')).split()[1]) * 1024
-_, hard = resource.getrlimit(resource.RLIMIT_AS)
-limit = baseline + 64 * 1024 * 1024
-if hard != resource.RLIM_INFINITY:
-    limit = min(limit, hard)
-resource.setrlimit(resource.RLIMIT_AS, (limit, hard))
+'''
+    code = r'''
 try:
     OPERATION
 except dcbor.CBORError as exc:
@@ -37,8 +31,12 @@ else:
         "constructor_tuple": "dcbor.CBORMap([(key, 0)])",
         "constructor_list": "dcbor.CBORMap([(list(key), 0)])",
     }[operation])
-    result = subprocess.run([sys.executable, "-c", textwrap.dedent(code)],
-                            capture_output=True, text=True, timeout=30)
+    result = run_address_space_limited(
+        code,
+        prepare=prepare,
+        memory_headroom=64 * 1024 * 1024,
+        timeout=30,
+    )
     assert result.returncode == 0, result.stderr
 
 
@@ -84,27 +82,24 @@ def test_replacement_accounting_within_composite_key(snapshot):
 
 
 def test_replacement_subprocess_with_shared_large_value():
-    if platform.system() != "Linux":
-        pytest.skip("VmSize/RLIMIT_AS allocation regression is Linux specific")
-    code = r'''
+    if not linux_address_space_limit_available():
+        pytest.skip("requires /proc VmSize and resource.RLIMIT_AS to cap allocations")
+    prepare = r'''
 import dcbor
-import resource
-from pathlib import Path
 keys = ['\u00c5', 'A\u030a', '\u212b']
 chunk = b'x' * (6 * 1024 * 1024)
 value = {chunk: 0}
 source = {key: value for key in keys}
-baseline = int(next(line for line in Path('/proc/self/status').read_text().splitlines()
-                    if line.startswith('VmSize:')).split()[1]) * 1024
-_, hard = resource.getrlimit(resource.RLIMIT_AS)
-limit = baseline + 128 * 1024 * 1024
-if hard != resource.RLIM_INFINITY:
-    limit = min(limit, hard)
-resource.setrlimit(resource.RLIMIT_AS, (limit, hard))
+'''
+    code = r'''
 expected = dcbor.dumps({keys[-1]: value})
 assert len(expected) == 6291467
 assert dcbor.dumps(source) == expected
 '''
-    result = subprocess.run([sys.executable, "-c", textwrap.dedent(code)],
-                            capture_output=True, text=True, timeout=30)
+    result = run_address_space_limited(
+        code,
+        prepare=prepare,
+        memory_headroom=128 * 1024 * 1024,
+        timeout=30,
+    )
     assert result.returncode == 0, result.stderr

@@ -1,19 +1,16 @@
-> Disclaimer: This is AI generated, tested and verified code (not assisted,
-this was done with minimal oversight!)
-Credits to claude (build) and codex (review and fixes)
-
 # dcbor
 
-Python bindings for [Blockchain Commons' `dcbor`](https://github.com/BlockchainCommons/bc-dcbor-rust)
-Rust crate — a deterministic CBOR ("dCBOR") encoder/decoder implementing the
-constraints of the dCBOR specification (RFC 8949 §4.2.1 plus the dCBOR
-application profile): canonical shortest-form integers, floating-point
-numeric reduction, NFC-normalized strings, lexicographically ordered map
-keys, and rejection of non-canonical encodings on decode.
+`dcbor` provides Python bindings for [Blockchain Commons' Rust `dcbor`
+crate](https://github.com/BlockchainCommons/bc-dcbor-rust). It encodes and
+decodes deterministic CBOR (dCBOR), applying shortest-form integer and float
+encodings, NFC text normalization, canonical map-key ordering, and validation
+of canonical input. The codec implements RFC 8949 deterministic encoding with
+the dCBOR application profile.
 
 Core encoding/decoding runs in the Rust crate via [PyO3](https://pyo3.rs/).
-The bindings convert Python values and check wire-level numeric canonicality,
-nesting depth, and aggregate encoded map-key storage before decoding.
+The binding preflight checks complete input structure, nesting depth, map-count
+overflow, and aggregate encoded map-key storage. The pinned, locally patched
+decoder validates numeric canonicality before converting float payloads.
 The published `dcbor` 0.25.2 codec is included with a narrow numeric-reduction
 patch; its source, license, provenance, and changes are in
 [`crates/dcbor`](crates/dcbor/PATCHES.md).
@@ -74,7 +71,10 @@ assert dcbor.dumps(dcbor.loads(dcbor.dumps(mapping))) == dcbor.dumps(mapping)
 `CBORMap` supports indexing, membership, iteration, `len()`, `get()`,
 `keys()`, `values()`, and `items()`. Returned containers are fresh decoded
 values; changing them does not modify the snapshot. Its constructor accepts
-key/value pairs and rejects duplicate canonical keys. Converting it to a
+key/value pairs and rejects duplicate canonical keys. Python `dict` encoding
+keeps its established last-entry-wins behavior when different string keys
+normalize to the same NFC encoding; this compatibility behavior is distinct
+from `CBORMap`'s duplicate-canonical-key rejection. Converting a `CBORMap` to a
 Python `dict` can lose distinctions such as `1` versus `True`.
 
 Map-key conversion preserves canonical encoding throughout composite keys.
@@ -119,8 +119,8 @@ represented in dCBOR (unsupported Python types, out-of-range integers) raise
 - **NFC string collisions.** dCBOR text strings are normalized to Unicode
   NFC before encoding. Two distinct Python strings that normalize to the
   same NFC form (e.g. `"é"` composed vs. `"e"` + combining acute) encode
-  identically, so as dict keys the later one silently overwrites the
-  earlier one — the same behavior the underlying Rust crate has.
+  identically. For `dict` input, the later item deliberately wins for
+  compatibility; `CBORMap` instead rejects duplicate canonical pairs.
 - **Nesting depth is capped at 512 levels** (arrays/maps/tags, on both
   `dumps()` and `loads()`) to prevent stack-exhaustion crashes on
   adversarial input; deeper structures raise `CBORError` rather than
@@ -151,6 +151,16 @@ maturin develop
 pytest
 ```
 
+The full numeric-oracle and binary16 exhaustive cases run on CPython 3.14/Linux.
+Other interpreter and wheel jobs run the rest of the suite, including the
+independent conformance and safety tests. The source distribution runs the full
+suite before wheel builds.
+
+The upstream codec has a named maintainer and a repeatable checksum, patch, and
+test verification process in [`crates/dcbor/PATCHES.md`](crates/dcbor/PATCHES.md).
+Current performance follow-ups are recorded in
+[`docs/allocation-plan.md`](docs/allocation-plan.md).
+
 ## CI and releases
 
 The [GitHub Actions workflow](.github/workflows/ci.yml) runs on pull requests,
@@ -161,10 +171,13 @@ pushes to `master`/`main`, `v*` tags, and manual dispatches. Its stages are:
    starting builds.
 2. Run the vendored Rust codec tests once with `--locked`, using the committed
    `crates/dcbor/Cargo.lock` (separate from the binding's root lockfile).
-3. Build the extension and run the full test suite on CPython 3.9–3.14.
-4. Create an sdist and verify it installs and passes tests.
+3. Build the extension on CPython 3.9–3.14. Run the full suite on CPython
+   3.14/Linux; other Python versions exclude only tests marked `exhaustive`.
+4. Create an sdist and verify it installs and passes the full test suite.
 5. Build release wheels **from that sdist**, then install and test every wheel
    in an isolated environment using [cibuildwheel](https://cibuildwheel.pypa.io/).
+   Wheel tests exclude only tests marked `exhaustive`; all remaining conformance
+   and safety tests run on every wheel.
    Pull requests build Linux and Windows wheels; the macOS 3-core jobs run only
    on branch pushes, tags, and manual dispatches.
 6. Check distribution metadata, require all 42 wheels, and generate `SHA256SUMS`.

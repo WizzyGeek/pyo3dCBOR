@@ -4,7 +4,7 @@ Reference: https://datatracker.ietf.org/doc/html/draft-mcnally-deterministic-cbo
 These tests deliberately do not use dumps() to construct decoder inputs.
 Round trips alone can miss an encoder and decoder sharing the same defect.
 The full negative CBOR integer range is discussed separately in
-SPEC_REVIEW.md because draft-18's normative text and Appendix A disagree.
+docs/reviews/SPEC_REVIEW.md because draft-18's normative text and Appendix A disagree.
 """
 
 import math
@@ -206,6 +206,7 @@ def _small_integer_wire(number):
     return bytes([major | 25]) + argument.to_bytes(2, "big")
 
 
+@pytest.mark.exhaustive
 def test_every_binary16_encoding_has_the_specified_canonical_form():
     # Covers every sign, exponent, significand, subnormal, NaN payload, and
     # signed zero. Python's struct module supplies an independent IEEE oracle.

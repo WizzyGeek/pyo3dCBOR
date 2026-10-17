@@ -60,7 +60,7 @@
   "runs": {
     "baseline": {
       "label": "baseline",
-      "extension": "/tmp/aidcbor-perf-review.nRwy09/baseline/dcbor/_dcbor.so",
+      "extension": null,
       "extension_sha256": "0e81fec3ea060a622c6b2d8e657b08d167e9cbf9fd5131d540cd5b9a3ec70cb2",
       "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
       "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
@@ -625,7 +625,7 @@
     },
     "baseline_repeat": {
       "label": "baseline_repeat",
-      "extension": "/tmp/aidcbor-perf-review.nRwy09/baseline/dcbor/_dcbor.so",
+      "extension": null,
       "extension_sha256": "0e81fec3ea060a622c6b2d8e657b08d167e9cbf9fd5131d540cd5b9a3ec70cb2",
       "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
       "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
@@ -1190,7 +1190,7 @@
     },
     "dispatch": {
       "label": "dispatch",
-      "extension": "/tmp/aidcbor-perf-review.nRwy09/dispatch/dcbor/_dcbor.so",
+      "extension": null,
       "extension_sha256": "0b5edf14cd8b2066d8f34a8e8f0f5614a04c3468d0ed4be4fc88ab3553c9f8f6",
       "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
       "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
@@ -1755,7 +1755,7 @@
     },
     "dispatch_repeat": {
       "label": "dispatch_repeat",
-      "extension": "/tmp/aidcbor-perf-review.nRwy09/dispatch/dcbor/_dcbor.so",
+      "extension": null,
       "extension_sha256": "0b5edf14cd8b2066d8f34a8e8f0f5614a04c3468d0ed4be4fc88ab3553c9f8f6",
       "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
       "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
@@ -2320,7 +2320,7 @@
     },
     "ascii": {
       "label": "ascii",
-      "extension": "/tmp/aidcbor-perf-review.nRwy09/ascii/dcbor/_dcbor.so",
+      "extension": null,
       "extension_sha256": "beecf38d3df532a86af80089a542f0b222ce1720864c09b5283a2241b9166a64",
       "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
       "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
@@ -2885,7 +2885,7 @@
     },
     "ascii_repeat": {
       "label": "ascii_repeat",
-      "extension": "/tmp/aidcbor-perf-review.nRwy09/ascii/dcbor/_dcbor.so",
+      "extension": null,
       "extension_sha256": "beecf38d3df532a86af80089a542f0b222ce1720864c09b5283a2241b9166a64",
       "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
       "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
@@ -3450,7 +3450,7 @@
     },
     "append": {
       "label": "append",
-      "extension": "/tmp/aidcbor-perf-review.nRwy09/append/dcbor/_dcbor.so",
+      "extension": null,
       "extension_sha256": "10ada11f1ebb766e468ca4bf82e18540f8ba1b3e832f629b0c0221537b83347c",
       "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
       "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
@@ -4015,7 +4015,7 @@
     },
     "append_repeat": {
       "label": "append_repeat",
-      "extension": "/tmp/aidcbor-perf-review.nRwy09/append/dcbor/_dcbor.so",
+      "extension": null,
       "extension_sha256": "10ada11f1ebb766e468ca4bf82e18540f8ba1b3e832f629b0c0221537b83347c",
       "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
       "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
@@ -4580,7 +4580,7 @@
     },
     "numeric_preflight": {
       "label": "numeric_preflight",
-      "extension": "/tmp/aidcbor-perf-review.nRwy09/numeric_preflight/dcbor/_dcbor.so",
+      "extension": null,
       "extension_sha256": "3fad590b28a995f9a0f2016f5d450326159489ce8f6baad87ecf10f7aea884a8",
       "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
       "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
@@ -5145,7 +5145,7 @@
     },
     "numeric_preflight_repeat": {
       "label": "numeric_preflight_repeat",
-      "extension": "/tmp/aidcbor-perf-review.nRwy09/numeric_preflight/dcbor/_dcbor.so",
+      "extension": null,
       "extension_sha256": "3fad590b28a995f9a0f2016f5d450326159489ce8f6baad87ecf10f7aea884a8",
       "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
       "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
@@ -5710,7 +5710,7 @@
     },
     "ownership": {
       "label": "ownership",
-      "extension": "/tmp/aidcbor-perf-review.nRwy09/ownership/dcbor/_dcbor.so",
+      "extension": null,
       "extension_sha256": "7b9dd26cbc37ff18a08073a5ad0cc9c0110e698235815a75a68771de67e1b666",
       "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
       "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
@@ -6275,7 +6275,7 @@
     },
     "bytes_only": {
       "label": "bytes_only",
-      "extension": "/tmp/aidcbor-perf-review.nRwy09/bytes_only/dcbor/_dcbor.so",
+      "extension": null,
       "extension_sha256": "cd01b0d97687516088686807917a4d1a0ffae62f2c1f19ac252c4df839de6b0c",
       "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
       "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
@@ -6881,5 +6881,6 @@
       ],
       "total_passed": 180
     }
-  }
+  },
+  "artifact_note": "Temporary extension paths are omitted; the corresponding extension_sha256 values identify the measured binaries, which are not retained here."
 }

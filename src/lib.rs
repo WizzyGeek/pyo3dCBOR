@@ -1,7 +1,7 @@
 //! PyO3 bindings exposing Blockchain Commons' `dcbor` (deterministic CBOR)
-//! Rust crate to Python. The bindings convert Python objects, preserve map
-//! key identity, and check resource limits and numeric canonicality before
-//! entering the upstream decoder.
+//! Rust crate to Python. The bindings preserve map key identity, preflight
+//! structural and resource limits, and leave numeric canonicality to the
+//! patched decoder.
 
 use dcbor::{ByteString, CBOR, CBORCase, Map, Simple, Tag};
 use pyo3::create_exception;
@@ -36,6 +36,35 @@ fn depth_err() -> PyErr {
     ))
 }
 
+fn python_integer_to_cbor(obj: &Bound<'_, PyAny>) -> PyResult<CBOR> {
+    // The caller has already established that `obj` is a Python int. Keep
+    // the common i64 conversion cheap; every wider value in the dCBOR
+    // interval fits in i128, so an i128 extraction overflow means it is out
+    // of range.
+    if let Ok(value) = obj.extract::<i64>() {
+        return Ok(CBOR::from(value));
+    }
+    let value = obj.extract::<i128>().map_err(|_| {
+        CBORError::new_err(
+            "integer out of range for dCBOR (must fit in [-2^64, 2^64-1])",
+        )
+    })?;
+    const MIN: i128 = -(1i128 << 64);
+    const MAX: i128 = (1i128 << 64) - 1;
+    if !(MIN..=MAX).contains(&value) {
+        return Err(CBORError::new_err(
+            "integer out of range for dCBOR (must fit in [-2^64, 2^64-1])",
+        ));
+    }
+
+    if value < 0 {
+        let magnitude = (-1i128 - value) as u64;
+        Ok(CBOR::from(CBORCase::Negative(magnitude)))
+    } else {
+        Ok(CBOR::from(value as u64))
+    }
+}
+
 /// Convert a Python object into a `dcbor::CBOR` value.
 fn py_to_cbor(py: Python<'_>, obj: &Bound<'_, PyAny>, depth: u32) -> PyResult<CBOR> {
     py_to_cbor_with_budget(py, obj, depth, &mut encode::EncodeBudget::default())
@@ -68,7 +97,9 @@ fn py_to_cbor_with_budget(
     // Exact builtin nonintegers cannot implement Python's integer protocol.
     // Keep probing subclasses and custom objects so their `__index__`
     // behavior, including its precedence over their builtin base, is
-    // unchanged.
+    // unchanged. Convert arbitrary objects through that protocol only once;
+    // the width probes below used to invoke stateful `__index__` methods
+    // repeatedly.
     let needs_integer_probe = obj.cast::<PyInt>().is_ok()
         || !(obj.is_exact_instance_of::<PyFloat>()
             || obj.is_exact_instance_of::<PyString>()
@@ -78,30 +109,22 @@ fn py_to_cbor_with_budget(
             || obj.is_exact_instance_of::<PyTuple>()
             || obj.is_exact_instance_of::<PyDict>());
     if needs_integer_probe {
-        if let Ok(i) = obj.extract::<i64>() {
-            return budget.scalar(CBOR::from(i));
-        }
-        if let Ok(i) = obj.extract::<u64>() {
-            return budget.scalar(CBOR::from(i));
-        }
-        if let Ok(i) = obj.extract::<i128>() {
-            // Beyond i64/u64 direct range: dCBOR negatives can reach -(2^64).
-            if i < 0 {
-                let mag: i128 = -1 - i;
-                if let Ok(mag) = u64::try_from(mag) {
-                    return budget.scalar(CBOR::from(CBORCase::Negative(mag)));
-                }
-            }
-            return Err(CBORError::new_err(
-                "integer out of range for dCBOR (must fit in [-2^64, 2^64-1])",
-            ));
-        }
+        // Preserve the direct path for int instances. For other objects,
+        // PyNumber_Index applies Python's integer protocol once and returns
+        // a genuine Python int. Its error is intentionally discarded here:
+        // historically failed `__index__` hooks fell through to the normal
+        // "not dCBOR serializable" error, which callers already observe.
         if obj.cast::<PyInt>().is_ok() {
-            // A Python int that didn't fit in i128 either: still an
-            // out-of-range integer, not an unsupported type.
-            return Err(CBORError::new_err(
-                "integer out of range for dCBOR (must fit in [-2^64, 2^64-1])",
-            ));
+            return budget.scalar(python_integer_to_cbor(obj)?);
+        }
+        let indexed = unsafe {
+            Bound::<PyAny>::from_owned_ptr_or_err(
+                py,
+                pyo3::ffi::PyNumber_Index(obj.as_ptr()),
+            )
+        };
+        if let Ok(indexed) = indexed {
+            return budget.scalar(python_integer_to_cbor(&indexed)?);
         }
     }
     if let Ok(f) = obj.cast::<PyFloat>() {

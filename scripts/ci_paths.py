@@ -7,8 +7,10 @@ import sys
 BUILD_PATH = re.compile(
     r"^\.github/workflows/"
     r"|(^|/)[^/]+\.(py|pyi|rs)$"
-    r"|(^|/)(Cargo\.toml|Cargo\.lock|pyproject\.toml|rust-toolchain(?:\.toml)?)$"
+    r"|(^|/)(Cargo\.toml|Cargo\.toml\.orig|Cargo\.lock|pyproject\.toml|"
+    r"pytest\.ini|py\.typed|rust-toolchain(?:\.toml)?)$"
     r"|(^|/)\.cargo/config(?:\.toml)?$"
+    r"|^crates/dcbor/.*\.(?:patch|json|lock|sha256)$"
 )
 
 
