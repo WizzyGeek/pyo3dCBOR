@@ -164,7 +164,7 @@ jobs:
 
   wheels:
     name: Wheels on ${{ matrix.os }}
-    needs: [changes, sdist]
+    needs: [changes, test, rust, sdist]
     if: needs.changes.outputs.code_changed == 'true'
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
