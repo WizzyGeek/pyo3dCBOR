@@ -13,6 +13,7 @@ __pycache__/
 /crates/dcbor/*
 !/crates/dcbor/.gitignore
 !/crates/dcbor/Cargo.toml
+!/crates/dcbor/Cargo.lock
 !/crates/dcbor/Cargo.toml.orig
 !/crates/dcbor/README.md
 !/crates/dcbor/LICENSE.md

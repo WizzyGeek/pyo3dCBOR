@@ -1,5 +1,6 @@
 """Release checks. Run with Python 3.11+; distributions also needs packaging."""
 
+import ast
 import hashlib
 import os
 from pathlib import Path
@@ -18,12 +19,28 @@ PLATFORMS = {
 }
 
 
-def versions():
-    project = tomllib.loads((ROOT / "pyproject.toml").read_text())["project"]
-    cargo = tomllib.loads((ROOT / "Cargo.toml").read_text())["package"]
+def versions(root=ROOT):
+    project = tomllib.loads((root / "pyproject.toml").read_text())["project"]
+    cargo = tomllib.loads((root / "Cargo.toml").read_text())["package"]
     version = project["version"]
     if cargo["version"] != version:
         raise ValueError("Cargo.toml and pyproject.toml versions must match")
+    package_tree = ast.parse((root / "python/dcbor/__init__.py").read_text())
+    package_version = None
+    for statement in package_tree.body:
+        if isinstance(statement, ast.Assign) and any(
+            isinstance(target, ast.Name) and target.id == "__version__"
+            for target in statement.targets
+        ):
+            if isinstance(statement.value, ast.Constant) and isinstance(
+                statement.value.value, str
+            ):
+                package_version = statement.value.value
+            break
+    if package_version != version:
+        raise ValueError(
+            "pyproject.toml and python/dcbor/__init__.py versions must match"
+        )
     tag = os.environ.get("RELEASE_TAG", "")
     if tag and (not re.fullmatch(r"v\d+\.\d+\.\d+", tag) or tag != f"v{version}"):
         raise ValueError(f"Release tag must be v{version}, got {tag!r}")

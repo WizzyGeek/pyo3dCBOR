@@ -89,5 +89,5 @@ dkms.conf
 # End of https://www.gitignore.io/api/c
 
 target/
-Cargo.lock
+# Keep Cargo.lock in Git for the standalone, locked codec test job.
 cargo-docs/

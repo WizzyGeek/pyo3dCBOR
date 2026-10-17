@@ -23,8 +23,47 @@ defaults:
     shell: bash
 
 jobs:
+  changes:
+    name: Detect code changes
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      code_changed: ${{ steps.filter.outputs.code_changed }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Check changed paths
+        id: filter
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REF_TYPE: ${{ github.ref_type }}
+          BEFORE_SHA: ${{ github.event.before }}
+          HEAD_SHA: ${{ github.sha }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          if [[ "$EVENT_NAME" == "workflow_dispatch" || "$REF_TYPE" == "tag" ]]; then
+            echo "code_changed=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            changed_files=$(git diff --name-only "$PR_BASE_SHA...$PR_HEAD_SHA")
+          elif [[ "$EVENT_NAME" == "push" && "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]]; then
+            changed_files=$(git diff --name-only "$BEFORE_SHA..$HEAD_SHA")
+          else
+            echo "code_changed=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          python3 scripts/ci_paths.py <<< "$changed_files" >> "$GITHUB_OUTPUT"
+
   metadata:
     name: Check package and release versions
+    needs: changes
+    if: needs.changes.outputs.code_changed == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -34,13 +73,17 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.14'
+      - run: python -m pip install 'pytest>=8,<9'
+      - name: Verify version and changed-path guards
+        run: python -m pytest -q tests/test_ci_version.py tests/test_ci_paths.py
       - run: python scripts/ci.py versions
         env:
           RELEASE_TAG: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || '' }}
 
   test:
     name: Test Python ${{ matrix.python }}
-    needs: metadata
+    needs: [changes, metadata]
+    if: needs.changes.outputs.code_changed == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     strategy:
@@ -65,9 +108,27 @@ jobs:
           RUSTUP_TOOLCHAIN: ${{ env.RUST_VERSION }}
       - run: python -m pytest -q
 
+  rust:
+    name: Test vendored Rust codec
+    needs: [changes, metadata]
+    if: needs.changes.outputs.code_changed == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Select Rust toolchain
+        run: rustup toolchain install "$RUST_VERSION" --profile minimal --no-self-update
+      - name: Run codec tests with the committed lockfile
+        run: cargo test --manifest-path crates/dcbor/Cargo.toml --locked
+        env:
+          RUSTUP_TOOLCHAIN: ${{ env.RUST_VERSION }}
+
   sdist:
     name: Build and test source distribution
-    needs: test
+    needs: [changes, test, rust]
+    if: needs.changes.outputs.code_changed == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
@@ -96,14 +157,15 @@ jobs:
 
   wheels:
     name: Wheels on ${{ matrix.os }}
-    needs: sdist
+    needs: [changes, sdist]
+    if: needs.changes.outputs.code_changed == 'true'
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
     strategy:
       fail-fast: false
       max-parallel: 3
       matrix:
-        os: [ubuntu-24.04, ubuntu-24.04-arm, macos-15-intel, macos-14, windows-2022]
+        os: [ubuntu-24.04, ubuntu-24.04-arm, windows-2022]
     steps:
       - uses: actions/checkout@v6
         with:
@@ -138,9 +200,54 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+  macos-wheels:
+    name: Wheels on ${{ matrix.os }}
+    if: github.event_name != 'pull_request' && needs.changes.outputs.code_changed == 'true'
+    needs: [changes, sdist]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        os: [macos-15-intel, macos-14]
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+      - uses: actions/download-artifact@v4
+        with:
+          name: sdist
+          path: dist
+      - name: Select native Rust toolchain
+        run: rustup toolchain install "$RUST_VERSION" --profile minimal --no-self-update
+      - name: Locate source archive
+        id: source
+        run: |
+          archives=(dist/*.tar.gz)
+          test "${#archives[@]}" -eq 1
+          echo "path=${archives[0]}" >> "$GITHUB_OUTPUT"
+      - name: Build, repair, and test every wheel from the source archive
+        uses: pypa/cibuildwheel@v4.3.1
+        with:
+          package-dir: ${{ steps.source.outputs.path }}
+          output-dir: wheelhouse
+        env:
+          RUSTUP_TOOLCHAIN: ${{ env.RUST_VERSION }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheels-${{ matrix.os }}
+          path: wheelhouse/*.whl
+          if-no-files-found: error
+          retention-days: 14
+
   distributions:
     name: Validate complete release bundle
-    needs: [sdist, wheels]
+    if: github.event_name != 'pull_request' && needs.changes.outputs.code_changed == 'true'
+    needs: [changes, sdist, wheels, macos-wheels]
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:

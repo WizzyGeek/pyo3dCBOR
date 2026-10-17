@@ -156,14 +156,19 @@ pytest
 The [GitHub Actions workflow](.github/workflows/ci.yml) runs on pull requests,
 pushes to `master`/`main`, `v*` tags, and manual dispatches. Its stages are:
 
-1. Check that Python and Cargo package versions agree. On tags, also require
-   an exact `vX.Y.Z` match before starting builds.
-2. Build the extension and run the full test suite on CPython 3.9–3.14.
-3. Create an sdist and verify it installs and passes tests.
-4. Build release wheels **from that sdist**, then install and test every wheel
+1. Check that Python and Cargo package versions agree with the public
+   `dcbor.__version__`. On tags, also require an exact `vX.Y.Z` match before
+   starting builds.
+2. Run the vendored Rust codec tests once with `--locked`, using the committed
+   `crates/dcbor/Cargo.lock` (separate from the binding's root lockfile).
+3. Build the extension and run the full test suite on CPython 3.9–3.14.
+4. Create an sdist and verify it installs and passes tests.
+5. Build release wheels **from that sdist**, then install and test every wheel
    in an isolated environment using [cibuildwheel](https://cibuildwheel.pypa.io/).
-5. Check distribution metadata, require all 42 wheels, and generate `SHA256SUMS`.
-6. For version-tag pushes, publish a GitHub Release containing the tested wheels,
+   Pull requests build Linux and Windows wheels; the macOS 3-core jobs run only
+   on branch pushes, tags, and manual dispatches.
+6. Check distribution metadata, require all 42 wheels, and generate `SHA256SUMS`.
+7. For version-tag pushes, publish a GitHub Release containing the tested wheels,
    source archive, and checksums. Ordinary CI runs retain downloadable artifacts.
 
 | Platform | Architecture | Build environment | Python versions |
@@ -178,14 +183,18 @@ cibuildwheel; macOS and Windows use native runner images because their toolchain
 require those operating systems. Rust is pinned to 1.90.0 in the workflow and Linux
 container setup. Update both together. Dependabot checks action updates weekly.
 Compiler jobs are limited to two, and at most three wheel jobs run concurrently.
+The workflow starts with a small Ubuntu change-detection job. If a push or pull
+request changes only Markdown files, the test, build, and release jobs are
+skipped; skipped job checks report success. Manual dispatches and tag pushes
+always run the full matrix.
 
 The patched `crates/dcbor` sources and license must be committed with the project.
 Do not replace them with the unpatched registry crate. The sdist includes this
 dependency and the Python tests so packaging failures are caught before release.
 
-To release, update `version` in both `pyproject.toml` and `Cargo.toml`, refresh
-`Cargo.lock` with `cargo check`, commit and push the tested changes, then push
-the matching tag:
+To release, update `version` in `pyproject.toml` and `Cargo.toml`, update
+`__version__` in `python/dcbor/__init__.py`, refresh `Cargo.lock` with
+`cargo check`, commit and push the tested changes, then push the matching tag:
 
 ```sh
 git tag v0.1.0

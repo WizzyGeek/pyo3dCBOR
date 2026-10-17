@@ -27,6 +27,7 @@ module-name = "dcbor._dcbor"
 features = ["pyo3/extension-module"]
 locked = true
 include = [
+    { path = "scripts/**/*.py", format = "sdist" },
     { path = "tests/**/*.py", format = "sdist" },
     { path = "crates/dcbor/PATCHES.md", format = "sdist" },
     { path = "crates/dcbor/SECURITY-REVIEW.md", format = "sdist" },
