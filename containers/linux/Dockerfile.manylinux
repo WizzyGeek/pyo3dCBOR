@@ -5,6 +5,8 @@ LABEL org.opencontainers.image.source="https://github.com/WizzyGeek/pyo3dCBOR"
 
 ARG RUST_VERSION=1.90.0
 ARG RUST_TARGET
+ARG RUSTUP_VERSION=1.28.2
+ARG RUSTUP_INIT_SHA256=17247e4bcacf6027ec2e11c79a72c494c9af69ac8d1abcc1b271fa4375a106c2
 
 ENV RUSTUP_HOME=/root/.rustup \
     CARGO_HOME=/root/.cargo \
@@ -14,9 +16,10 @@ ENV RUSTUP_HOME=/root/.rustup \
 
 RUN set -eu; \
     test -n "${RUST_TARGET}"; \
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
+    curl --proto '=https' --tlsv1.2 -sSf "https://raw.githubusercontent.com/rust-lang/rustup/${RUSTUP_VERSION}/rustup-init.sh" \
       -o /root/rustup-init.sh; \
-    sh /root/rustup-init.sh -y --no-modify-path --profile minimal \
+    echo "${RUSTUP_INIT_SHA256}  /root/rustup-init.sh" | sha256sum -c -; \
+    RUSTUP_VERSION="${RUSTUP_VERSION}" sh /root/rustup-init.sh -y --no-modify-path --profile minimal \
       --default-toolchain "${RUST_VERSION}"; \
     rm /root/rustup-init.sh; \
     rustup target add "${RUST_TARGET}" --toolchain "${RUST_VERSION}"; \

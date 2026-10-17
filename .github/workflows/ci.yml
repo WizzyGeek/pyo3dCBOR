@@ -6,7 +6,18 @@ on:
     tags: ['v*']
   pull_request:
   workflow_dispatch:
+    inputs:
+      linux_images:
+        description: Linux build images (upstream is the rollback)
+        type: choice
+        options: [upstream, maintained]
+        default: upstream
   workflow_call:
+    inputs:
+      linux_images:
+        description: Linux build images (upstream or maintained)
+        type: string
+        default: upstream
 
 permissions:
   contents: read
@@ -193,6 +204,32 @@ jobs:
           archives=(dist/*.tar.gz)
           test "${#archives[@]}" -eq 1
           echo "path=${archives[0]}" >> "$GITHUB_OUTPUT"
+      - name: Select Linux image mode
+        if: runner.os == 'Linux'
+        env:
+          IMAGE_MODE: ${{ inputs.linux_images || vars.DCBOR_LINUX_IMAGES || 'upstream' }}
+        run: |
+          python scripts/ci_linux_images.py "$IMAGE_MODE" >> "$GITHUB_ENV"
+          echo "Linux image mode: $IMAGE_MODE" >> "$GITHUB_STEP_SUMMARY"
+          echo "LINUX_IMAGE_MODE=$IMAGE_MODE" >> "$GITHUB_ENV"
+      - name: Pull and validate the exact maintained image digests
+        if: runner.os == 'Linux' && env.LINUX_IMAGE_MODE == 'maintained'
+        run: |
+          set -euo pipefail
+          case "$(uname -m)" in
+            x86_64) manylinux="$CIBW_MANYLINUX_X86_64_IMAGE"; musllinux="$CIBW_MUSLLINUX_X86_64_IMAGE" ;;
+            aarch64) manylinux="$CIBW_MANYLINUX_AARCH64_IMAGE"; musllinux="$CIBW_MUSLLINUX_AARCH64_IMAGE" ;;
+            *) exit 1 ;;
+          esac
+          for family in manylinux_2_28 musllinux_1_2; do
+            if [[ "$family" == manylinux_2_28 ]]; then image="$manylinux"; else image="$musllinux"; fi
+            echo "Validating $image at $(date -u +%FT%TZ)"
+            docker pull "$image"
+            docker run --rm \
+              --volume "$PWD/containers/linux/validate-image.sh:/validate-image.sh:ro" \
+              "$image" bash /validate-image.sh "$family" "$(uname -m)"
+            echo "Validated: \`$image\`" >> "$GITHUB_STEP_SUMMARY"
+          done
       - name: Build, repair, and test every wheel from the source archive
         uses: pypa/cibuildwheel@v4.3.1
         with:

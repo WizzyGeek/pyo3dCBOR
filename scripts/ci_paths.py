@@ -5,7 +5,8 @@ import sys
 
 
 BUILD_PATH = re.compile(
-    r"^\.github/workflows/"
+    r"^containers/linux/"
+    r"|^\.github/workflows/"
     r"|(^|/)[^/]+\.(py|pyi|rs)$"
     r"|(^|/)(Cargo\.toml|Cargo\.toml\.orig|Cargo\.lock|pyproject\.toml|"
     r"pytest\.ini|py\.typed|rust-toolchain(?:\.toml)?)$"

@@ -5,7 +5,8 @@ on:
     branches: [master, main]
     paths:
       - ".github/workflows/publish-linux-images.yml"
-      - "containers/linux/**"
+      - "containers/linux/Dockerfile.*"
+      - "containers/linux/validate-image.sh"
       - "tests/test_ci_linux_images.py"
   workflow_dispatch:
 
@@ -86,22 +87,9 @@ jobs:
             --load \
             .
           docker run --rm \
-            --env ARCH \
-            --env EXPECTED_POLICY \
-            --env RUST_TARGET \
+            --volume "$PWD/containers/linux/validate-image.sh:/validate-image.sh:ro" \
             "$local_image" \
-            bash -euo pipefail -c '
-              test "$(uname -m)" = "$ARCH"
-              test "$AUDITWHEEL_ARCH" = "$ARCH"
-              test "$AUDITWHEEL_POLICY" = "$EXPECTED_POLICY"
-              test "$CARGO_BUILD_JOBS" = "2"
-              rustc --version | grep -Eq "^rustc 1\\.90\\.0([[:space:]]|$)"
-              rustup target list --installed | grep -Fx "$RUST_TARGET"
-              command -v auditwheel
-              for python in cp39 cp310 cp311 cp312 cp313 cp314; do
-                test -x "/opt/python/${python}-${python}/bin/python"
-              done
-            '
+            bash /validate-image.sh "$EXPECTED_POLICY" "$ARCH"
       - name: Log in to GHCR with the job token
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -129,23 +117,22 @@ jobs:
             digest="$(awk '$1 == "Digest:" { print $2; exit }' <<< "$existing")"
             echo "Reusing the existing versioned image tag ${image}:${tag}"
           else
-            docker buildx build \
-              --platform "$PLATFORM" \
-              --build-arg "BASE_IMAGE=$BASE_IMAGE" \
-              --build-arg RUST_VERSION=1.90.0 \
-              --build-arg "RUST_TARGET=$RUST_TARGET" \
-              --file "$DOCKERFILE" \
-              --tag "${image}:${tag}" \
-              --metadata-file build-metadata.json \
-              --push \
-              .
-
-            digest="$(jq -r '."containerimage.digest" // empty' build-metadata.json)"
+            # Push the loaded image already tested above; do not rebuild it.
+            docker tag "linux-image-check:${FAMILY}-${ARCH}" "${image}:${tag}"
+            docker push "${image}:${tag}"
+            published="$(docker buildx imagetools inspect "${image}:${tag}")"
+            digest="$(awk '$1 == "Digest:" { print $2; exit }' <<< "$published")"
           fi
           if [[ ! "$digest" =~ ^sha256:[0-9a-f]{64}$ ]]; then
             echo "Could not obtain a valid digest for ${image}:${tag}" >&2
             exit 1
           fi
+
+          # Validate the exact registry object, including when reusing a tag.
+          docker pull "${image}@${digest}"
+          docker run --rm \
+            --volume "$PWD/containers/linux/validate-image.sh:/validate-image.sh:ro" \
+            "${image}@${digest}" bash /validate-image.sh "$FAMILY" "$ARCH"
 
           jq -n \
             --arg family "$FAMILY" \

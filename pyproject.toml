@@ -29,6 +29,8 @@ module-name = "dcbor._dcbor"
 features = ["pyo3/extension-module"]
 locked = true
 include = [
+    { path = "containers/linux/*.sh", format = "sdist" },
+    { path = "containers/linux/images.json", format = "sdist" },
     { path = "scripts/**/*.py", format = "sdist" },
     { path = "tests/**/*.py", format = "sdist" },
     { path = "pytest.ini", format = "sdist" },

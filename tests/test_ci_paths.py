@@ -25,6 +25,8 @@ affects_build = runpy.run_path(str(SCRIPT))["affects_build"]
     "python/dcbor/py.typed", "pytest.ini", ".gitattributes",
     "tests/test_dcbor.py", "scripts/ci_paths.py", "scripts/vendor_dcbor.py",
     ".github/workflows/ci.yml",
+    "containers/linux/images.json", "containers/linux/validate-image.sh",
+    "containers/linux/Dockerfile.manylinux", "containers/linux/Dockerfile.musllinux",
 ])
 def test_build_inputs_trigger_ci(path):
     assert affects_build([path])

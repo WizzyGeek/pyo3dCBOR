@@ -1,8 +1,9 @@
 # FEAT_001: CI environment and pipeline speedups
 
-**Status:** sdist/test parallelization implemented; Linux image publishing
-prototype implemented but not yet published or consumed; native caching
-deferred pending baseline evidence.
+**Status:** sdist/test parallelization implemented; Linux images published and
+public manifest access verified; opt-in consumption prepared, hosted wheel
+validation pending. Native caching and default adoption remain deferred pending
+baseline and cost evidence.
 
 ## Problem
 
@@ -125,12 +126,19 @@ upstream environments, Rust targets, auditwheel policy/architecture variables,
 and CPython build interpreters, but is not a substitute for native ARM CI or
 building/testing dcbor wheels with cibuildwheel.
 
-The publishing workflow has not yet run, so no GHCR image digests exist to
-consume. Do not change `pyproject.toml` to reference an unverified tag or a
-placeholder digest. Once the workflow has published and its four digest
-outputs have been reviewed, CI integration can consume those exact digests in
-a separate change. The image build checks in the publishing workflow are not
-a substitute for testing cibuildwheel consumption across all four pairs.
+The publisher succeeded in
+[run 39051517661](https://github.com/WizzyGeek/pyo3dCBOR/actions/runs/39051517661).
+Its four JSON artifacts contain the actual registry digests, now recorded in
+[`containers/linux/images.json`](../../containers/linux/images.json). Artifact
+ZIP hashes printed by the download action are not image digests. Public GHCR
+manifest access, digest hashes, architectures and configuration were checked
+on 2026-10-18. Runtime and wheel consumption still require the hosted trial.
+
+The consuming workflow now supports opt-in `linux_images=maintained` on a manual
+full-matrix run, retaining upstream defaults and an explicit rollback. See
+[`containers/linux/README.md`](../../containers/linux/README.md) for validation,
+publisher hardening, promotion criteria, and measurement limits. This is not yet
+evidence of a successful maintained-image wheel run or a measured speedup.
 
 ### Native runner baseline
 
