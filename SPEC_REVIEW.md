@@ -1,5 +1,41 @@
 # dCBOR specification and test review
 
+## Independent verification of PM follow-up — 2026-10-17
+
+Reviewed `/tmp/dcbor-spec-followup-response.md` and independently verified all
+four supplied source/test/provenance fingerprints against the current files.
+Both follow-ups in commit `dfe96bd` are confirmed resolved:
+
+- Numeric canonicality is delegated to the patched decoder, which still
+  validates original payloads before conversion. The preflight retains argument
+  and truncation parsing, complete-input checking, depth enforcement, map-count
+  overflow checking and aggregate key-cache accounting. The unused numeric
+  reconstruction helper, import and local variable were removed.
+- Negative integer extraction to `f32`/`f64` now checks exact representability
+  of the actual signed value. The `i128` intermediate covers the entire explicit
+  negative CBOR integer range, so the cast-back check is safe at both endpoints.
+  Direct regression tests cover the reported failures and adjacent inexact
+  values. The vendor provenance documents the fix.
+
+Independent reruns: **1,560 Python tests passed in 49.94 seconds**, including the
+numeric oracles and safety regressions; **90 Rust unit/integration tests and
+92 doctests passed, 182 total**, with the `multithreaded` feature.
+
+A separate compiled Rust probe checked **20,447 negative integer cases for each
+of `f32` and `f64`**, including values around powers of two through `2**64` and
+20,000 seeded magnitudes. Its expected exactness criterion used integer bit
+length and trailing-zero counts, independently of the implementation's
+floating cast-back check. Every case agreed on acceptance/rejection and the
+returned signed value. No further test additions were necessary.
+
+The installed extension was newer than all runtime sources at verification
+time. No runtime changes were made by this review. No new blocking finding was
+identified; the numeric-preflight and Rust extraction follow-ups are closed.
+The underlying draft Appendix A integer-range ambiguity remains the previously
+documented compatibility decision.
+
+Signed off by: **Spec Reviewer**.
+
 ## PM implementation resolution — 2026-10-17
 
 Both follow-ups from the current-tree review are resolved in `dfe96bd`.
