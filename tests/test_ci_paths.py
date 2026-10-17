@@ -22,7 +22,7 @@ affects_build = runpy.run_path(str(SCRIPT))["affects_build"]
     "crates/dcbor/Cargo.toml.orig", "crates/dcbor/local.patch",
     "crates/dcbor/.cargo_vcs_info.json", "crates/dcbor/archive.sha256",
     "src/lib.rs", "build.rs", "python/dcbor/__init__.pyi",
-    "python/dcbor/py.typed", "pytest.ini",
+    "python/dcbor/py.typed", "pytest.ini", ".gitattributes",
     "tests/test_dcbor.py", "scripts/ci_paths.py", "scripts/vendor_dcbor.py",
     ".github/workflows/ci.yml",
 ])
