@@ -12,11 +12,17 @@ import yaml
 
 
 WORKFLOW = Path(__file__).resolve().parents[1] / ".github/workflows/ci.yml"
+RELEASE_WORKFLOW = WORKFLOW.with_name("release.yml")
 
 
 def workflow_jobs():
     """Load the workflow without YAML 1.1's special treatment of the `on` key."""
     workflow = yaml.load(WORKFLOW.read_text(), Loader=yaml.BaseLoader)
+    return workflow, workflow["jobs"]
+
+
+def release_jobs():
+    workflow = yaml.load(RELEASE_WORKFLOW.read_text(), Loader=yaml.BaseLoader)
     return workflow, workflow["jobs"]
 
 
@@ -57,7 +63,44 @@ def test_release_bundle_is_gated_by_all_required_checks_and_builds():
     }
 
     assert required_before_bundle <= ancestors(graph, "distributions")
-    assert {"distributions", *required_before_bundle} <= ancestors(graph, "release")
+    assert "release" not in jobs
+
+
+def test_tag_release_reuses_or_builds_and_then_publishes_bundle():
+    workflow, jobs = release_jobs()
+    triggers = workflow["on"]
+    assert triggers["push"]["tags"] == ["v*"]
+    assert jobs["build-if-missing"]["uses"] == "./.github/workflows/ci.yml"
+    assert jobs["build-if-missing"]["with"]["full_matrix"] == "true"
+    assert {"prepare", "build-if-missing"} <= set(jobs["publish"]["needs"])
+    assert jobs["publish"]["permissions"] == {
+        "contents": "write",
+        "actions": "read",
+    }
+    assert workflow["permissions"] == {"contents": "read", "actions": "read"}
+    publisher = "\n".join(
+        step.get("run", "") for step in jobs["publish"]["steps"]
+    )
+    assert "gh release create" in publisher and "--draft" in publisher
+    assert "gh release edit" in publisher and "--draft=false" in publisher
+    assert "gh release upload" in publisher
+    assert "--clobber" not in publisher
+
+    build_workflow, _ = workflow_jobs()
+    assert "tags" not in build_workflow["on"].get("push", {})
+
+
+def test_build_bundle_name_is_versioned_and_contains_provenance():
+    _, jobs = workflow_jobs()
+    distributions = jobs["distributions"]
+    upload = next(
+        step
+        for step in distributions["steps"]
+        if step.get("uses", "").startswith("actions/upload-artifact@")
+    )
+
+    assert "${{ needs.metadata.outputs.version }}" in upload["with"]["name"]
+    assert any(step.get("name") == "Record release bundle provenance" for step in distributions["steps"])
 
 
 def test_source_and_wheel_builds_keep_independent_parallel_paths():
@@ -86,7 +129,4 @@ def test_build_jobs_are_read_only_and_only_release_can_write_contents():
 
     for name, job in jobs.items():
         effective_permissions = job.get("permissions", defaults)
-        if name == "release":
-            assert effective_permissions == {"contents": "write"}
-        else:
-            assert effective_permissions == {"contents": "read"}
+        assert effective_permissions == {"contents": "read"}

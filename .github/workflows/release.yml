@@ -1,0 +1,230 @@
+name: Fulfill GitHub Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: release-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    name: Find and verify versioned build bundle
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+      version: ${{ steps.tag.outputs.version }}
+      version_artifact_name: ${{ steps.tag.outputs.artifact_name }}
+      commit_sha: ${{ steps.tag.outputs.commit_sha }}
+      run_id: ${{ steps.lookup.outputs.run_id }}
+      artifact_name: ${{ steps.lookup.outputs.artifact_name }}
+      reusable: ${{ steps.validate.outputs.reusable }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.14'
+      - name: Validate release tag and repository version
+        id: tag
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          [[ "$RELEASE_TAG" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]
+          version="${RELEASE_TAG#v}"
+          python scripts/ci.py versions
+          echo "tag=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "artifact_name=$(python scripts/ci_release.py artifact-name "$RELEASE_TAG")" >> "$GITHUB_OUTPUT"
+          echo "commit_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Find successful build artifact for this tag commit
+        id: lookup
+        uses: actions/github-script@v8
+        env:
+          ARTIFACT_NAME: ${{ steps.tag.outputs.artifact_name }}
+          TAG_SHA: ${{ steps.tag.outputs.commit_sha }}
+        with:
+          script: |
+            const artifactName = process.env.ARTIFACT_NAME;
+            core.setOutput('found', 'false');
+            core.setOutput('artifact_name', artifactName);
+
+            const { owner, repo } = context.repo;
+            const result = await github.rest.actions.listWorkflowRuns({
+              owner,
+              repo,
+              workflow_id: 'ci.yml',
+              head_sha: process.env.TAG_SHA,
+              per_page: 100,
+            });
+            const runs = result.data.workflow_runs
+              .filter(run => run.head_sha === process.env.TAG_SHA &&
+                run.status === 'completed' &&
+                run.conclusion === 'success')
+              .sort((a, b) => Date.parse(b.updated_at) - Date.parse(a.updated_at));
+
+            for (const run of runs) {
+              const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+                owner,
+                repo,
+                run_id: run.id,
+                per_page: 100,
+              });
+              const artifact = artifacts.data.artifacts.find(item =>
+                item.name === artifactName && !item.expired);
+              if (artifact) {
+                core.setOutput('found', 'true');
+                core.setOutput('run_id', String(run.id));
+                core.info(`Found ${artifactName} in successful build run ${run.id}`);
+                return;
+              }
+            }
+            core.info(`No usable ${artifactName} artifact found; the full build workflow will run.`);
+      - name: Download candidate bundle from its build run
+        id: download
+        if: steps.lookup.outputs.found == 'true'
+        continue-on-error: true
+        uses: actions/download-artifact@v8
+        with:
+          name: ${{ steps.lookup.outputs.artifact_name }}
+          run-id: ${{ steps.lookup.outputs.run_id }}
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          path: dist
+      - name: Validate candidate bundle
+        id: validate
+        if: always()
+        env:
+          DOWNLOAD_RESULT: ${{ steps.download.outcome }}
+          RELEASE_TAG: ${{ steps.tag.outputs.tag }}
+          TAG_SHA: ${{ steps.tag.outputs.commit_sha }}
+          EXPECTED_RUN_ID: ${{ steps.lookup.outputs.run_id }}
+        run: |
+          set -euo pipefail
+          echo "reusable=false" >> "$GITHUB_OUTPUT"
+          if [[ "${{ steps.lookup.outputs.found }}" != "true" || "$DOWNLOAD_RESULT" != "success" ]]; then
+            echo "No downloadable candidate bundle is available."
+            exit 0
+          fi
+          python -m pip install 'packaging>=24'
+          if python scripts/ci_release.py validate dist "$RELEASE_TAG" "$TAG_SHA" \
+            --expected-run-id "$EXPECTED_RUN_ID"; then
+            echo "reusable=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Candidate bundle failed validation; rebuilding from the release tag."
+            rm -rf dist
+          fi
+      - name: Stage validated candidate for the release job
+        if: steps.validate.outputs.reusable == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-bundle-candidate-${{ steps.tag.outputs.version }}
+          path: dist/*
+          if-no-files-found: error
+          retention-days: 1
+
+  build-if-missing:
+    name: Build and validate bundle from the release tag
+    needs: prepare
+    if: needs.prepare.outputs.reusable != 'true'
+    uses: ./.github/workflows/ci.yml
+    with:
+      full_matrix: true
+
+  publish:
+    name: Attach validated distributions to GitHub Release
+    needs: [prepare, build-if-missing]
+    if: >-
+      always() && needs.prepare.result == 'success' &&
+      (needs.prepare.outputs.reusable == 'true' || needs.build-if-missing.result == 'success')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ needs.prepare.outputs.tag }}
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.14'
+      - name: Download the verified bundle
+        uses: actions/download-artifact@v8
+        with:
+          name: ${{ needs.prepare.outputs.reusable == 'true' && format('release-bundle-candidate-{0}', needs.prepare.outputs.version) || needs.prepare.outputs.version_artifact_name }}
+          run-id: ${{ github.run_id }}
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          path: dist
+      - name: Revalidate, archive, and assemble release assets
+        env:
+          RELEASE_TAG: ${{ needs.prepare.outputs.tag }}
+          TAG_SHA: ${{ needs.prepare.outputs.commit_sha }}
+          EXPECTED_RUN_ID: ${{ needs.prepare.outputs.reusable == 'true' && needs.prepare.outputs.run_id || github.run_id }}
+        run: |
+          set -euo pipefail
+          python -m pip install 'packaging>=24'
+          python scripts/ci_release.py validate dist "$RELEASE_TAG" "$TAG_SHA" \
+            --expected-run-id "$EXPECTED_RUN_ID"
+          python scripts/ci_release.py archive dist "dcbor-${RELEASE_TAG}-bundle.zip"
+      - name: Upload assets without replacing conflicting release files
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ needs.prepare.outputs.tag }}
+        run: |
+          set -euo pipefail
+          assets=(dist/*.whl dist/*.tar.gz dist/SHA256SUMS dist/BUILD-PROVENANCE.json "dcbor-${RELEASE_TAG}-bundle.zip")
+          existing_dir=$(mktemp -d)
+          trap 'rm -rf "$existing_dir"' EXIT
+
+          if ! gh release view "$RELEASE_TAG" --repo "$GH_REPO" >/dev/null 2>&1; then
+            gh release create "$RELEASE_TAG" --repo "$GH_REPO" --draft --verify-tag \
+              --generate-notes --title "dcbor $RELEASE_TAG"
+          fi
+
+          release_is_draft=$(gh api "repos/$GH_REPO/releases/tags/$RELEASE_TAG" --jq '.draft')
+          existing_names=$(gh release view "$RELEASE_TAG" --repo "$GH_REPO" --json assets --jq '[.assets[].name]')
+          pending=()
+          for asset in "${assets[@]}"; do
+            name=$(basename "$asset")
+            if jq -e --arg name "$name" 'index($name) != null' <<< "$existing_names" >/dev/null; then
+              gh release download "$RELEASE_TAG" --repo "$GH_REPO" --pattern "$name" --dir "$existing_dir"
+              if ! cmp --silent "$asset" "$existing_dir/$name"; then
+                echo "Conflicting release asset already exists: $name" >&2
+                exit 1
+              fi
+            else
+              pending+=("$asset")
+            fi
+          done
+
+          if [[ "$release_is_draft" == "false" ]] && ((${#pending[@]})); then
+            echo "Published release is missing expected assets; refusing to alter it." >&2
+            exit 1
+          fi
+          if ((${#pending[@]})); then
+            gh release upload "$RELEASE_TAG" "${pending[@]}" --repo "$GH_REPO"
+          fi
+
+          uploaded_names=$(gh release view "$RELEASE_TAG" --repo "$GH_REPO" --json assets --jq '[.assets[].name]')
+          for asset in "${assets[@]}"; do
+            name=$(basename "$asset")
+            jq -e --arg name "$name" 'index($name) != null' <<< "$uploaded_names" >/dev/null || {
+              echo "Release is missing expected asset after upload: $name" >&2
+              exit 1
+            }
+          done
+          if [[ "$release_is_draft" == "true" ]]; then
+            gh release edit "$RELEASE_TAG" --repo "$GH_REPO" --draft=false
+          fi
