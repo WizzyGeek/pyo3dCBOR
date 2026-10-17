@@ -193,7 +193,7 @@ jobs:
               --generate-notes --title "dcbor $RELEASE_TAG"
           fi
 
-          release_is_draft=$(gh api "repos/$GH_REPO/releases/tags/$RELEASE_TAG" --jq '.draft')
+          release_is_draft=$(gh release view "$RELEASE_TAG" --repo "$GH_REPO" --json isDraft --jq .isDraft)
           existing_names=$(gh release view "$RELEASE_TAG" --repo "$GH_REPO" --json assets --jq '[.assets[].name]')
           pending=()
           for asset in "${assets[@]}"; do
