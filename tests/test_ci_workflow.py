@@ -23,6 +23,19 @@ def job_needs(workflow, job):
     return [dependency.strip() for dependency in match.group(1).split(",")]
 
 
+def test_concurrency_cancels_superseded_branch_pushes_and_pr_runs():
+    workflow = WORKFLOW.read_text()
+    group = (
+        "wheels-${{ github.workflow }}-${{ "
+        "(github.event_name == 'pull_request' || "
+        "(github.event_name == 'push' && github.ref_type == 'branch')) "
+        "&& github.ref || github.run_id }}"
+    )
+
+    assert re.search(rf"^  group: {re.escape(group)}$", workflow, re.MULTILINE)
+    assert re.search(r"^  cancel-in-progress: true$", workflow, re.MULTILINE)
+
+
 def test_sdist_runs_after_metadata_without_waiting_for_test_jobs():
     workflow = WORKFLOW.read_text()
 
