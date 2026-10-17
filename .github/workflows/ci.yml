@@ -155,7 +155,7 @@ jobs:
           python -m pytest -q
         env:
           RUSTUP_TOOLCHAIN: ${{ env.RUST_VERSION }}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: sdist
           path: dist/*.tar.gz
@@ -200,7 +200,7 @@ jobs:
           output-dir: wheelhouse
         env:
           RUSTUP_TOOLCHAIN: ${{ env.RUST_VERSION }}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: wheels-${{ matrix.os }}
           path: wheelhouse/*.whl
@@ -244,7 +244,7 @@ jobs:
           output-dir: wheelhouse
         env:
           RUSTUP_TOOLCHAIN: ${{ env.RUST_VERSION }}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: wheels-${{ matrix.os }}
           path: wheelhouse/*.whl
@@ -277,7 +277,7 @@ jobs:
           python -m pip install 'twine>=6,<7' 'packaging>=24'
           python -m twine check --strict dist/*
           python scripts/ci.py distributions dist
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: release-bundle
           path: dist/*
