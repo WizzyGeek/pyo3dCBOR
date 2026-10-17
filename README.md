@@ -68,7 +68,7 @@ dCBOR used 19 (+26.67%). The other five fixtures favored dCBOR by 23.86% to
 36.54%. This mix includes a result unfavorable to dCBOR and is still too narrow
 to establish a general size advantage.
 
-![Grouped bars show compact JSON and dCBOR payload bytes for six equivalent fixtures, including compact scientific notation where JSON is smaller.](.github/assets/graphs/encoded-size.svg)
+![Six fixture cards compare compact JSON and dCBOR payload bytes, including compact scientific notation where JSON is smaller; each card has its own scale.](.github/assets/graphs/encoded-size.svg)
 
 The [fixture definitions, raw measurements, environment, hashes, and graph
 generator](benchmarks/encoded_size/README.md) let readers reproduce this chart.

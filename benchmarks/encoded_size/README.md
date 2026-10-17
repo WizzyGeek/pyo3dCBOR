@@ -6,9 +6,17 @@ six logical values. It measures neither Python object size nor process memory.
 The committed [`results.json`](results.json) records every byte count and hash,
 the source commit, Python/platform details, dcbor package version, and the
 loaded extension's SHA-256. The generated
-[encoded-size.svg](../../.github/assets/graphs/encoded-size.svg) shows the
-absolute sizes and percentage difference for each fixture; its SVG title and
-description provide an accessible text alternative.
+[encoded-size.svg](../../.github/assets/graphs/encoded-size.svg) shows six
+fixture cards with JSON and dCBOR byte counts and dCBOR's percentage difference
+from JSON. Each card uses its own byte scale, so compare the values printed on
+the bars rather than their lengths across cards; lower means fewer payload
+bytes.
+
+![Six fixture cards compare compact JSON and dCBOR payload bytes, with exact counts and the dCBOR percentage difference. Each card has its own scale.](../../.github/assets/graphs/encoded-size.svg)
+
+The compact scientific-notation fixture is an explicit counterexample: JSON is
+15 bytes and dCBOR is 19 bytes (+26.67%). The graph includes this result with
+the five fixtures where dCBOR uses fewer bytes.
 
 ## Reproduce
 

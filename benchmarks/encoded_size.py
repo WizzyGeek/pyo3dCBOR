@@ -20,6 +20,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from chart_style import COMMON_STYLE, PALETTE, sha256_file, xml_text
+
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = Path(__file__).resolve().parent / "encoded_size"
@@ -203,6 +205,8 @@ def build_results(dcbor: object) -> dict[str, object]:
             "git_worktree_dirty": source_worktree_dirty(),
             "generator_path": Path(__file__).resolve().relative_to(ROOT).as_posix(),
             "generator_sha256": sha256(Path(__file__).read_bytes()),
+            "chart_style_path": "benchmarks/chart_style.py",
+            "chart_style_sha256": sha256_file(Path(__file__).with_name("chart_style.py")),
             "chart_path": SVG_PATH.relative_to(ROOT).as_posix(),
         },
         "build": {
@@ -246,63 +250,62 @@ def build_results(dcbor: object) -> dict[str, object]:
 def svg_chart(results: dict[str, object]) -> str:
     rows = results["fixtures"]
     assert isinstance(rows, dict)
-    names = list(rows)
-    width = 920
-    left = 210
-    plot_width = 500
-    top = 96
-    row_height = 76
-    height = top + row_height * len(names) + 42
-    max_size = max(
-        max(row["json_utf8_bytes"], row["dcbor_wire_bytes"]) for row in rows.values()
-    )
-    max_size = max(1, max_size)
-    scale = plot_width / max_size
-    chart_rows = []
-    for index, name in enumerate(names):
-        row = rows[name]
-        y = top + index * row_height
-        json_width = max(1, row["json_utf8_bytes"] * scale)
-        cbor_width = max(1, row["dcbor_wire_bytes"] * scale)
-        chart_rows.append(
-            f'<text x="{left - 14}" y="{y + 18}" text-anchor="end" '
-            f'class="fixture">{name.replace("_", " ")}</text>'
-            f'<text x="{left}" y="{y + 39}" class="series">Compact JSON</text>'
-            f'<rect x="{left + 105}" y="{y + 25}" width="{json_width:.2f}" '
-            f'height="18" rx="3" class="json" />'
-            f'<text x="{left + 112 + json_width:.2f}" y="{y + 39}" '
-            f'class="value">{row["json_utf8_bytes"]:,} B</text>'
-            f'<text x="{left}" y="{y + 64}" class="series">dCBOR wire</text>'
-            f'<rect x="{left + 105}" y="{y + 50}" width="{cbor_width:.2f}" '
-            f'height="18" rx="3" class="cbor" />'
-            f'<text x="{left + 112 + cbor_width:.2f}" y="{y + 64}" '
-            f'class="value">{row["dcbor_wire_bytes"]:,} B '
-            f'({row["dcbor_vs_json_percent"]:+.2f}%)</text>'
+    labels = {
+        "small_record": "Small record",
+        "nested_document": "Nested document",
+        "repeated_unicode_strings": "Repeated Unicode strings",
+        "numeric_array": "Numeric array",
+        "compact_scientific_notation": "Compact scientific notation",
+        "large_collection": "Large collection",
+    }
+    width, height = 1000, 690
+    card_width, card_height = 300, 246
+    x_positions = (32, 350, 668)
+    y_positions = (116, 380)
+    cards = []
+    for index, (name, row) in enumerate(rows.items()):
+        x = x_positions[index % 3]
+        y = y_positions[index // 3]
+        maximum = max(row["json_utf8_bytes"], row["dcbor_wire_bytes"])
+        plot_width = card_width - 32
+        json_width = max(3, plot_width * row["json_utf8_bytes"] / maximum)
+        cbor_width = max(3, plot_width * row["dcbor_wire_bytes"] / maximum)
+        delta = row["json_utf8_bytes"] - row["dcbor_wire_bytes"]
+        note = (
+            f'{delta:,} B fewer than JSON' if delta >= 0
+            else f'{abs(delta):,} B more than JSON'
+        )
+        cards.append(
+            f'<g aria-label="{xml_text(labels.get(name, name.replace("_", " ")))}">'
+            f'<rect x="{x}" y="{y}" width="{card_width}" height="{card_height}" rx="12" class="card" />'
+            f'<text x="{x + 16}" y="{y + 28}" class="fixture">{xml_text(labels.get(name, name.replace("_", " ")))}</text>'
+            f'<text x="{x + 16}" y="{y + 70}" class="small">Compact JSON</text>'
+            f'<text x="{x + card_width - 16}" y="{y + 70}" text-anchor="end" class="value">{row["json_utf8_bytes"]:,} B</text>'
+            f'<rect x="{x + 16}" y="{y + 79}" width="{plot_width}" height="9" rx="4.5" fill="{PALETTE["track"]}" />'
+            f'<rect x="{x + 16}" y="{y + 79}" width="{json_width:.2f}" height="9" rx="4.5" fill="{PALETTE["json"]}" />'
+            f'<text x="{x + 16}" y="{y + 127}" class="small">dCBOR · {row["dcbor_vs_json_percent"]:+.2f}% vs JSON</text>'
+            f'<text x="{x + card_width - 16}" y="{y + 127}" text-anchor="end" class="value">{row["dcbor_wire_bytes"]:,} B</text>'
+            f'<rect x="{x + 16}" y="{y + 136}" width="{plot_width}" height="9" rx="4.5" fill="{PALETTE["track"]}" />'
+            f'<rect x="{x + 16}" y="{y + 136}" width="{cbor_width:.2f}" height="9" rx="4.5" fill="{PALETTE["dcbor"]}" />'
+            f'<line x1="{x + 16}" y1="{y + 170}" x2="{x + card_width - 16}" y2="{y + 170}" class="rule" />'
+            f'<text x="{x + 16}" y="{y + 195}" class="caption">{xml_text(note)}</text>'
+            f'</g>'
         )
     return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}"
  viewBox="0 0 {width} {height}" role="img" aria-labelledby="title desc">
   <title id="title">Compact JSON and dCBOR payload sizes</title>
-  <desc id="desc">Grouped horizontal bars compare UTF-8 compact JSON bytes and
-  dCBOR wire bytes for six equivalent JSON-compatible fixtures. Exact byte
-  counts and dCBOR percentage differences are printed beside every bar. These
-  measurements describe serialized payload size, not process memory.</desc>
-  <style>
-    text {{ font-family: system-ui, sans-serif; fill: #192b3c; }}
-    .heading {{ font-size: 21px; font-weight: 650; }}
-    .note {{ font-size: 13px; fill: #40566b; }}
-    .fixture {{ font-size: 14px; font-weight: 650; }}
-    .series {{ font-size: 12px; fill: #40566b; }}
-    .value {{ font-size: 12px; font-variant-numeric: tabular-nums; }}
-    .json {{ fill: #4c78a8; }} .cbor {{ fill: #f28e2b; }}
-  </style>
-  <text x="24" y="34" class="heading">Serialized payload size by fixture</text>
-  <text x="24" y="58" class="note">Compact UTF-8 JSON vs canonical dCBOR wire bytes · lower is smaller</text>
-  <rect x="24" y="72" width="14" height="14" rx="2" class="json" />
-  <text x="44" y="84" class="note">Compact JSON</text>
-  <rect x="156" y="72" width="14" height="14" rx="2" class="cbor" />
-  <text x="176" y="84" class="note">dCBOR wire</text>
-  {''.join(chart_rows)}
-  <text x="24" y="{height - 10}" class="note">Percent difference = (dCBOR bytes − JSON bytes) / JSON bytes. See README.md for fixtures and method.</text>
+  <desc id="desc">Six fixture cards compare exact compact JSON UTF-8 bytes with dCBOR wire bytes. Each card has its own zero-based scale, plus the exact dCBOR percentage difference versus JSON. The chart measures serialized payload size, not process memory.</desc>
+  <style>{COMMON_STYLE}</style>
+  <rect width="1000" height="690" fill="{PALETTE["canvas"]}" />
+  <text x="32" y="39" class="title">Payload size, fixture by fixture</text>
+  <text x="32" y="63" class="subtitle">Compact UTF-8 JSON and dCBOR wire bytes · lower is smaller</text>
+  <rect x="32" y="82" width="12" height="12" rx="3" fill="{PALETTE["json"]}" />
+  <text x="51" y="92" class="caption">Compact JSON</text>
+  <rect x="155" y="82" width="12" height="12" rx="3" fill="{PALETTE["dcbor"]}" />
+  <text x="174" y="92" class="caption">dCBOR</text>
+  <text x="968" y="92" text-anchor="end" class="caption">Each fixture card uses its own zero-based scale</text>
+  {''.join(cards)}
+  <text x="32" y="665" class="caption">Difference = (dCBOR bytes − JSON bytes) / JSON bytes. See the report for hashes, fixture definitions, and method.</text>
 </svg>
 '''
 

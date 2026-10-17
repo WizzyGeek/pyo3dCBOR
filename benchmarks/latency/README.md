@@ -16,6 +16,9 @@ dCBOR. In cbor2 6.1.5, `canonical=True` uses length-first map-key ordering
 (legacy RFC 8949 §4.2.3); dCBOR uses bytewise ordering. cborx documents
 bytewise encoded-key ordering for its canonical mode. Backend status is
 recorded because cborx can use a pure-Python fallback or native accelerator.
+These library-specific canonical modes are not interchangeable; the
+comparison measures each implementation as provided without treating them as
+equivalent implementations of the dCBOR profile.
 
 The fixtures are shared by name and value with
 [`benchmarks/encoded_size.py`](../encoded_size.py): `small_record`,
@@ -28,6 +31,24 @@ uses UTF-8, `ensure_ascii=False`, compact separators, and `allow_nan=False`.
 CBOR decoding uses bytes encoded by that same implementation. Round-trip timing
 includes exactly one encode followed by one decode. Strict validation is
 excluded because the libraries' validation operations and guarantees differ.
+
+## Reading the graph
+
+![Three operation matrices compare the six codecs across six fixtures. Each cell shows median latency relative to Python json for the same fixture and operation; 1× is parity, lower is faster, and higher is slower.](../../.github/assets/graphs/latency.svg)
+
+The graph groups results by encode, decode, and round trip. Each cell shows a
+codec's median divided by Python `json` for the same fixture and operation.
+The `1×` reference means equal medians; values below it are faster than JSON,
+and values above it are slower. Read across a fixture row to compare codec
+modes, or down a codec column to see how its result varies by fixture.
+
+The graph summarizes one recorded host and run. It does not show dispersion:
+the raw report retains the exact medians, median absolute deviations (MAD),
+and all process samples. Results can vary with scheduling, thermal and
+frequency changes, background processes, Python version, and implementation
+changes. Close or inconsistent results are inconclusive. These data do not
+predict other hosts, workloads, or application-level performance, and imply
+no general speed, memory, or format-superiority ranking.
 
 ## Reproduce
 
@@ -68,37 +89,3 @@ required package, pinned version, or matching release artifact is unavailable,
 the run writes a machine-readable `blocked` report and a graph that shows the
 blocker instead of timing only a subset. If an isolated worker fails, the runner
 preserves its error and any completed process samples in a `failed` report.
-
-## Recorded run
-
-The checked-in report was measured on CPython 3.14.7, Linux x86_64, an AMD
-Ryzen 7 7435HS, with the `cbor2` and `cborx` native extensions active and the
-dCBOR release artifact verified by SHA-256. Each value below compares the
-median per-process latency for one operation; lower is faster.
-
-- `small_record`: dCBOR beat Python `json` in all three operations, but the
-  fastest generic CBOR mode was 1.4–2.0× faster than dCBOR.
-- `nested_document`: dCBOR was 1.1–1.3× slower than JSON and 1.6–3.4× slower
-  than the fastest generic CBOR mode.
-- `repeated_unicode_strings`: dCBOR was 2.5–3.5× slower than JSON and
-  2.1–10.2× slower than the fastest generic CBOR mode, depending on operation.
-- `numeric_array`: dCBOR was 6–34% faster than JSON, while `cborx` default was
-  2.4–2.6× faster than dCBOR.
-- `compact_scientific_notation`: dCBOR had the lowest latency in all three
-  operations, although its wire representation was 26.7% larger than JSON.
-- `large_collection`: dCBOR was 2.3–2.7× slower than JSON and 2.1–7.1× slower
-  than the fastest generic CBOR mode.
-
-These ratios describe only the medians in this one run. They do not establish
-statistical significance or predict other machines, Python versions, workloads,
-or application-level performance. The graph and raw report retain every
-fixture, operation, codec mode, dispersion value, and process sample.
-
-These numbers describe this host, interpreter, library build, and fixture
-workload. They are sensitive to scheduling, thermal and frequency changes,
-background processes, Python version, and implementation changes. Process
-isolation and robust summaries reduce some noise but do not eliminate it; a
-close or inconsistent result is inconclusive. Report regressions and noisy
-results as measured, without extrapolating to other hosts or workloads. No
-memory, general-purpose performance, or format-superiority conclusion follows
-from this comparison.

@@ -21,6 +21,7 @@ import sys
 from pathlib import Path
 from typing import Callable
 
+from chart_style import COMMON_STYLE, PALETTE, sha256_file, xml_text
 from encoded_size import fixtures, equivalent_value
 
 
@@ -37,13 +38,13 @@ SERIES = (
     "cborx_default",
     "cborx_canonical",
 )
-LABELS = {
-    "json": "compact JSON",
-    "dcbor": "dCBOR 0.1.0",
-    "cbor2_default": f"cbor2 {PINNED_CBOR2} default",
-    "cbor2_canonical": f"cbor2 {PINNED_CBOR2} canonical=True (length-first)",
-    "cborx_default": f"cborx {PINNED_CBORX} default",
-    "cborx_canonical": f"cborx {PINNED_CBORX} canonical=True (bytewise)",
+SHORT_LABELS = {
+    "json": "JSON",
+    "dcbor": "dCBOR",
+    "cbor2_default": "cbor2 def",
+    "cbor2_canonical": "cbor2 canon",
+    "cborx_default": "cborx def",
+    "cborx_canonical": "cborx canon",
 }
 
 
@@ -208,6 +209,8 @@ def make_report(dcbor: object, cbor2: object, cborx: object) -> dict[str, object
             "git_worktree_dirty": source_worktree_dirty(),
             "generator_path": source_path.resolve().relative_to(ROOT).as_posix(),
             "generator_sha256": sha256(source_path.read_bytes()),
+            "chart_style_path": "benchmarks/chart_style.py",
+            "chart_style_sha256": sha256_file(Path(__file__).with_name("chart_style.py")),
             "chart_path": SVG_PATH.relative_to(ROOT).as_posix(),
         },
         "methodology": {
@@ -230,67 +233,79 @@ def make_report(dcbor: object, cbor2: object, cborx: object) -> dict[str, object
 
 def chart(report: dict[str, object]) -> str:
     if report.get("status") != "complete":
-        reason = str(report.get("blocker", "benchmark unavailable"))
+        reason = xml_text(report.get("blocker", "benchmark unavailable"))
         return f'''<svg xmlns="http://www.w3.org/2000/svg" width="900" height="220" viewBox="0 0 900 220" role="img" aria-labelledby="title desc">
   <title id="title">CBOR wire-size comparison unavailable</title>
   <desc id="desc">No complete codec comparison is plotted. The report records: {reason}</desc>
-  <style>text {{ font-family: system-ui, sans-serif; fill: #192b3c; }} .heading {{ font-size: 22px; font-weight: 650; }} .body {{ font-size: 14px; }} .muted {{ fill: #536a7e; font-size: 12px; }}</style>
-  <rect x="1" y="1" width="898" height="218" rx="10" fill="#fff8e8" stroke="#d8ad55" />
-  <text x="28" y="48" class="heading">CBOR wire-size comparison unavailable</text>
-  <text x="28" y="82" class="body">No complete codec comparison is plotted: {reason}</text>
-  <text x="28" y="126" class="muted">Install benchmarks/requirements.txt, build dcbor with maturin develop --release --locked, and rerun benchmarks/wire_size.py.</text>
-  <text x="28" y="157" class="muted">Planned series: compact JSON, dCBOR, cbor2 default/canonical, and cborx default/canonical.</text>
-  <text x="28" y="190" class="muted">No values are inferred for unavailable libraries.</text>
+  <style>{COMMON_STYLE}</style>
+  <rect width="900" height="220" fill="{PALETTE["canvas"]}" />
+  <rect x="1" y="1" width="898" height="218" rx="12" fill="{PALETTE["paper"]}" stroke="{PALETTE["line"]}" />
+  <text x="28" y="48" class="title">Wire-size comparison unavailable</text>
+  <text x="28" y="82" class="subtitle">No complete codec comparison is plotted: {reason}</text>
+  <text x="28" y="126" class="caption">Install the benchmark requirements, build the release extension, and rerun benchmarks/wire_size.py.</text>
+  <text x="28" y="157" class="caption">No values are inferred for unavailable libraries.</text>
 </svg>
 '''
 
     fixtures_result = report["fixtures"]
-    all_values = [
-        fixture[series]["bytes"]
-        for fixture in fixtures_result.values()
-        for series in SERIES
-    ]
-    maximum = max(all_values)
-    left = 330
-    plot_width = 560
-    row_height = 22
-    group_gap = 23
-    top = 92
-    group_height = row_height * len(SERIES) + group_gap
-    height = top + group_height * len(fixtures_result) + 42
-    colors = {
-        "json": "#4c78a8",
-        "dcbor": "#f28e2b",
-        "cbor2_default": "#59a14f",
-        "cbor2_canonical": "#b279a2",
-        "cborx_default": "#76b7b2",
-        "cborx_canonical": "#e15759",
+    fixture_labels = {
+        "small_record": "Small record",
+        "nested_document": "Nested document",
+        "repeated_unicode_strings": "Repeated Unicode strings",
+        "numeric_array": "Numeric array",
+        "compact_scientific_notation": "Compact scientific notation",
+        "large_collection": "Large collection",
     }
-    parts = []
+    width, height = 1000, 835
+    card_width, card_height = 460, 204
+    x_positions = (32, 508)
+    y_positions = (134, 354, 574)
+    cards = []
     for fixture_index, (fixture_name, details) in enumerate(fixtures_result.items()):
-        group_y = top + fixture_index * group_height
-        parts.append(
-            f'<text x="24" y="{group_y + 16}" class="fixture">{fixture_name.replace("_", " ")}</text>'
-        )
+        x = x_positions[fixture_index % 2]
+        y = y_positions[fixture_index // 2]
+        maximum = max(details[series]["bytes"] for series in SERIES)
+        bar_x, plot_width = x + 109, 104
+        rows = []
         for series_index, series in enumerate(SERIES):
             row = details[series]
-            y = group_y + 23 + series_index * row_height
-            bar_width = max(1.0, row["bytes"] * plot_width / maximum)
-            value_text = f'{row["bytes"]:,} B ({row["percent_vs_json"]:+.2f}% vs JSON)'
-            parts.append(
-                f'<text x="{left - 10}" y="{y + 13}" text-anchor="end" class="series">{LABELS[series]}</text>'
-                f'<rect x="{left}" y="{y}" width="{bar_width:.2f}" height="14" rx="2" fill="{colors[series]}" />'
-                f'<text x="{left + bar_width + 7:.2f}" y="{y + 12}" class="value">{value_text}</text>'
+            baseline = y + 57 + series_index * 21
+            bar_width = max(2.0, plot_width * row["bytes"] / maximum)
+            rows.append(
+                f'<text x="{x + 14}" y="{baseline + 4}" class="small" fill="{PALETTE[series]}">{SHORT_LABELS[series]}</text>'
+                f'<rect x="{bar_x}" y="{baseline - 6}" width="{plot_width}" height="8" rx="4" fill="{PALETTE["track"]}" />'
+                f'<rect x="{bar_x}" y="{baseline - 6}" width="{bar_width:.2f}" height="8" rx="4" fill="{PALETTE[series]}" />'
+                f'<text x="{x + 225}" y="{baseline + 4}" class="value">{row["bytes"]:,} B · {row["percent_vs_json"]:+.2f}%</text>'
             )
-    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="{height}" viewBox="0 0 1600 {height}" role="img" aria-labelledby="title desc">
+        fixture_label = xml_text(fixture_labels.get(fixture_name, fixture_name.replace("_", " ")))
+        cards.append(
+            f'<g aria-label="{fixture_label}">'
+            f'<rect x="{x}" y="{y}" width="{card_width}" height="{card_height}" rx="12" class="card" />'
+            f'<text x="{x + 14}" y="{y + 29}" class="fixture">{fixture_label}</text>'
+            f'<text x="{x + card_width - 14}" y="{y + 29}" text-anchor="end" class="caption">bytes · % vs JSON</text>'
+            f'{"".join(rows)}'
+            f'</g>'
+        )
+    colors = PALETTE
+    legend = []
+    legend_x = (32, 153, 265, 399, 554, 682)
+    legend_labels = ("JSON", "dCBOR", "cbor2 default", "cbor2 canonical", "cborx default", "cborx canonical")
+    for x, series, label in zip(legend_x, SERIES, legend_labels):
+        legend.append(
+            f'<rect x="{x}" y="84" width="10" height="10" rx="3" fill="{colors[series]}" />'
+            f'<text x="{x + 16}" y="93" class="caption">{label}</text>'
+        )
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-labelledby="title desc">
   <title id="title">Wire size by Python codec and fixture</title>
-  <desc id="desc">For each JSON-compatible fixture, horizontal bars show exact payload bytes from compact JSON, dCBOR, cbor2 default and canonical modes, and cborx default and canonical modes. Each row prints its percentage difference from JSON. This chart measures serialized payload bytes only, not database storage or process memory.</desc>
-  <style>text {{ font-family: system-ui, sans-serif; fill: #192b3c; }} .heading {{ font-size: 21px; font-weight: 650; }} .note {{ font-size: 13px; fill: #40566b; }} .fixture {{ font-size: 14px; font-weight: 700; }} .series {{ font-size: 11px; fill: #40566b; }} .value {{ font-size: 11px; font-variant-numeric: tabular-nums; }}</style>
-  <text x="24" y="34" class="heading">Serialized wire size by fixture and codec</text>
-  <text x="24" y="57" class="note">Bar length uses a shared linear scale; exact bytes and percentage vs compact JSON are printed for every series.</text>
-  <text x="24" y="77" class="note">Lower is smaller. Canonical modes use different ordering rules and are reported separately; neither generic codec is asserted to implement dCBOR.</text>
-  {''.join(parts)}
-  <text x="24" y="{height - 10}" class="note">See benchmarks/wire_size/README.md for fixture definitions, versions, build evidence, and limitations.</text>
+  <desc id="desc">Six fixture cards show exact payload byte counts and percentage differences from compact JSON for JSON, dCBOR, cbor2 default and canonical, and cborx default and canonical. Each card has its own zero-based scale. The chart measures serialized payload bytes only.</desc>
+  <style>{COMMON_STYLE}</style>
+  <rect width="1000" height="{height}" fill="{PALETTE["canvas"]}" />
+  <text x="32" y="39" class="title">Wire size across six codec modes</text>
+  <text x="32" y="62" class="subtitle">Exact payload bytes and difference from compact JSON · lower is smaller</text>
+  {''.join(legend)}
+  <text x="32" y="117" class="caption">Each fixture card uses its own zero-based scale. Values show bytes · percent versus JSON.</text>
+  {''.join(cards)}
+  <text x="32" y="811" class="caption">cbor2 {PINNED_CBOR2} and cborx {PINNED_CBORX}; canonical modes follow their respective ordering rules. See report for methodology and hashes.</text>
 </svg>
 '''
 
@@ -321,6 +336,8 @@ def main() -> int:
                 "git_worktree_dirty": source_worktree_dirty(),
                 "generator_path": Path(__file__).resolve().relative_to(ROOT).as_posix(),
                 "generator_sha256": sha256(Path(__file__).read_bytes()),
+                "chart_style_path": "benchmarks/chart_style.py",
+                "chart_style_sha256": sha256_file(Path(__file__).with_name("chart_style.py")),
                 "chart_path": SVG_PATH.relative_to(ROOT).as_posix(),
             },
             "expected_versions": {
@@ -363,6 +380,8 @@ def main() -> int:
                 "git_worktree_dirty": source_worktree_dirty(),
                 "generator_path": Path(__file__).resolve().relative_to(ROOT).as_posix(),
                 "generator_sha256": sha256(Path(__file__).read_bytes()),
+                "chart_style_path": "benchmarks/chart_style.py",
+                "chart_style_sha256": sha256_file(Path(__file__).with_name("chart_style.py")),
                 "chart_path": SVG_PATH.relative_to(ROOT).as_posix(),
             },
             "environment": env,
@@ -385,6 +404,8 @@ def main() -> int:
                 "git_worktree_dirty": source_worktree_dirty(),
                 "generator_path": Path(__file__).resolve().relative_to(ROOT).as_posix(),
                 "generator_sha256": sha256(Path(__file__).read_bytes()),
+                "chart_style_path": "benchmarks/chart_style.py",
+                "chart_style_sha256": sha256_file(Path(__file__).with_name("chart_style.py")),
                 "chart_path": SVG_PATH.relative_to(ROOT).as_posix(),
             },
             "environment": env,

@@ -20,7 +20,6 @@ import hashlib
 import importlib.machinery
 import importlib.metadata
 import json
-import math
 import os
 import platform
 import statistics
@@ -29,6 +28,8 @@ import sys
 import time
 from pathlib import Path
 from typing import Callable
+
+from chart_style import COMMON_STYLE, PALETTE, ratio_fill, sha256_file, xml_text
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -410,6 +411,8 @@ def metadata(warmup: int, rounds: int, repetitions: int) -> dict[str, object]:
             "git_worktree_dirty": source_worktree_dirty(),
             "generator_path": source_path.resolve().relative_to(ROOT).as_posix(),
             "generator_sha256": sha256(source_path.read_bytes()),
+            "chart_style_path": "benchmarks/chart_style.py",
+            "chart_style_sha256": sha256_file(Path(__file__).with_name("chart_style.py")),
             "chart_path": SVG_PATH.relative_to(ROOT).as_posix(),
         },
         "methodology": {
@@ -498,107 +501,107 @@ def blocked_results(reason: str, warmup: int, rounds: int, repetitions: int) -> 
 
 def chart(results: dict[str, object]) -> str:
     if results["status"] != "complete":
-        reason = str(results.get("blocker", "benchmark unavailable"))
+        reason = xml_text(results.get("blocker", "benchmark unavailable"))
         return f'''<svg xmlns="http://www.w3.org/2000/svg" width="900" height="220" viewBox="0 0 900 220" role="img" aria-labelledby="title desc">
   <title id="title">Latency comparison unavailable</title>
   <desc id="desc">No complete comparison is shown. The machine-readable report records the reason: {reason}</desc>
-  <style>text {{ font-family: system-ui, sans-serif; fill: #192b3c; }} .heading {{ font-size: 22px; font-weight: 650; }} .body {{ font-size: 14px; }} .muted {{ fill: #536a7e; font-size: 12px; }}</style>
-  <rect x="1" y="1" width="898" height="218" rx="10" fill="#fff8e8" stroke="#d8ad55" />
-  <text x="28" y="48" class="heading">Latency comparison unavailable</text>
-  <text x="28" y="82" class="body">No measurements are plotted: {reason}</text>
-  <text x="28" y="126" class="muted">Install benchmarks/requirements.txt, build with maturin develop --release --locked, and rerun the benchmark.</text>
-  <text x="28" y="151" class="muted">Planned series: Python json, dcbor, cbor2 default/canonical, and cborx default/canonical.</text>
-  <text x="28" y="169" class="muted">cbor2 canonical=True uses length-first key ordering (legacy RFC 8949 §4.2.3); dCBOR uses bytewise ordering.</text>
-  <text x="28" y="193" class="muted">Raw JSON records status and completed process samples. No inferred values are reported.</text>
+  <style>{COMMON_STYLE}</style>
+  <rect width="900" height="220" fill="{PALETTE["canvas"]}" />
+  <rect x="1" y="1" width="898" height="218" rx="12" fill="{PALETTE["paper"]}" stroke="{PALETTE["line"]}" />
+  <text x="28" y="48" class="title">Latency comparison unavailable</text>
+  <text x="28" y="82" class="subtitle">No measurements are plotted: {reason}</text>
+  <text x="28" y="126" class="caption">Install the benchmark requirements, build the release extension, and rerun benchmarks/latency.py.</text>
+  <text x="28" y="157" class="caption">Raw reports preserve status and completed process samples; unavailable values are not inferred.</text>
 </svg>
 '''
 
     fixtures_result = results["fixtures"]
-    values = [
-        details[implementation][operation]["median_ns_per_operation"]
-        for details in fixtures_result.values()
-        for implementation in IMPLEMENTATIONS
-        for operation in ("encode", "decode", "round_trip")
-    ]
-    minimum = min(values)
-    maximum = max(values)
-    log_min = math.floor(math.log10(minimum))
-    log_max = math.ceil(math.log10(maximum))
-    width = 1500
-    left = 280
-    plot_width = 700
-    top = 138
-    row_height = 100
-    group_count = len(fixtures()) * 3
-    height = top + group_count * row_height + 68
-    implementations = IMPLEMENTATIONS
-    colors = {
-        "json": "#4c78a8",
-        "dcbor": "#f28e2b",
-        "cbor2_default": "#59a14f",
-        "cbor2_canonical": "#b279a2",
-        "cborx_default": "#76b7b2",
-        "cborx_canonical": "#e15759",
+    fixture_labels = {
+        "small_record": "Small record",
+        "nested_document": "Nested document",
+        "repeated_unicode_strings": "Repeated Unicode strings",
+        "numeric_array": "Numeric array",
+        "compact_scientific_notation": "Compact scientific notation",
+        "large_collection": "Large collection",
     }
-    labels = {
-        "json": "Python json",
-        "dcbor": "dcbor 0.1.0",
-        "cbor2_default": f"cbor2 {PINNED_CBOR2} default",
-        "cbor2_canonical": f"cbor2 {PINNED_CBOR2} canonical=True (length-first)",
-        "cborx_default": f"cborx {PINNED_CBORX} default",
-        "cborx_canonical": f"cborx {PINNED_CBORX} canonical=True (bytewise)",
+    codec_labels = {
+        "json": "Python JSON",
+        "dcbor": "dCBOR",
+        "cbor2_default": "cbor2 default",
+        "cbor2_canonical": "cbor2 canonical",
+        "cborx_default": "cborx default",
+        "cborx_canonical": "cborx canonical",
     }
-    chart_rows = []
-    group_index = 0
-    for fixture_name, details in fixtures_result.items():
-        for operation in ("encode", "decode", "round_trip"):
-            y = top + group_index * row_height
-            chart_rows.append(
-                f'<text x="{left - 16}" y="{y + 33}" text-anchor="end" class="fixture">'
-                f'{fixture_name.replace("_", " ")} · {operation.replace("_", " ")}</text>'
-            )
-            for series_index, implementation in enumerate(implementations):
-                row = details[implementation][operation]
-                value = row["median_ns_per_operation"]
-                norm = (math.log10(value) - log_min) / max(1, log_max - log_min)
-                bar_width = max(2.0, norm * plot_width)
-                bar_y = y + series_index * 16
-                value_label = f'{value:,.0f} ns ± {row["mad_ns_per_operation"]:,.0f}'
-                chart_rows.append(
-                    f'<rect x="{left}" y="{bar_y}" width="{bar_width:.2f}" height="11" rx="2" '
-                    f'fill="{colors[implementation]}" />'
-                    f'<text x="{left + plot_width + 10}" y="{bar_y + 10}" class="value">'
-                    f'{labels[implementation]}: {value_label}</text>'
+    width, height = 1080, 822
+    operations = ("encode", "decode", "round_trip")
+    operation_titles = {"encode": "Encode", "decode": "Decode", "round_trip": "Round trip"}
+    panel_y = (125, 347, 569)
+    panel_height = 208
+    label_x, cell_x, cell_width, cell_gap = 48, 229, 126, 8
+    matrix_panels = []
+    for operation_index, operation in enumerate(operations):
+        y = panel_y[operation_index]
+        elements = [
+            f'<rect x="32" y="{y}" width="1016" height="{panel_height}" rx="12" class="card" />',
+            f'<text x="{label_x}" y="{y + 27}" class="fixture">{operation_titles[operation]}</text>',
+            f'<text x="{label_x + 104}" y="{y + 27}" class="caption">median ratio to Python JSON</text>',
+        ]
+        for codec_index, implementation in enumerate(IMPLEMENTATIONS):
+            x = cell_x + codec_index * (cell_width + cell_gap)
+            if implementation == "dcbor":
+                elements.extend([
+                    f'<rect x="{x + 2}" y="{y + 39}" width="{cell_width - 4}" height="19" rx="5" fill="{PALETTE["dcbor"]}" />',
+                    f'<text x="{x + cell_width / 2}" y="{y + 52}" text-anchor="middle" font-size="11" font-weight="650" style="fill:#FFFFFF">{codec_labels[implementation]}</text>',
+                ])
+            else:
+                elements.append(
+                    f'<text x="{x + cell_width / 2}" y="{y + 52}" text-anchor="middle" class="small">{codec_labels[implementation]}</text>'
                 )
-            group_index += 1
-    ticks = []
-    for power in range(log_min, log_max + 1):
-        x = left + ((power - log_min) / max(1, log_max - log_min)) * plot_width
-        ticks.append(
-            f'<line x1="{x:.2f}" y1="{top - 10}" x2="{x:.2f}" y2="{height - 45}" class="grid" />'
-            f'<text x="{x:.2f}" y="{top - 18}" text-anchor="middle" class="axis">10^{power} ns</text>'
-        )
+        for fixture_index, (fixture_name, details) in enumerate(fixtures_result.items()):
+            row_y = y + 77 + fixture_index * 20
+            fixture_label = xml_text(fixture_labels.get(fixture_name, fixture_name.replace("_", " ")))
+            elements.append(
+                f'<text x="{label_x}" y="{row_y + 14}" class="small">{fixture_label}</text>'
+            )
+            json_median = details["json"][operation]["median_ns_per_operation"]
+            for codec_index, implementation in enumerate(IMPLEMENTATIONS):
+                x = cell_x + codec_index * (cell_width + cell_gap)
+                value = details[implementation][operation]["median_ns_per_operation"]
+                ratio = value / json_median
+                emphasized = implementation == "dcbor"
+                elements.extend([
+                    f'<rect x="{x + 2}" y="{row_y}" width="{cell_width - 4}" height="18" rx="5" fill="{ratio_fill(ratio)}" stroke="{PALETTE["dcbor"] if emphasized else PALETTE["line"]}" stroke-width="{2 if emphasized else 0.8}" />',
+                    f'<text x="{x + cell_width / 2}" y="{row_y + 13}" text-anchor="middle" class="value">{ratio:.2f}×</text>',
+                ])
+        matrix_panels.append("".join(elements))
     return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-labelledby="title desc">
-  <title id="title">Serialization latency by fixture and operation</title>
-  <desc id="desc">Grouped horizontal bars compare medians and median absolute deviation for encode, decode, and round-trip calls. cbor2 and cborx default and canonical modes are separate series. cbor2 canonical=True uses length-first ordering (legacy RFC 8949 section 4.2.3); cborx canonical=True uses bytewise key ordering; dCBOR uses bytewise ordering and additionally applies the dCBOR profile. Bars use a logarithmic scale. See benchmarks/latency/README.md for the fixture and methodology scope.</desc>
-  <style>text {{ font-family: system-ui, sans-serif; fill: #192b3c; }} .heading {{ font-size: 21px; font-weight: 650; }} .note {{ font-size: 13px; fill: #40566b; }} .fixture {{ font-size: 12px; font-weight: 650; }} .value {{ font-size: 11px; font-variant-numeric: tabular-nums; }} .axis {{ font-size: 11px; fill: #40566b; }} .grid {{ stroke: #d7e0e7; stroke-width: 1; }}</style>
-  <text x="24" y="35" class="heading">Serialization latency by fixture and operation</text>
-  <text x="24" y="59" class="note">Median per-call time ± median absolute deviation · logarithmic scale · lower is faster</text>
-  <text x="24" y="82" class="note">dcbor 0.1.0 · Python stdlib json · cbor2 {PINNED_CBOR2} · cborx {PINNED_CBORX}; default and canonical modes</text>
-  {''.join(ticks)}
-  {''.join(chart_rows)}
-  <text x="24" y="{height - 14}" class="note">Decode uses precomputed bytes. Round-trip includes encode plus decode. Raw samples and environment are in benchmarks/latency/results.json.</text>
+  <title id="title">Serialization latency relative to Python JSON</title>
+  <desc id="desc">Three matrix panels show median latency ratios for six fixtures, six codec modes, and encode, decode, and round-trip operations. Each ratio compares a codec median with Python JSON for the same fixture and operation; 1.00 times is parity, values below one are faster. Teal/coral color strength follows log2 ratio and caps at 0.125× and 8×. The dCBOR column is outlined in teal. Raw medians, median absolute deviations, and process samples remain in the JSON report.</desc>
+  <style>{COMMON_STYLE}</style>
+  <rect width="1080" height="{height}" fill="{PALETTE["canvas"]}" />
+  <text x="32" y="39" class="title">Latency relative to Python JSON</text>
+  <text x="32" y="63" class="subtitle">Median per-call time ÷ same-fixture JSON median · 1.00× is parity · lower is faster</text>
+  <rect x="32" y="82" width="13" height="13" rx="4" fill="{PALETTE["fast_pale"]}" stroke="{PALETTE["line"]}" />
+  <text x="52" y="93" class="caption">Faster than JSON</text>
+  <rect x="164" y="82" width="13" height="13" rx="4" fill="{PALETTE["parity"]}" stroke="{PALETTE["line"]}" />
+  <text x="184" y="93" class="caption">Near parity</text>
+  <rect x="278" y="82" width="13" height="13" rx="4" fill="{PALETTE["slow_pale"]}" stroke="{PALETTE["line"]}" />
+  <text x="298" y="93" class="caption">Slower than JSON</text>
+  <text x="1048" y="93" text-anchor="end" class="caption">dCBOR column highlighted</text>
+  {''.join(matrix_panels)}
+  <text x="32" y="801" class="caption">Medians of process batch means · one host. Decode: precomputed bytes; round trip: encode + decode. Raw values/MAD: benchmarks/latency/results.json.</text>
 </svg>
 '''
 
-
 def write_report(report: dict[str, object], output_dir: Path) -> None:
+    svg = chart(report)
+    report["source"]["chart_sha256"] = sha256(svg.encode("utf-8"))  # type: ignore[index]
     output_dir.mkdir(parents=True, exist_ok=True)
     (output_dir / "results.json").write_text(
         json.dumps(report, indent=2, ensure_ascii=False, allow_nan=False) + "\n", encoding="utf-8"
     )
     SVG_PATH.parent.mkdir(parents=True, exist_ok=True)
-    SVG_PATH.write_text(chart(report), encoding="utf-8")
+    SVG_PATH.write_text(svg, encoding="utf-8")
 
 
 def main() -> int:

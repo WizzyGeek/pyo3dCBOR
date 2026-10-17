@@ -12,8 +12,13 @@ JSON versus dCBOR chart and calls out the scientific-notation fixture where
 JSON is smaller. This report adds generic CBOR codec results. The
 [machine-readable output](results.json) records each implementation's version,
 backend, payload hash, and absolute byte count. The stable
-[wire-size graph](../../.github/assets/graphs/wire-size.svg) prints byte counts
-and the difference from compact JSON for each series.
+[wire-size graph](../../.github/assets/graphs/wire-size.svg) presents one panel
+per fixture, with six codec rows, exact byte counts, and the percentage
+difference from compact JSON. Every panel starts at zero and has its own scale;
+use the printed values for comparisons across panels. Lower means fewer payload
+bytes.
+
+![Six fixture panels compare compact JSON and five CBOR codec modes. Each row shows exact bytes and the percentage difference from JSON on a local zero-based scale.](../../.github/assets/graphs/wire-size.svg)
 
 ## Reproduce
 
@@ -60,17 +65,21 @@ The fixtures cover records, nesting, repeated Unicode text, common numeric
 values, compact scientific-notation floats, and a larger collection. The
 scientific-notation example is an unfavorable size case for binary CBOR: JSON
 can write some large or small finite floats in fewer bytes than float64 CBOR.
-The benchmark includes it rather than selecting only cases that make dCBOR
-look smaller. In the recorded run, compact JSON used 15 bytes for this fixture
-and all five CBOR modes used 19 bytes (+26.67%). On the numeric array,
+The benchmark includes it alongside the other fixtures. In the recorded run,
+compact JSON used 15 bytes for this fixture and all five CBOR modes used 19
+bytes (+26.67%); this difference is called out in the graph. On the numeric
+array,
 `cbor2`/`cborx` default modes used 902 bytes (0.1% larger than JSON's 901),
 while dCBOR and both generic canonical modes used 686 bytes. The full
 fixture-by-fixture byte counts and hashes are in the raw report and graph.
 
 These are payload-size measurements for the listed Python values and codecs.
 The generic libraries have different accepted values, defaults, and
-canonicalization rules; the canonical modes are not interchangeable and none
-of these size results imply dCBOR conformance. JSON cannot represent all CBOR
+canonicalization rules. Their `canonical=True` options follow their own
+library rules: cbor2 uses length-first map-key ordering, while cborx documents
+bytewise encoded-key ordering. dCBOR applies its own profile rules, so these
+modes are not interchangeable and neither generic canonical mode establishes
+dCBOR conformance. JSON cannot represent all CBOR
 values, including byte strings, arbitrary key types, semantic tags, NaN, and
 infinity. PostgreSQL `jsonb` is a database storage/query feature and requires a
 separate workload that accounts for server version, schema, indexes, and
