@@ -1,6 +1,6 @@
 # Latency comparison
 
-This harness compares encode, decode, and round-trip latency for the same six
+This harness compares encode, decode, and round-trip latency for the same eight
 JSON-compatible fixture values across the `dcbor` 0.1.0 Python source extension,
 Python's standard-library `json`, two `cbor2` 6.1.5 modes, and two `cborx` 0.2.5
 modes. `cbor2` and `cborx` are maintained generic CBOR libraries; this selected
@@ -21,26 +21,27 @@ comparison measures each implementation as provided without treating them as
 equivalent implementations of the dCBOR profile.
 
 The fixtures are shared by name and value with
-[`benchmarks/encoded_size.py`](../encoded_size.py): `small_record`,
-`nested_document`, `repeated_unicode_strings`, `numeric_array`,
-`compact_scientific_notation`, and `large_collection`. The compact scientific
-notation fixture also appears in the size chart as a case where JSON can use
-fewer bytes than float64 CBOR. All use ordinary JSON-compatible types. Before
-timing, each implementation's decode result is checked against the source value. JSON
-uses UTF-8, `ensure_ascii=False`, compact separators, and `allow_nan=False`.
+[`fixtures.py`](../fixtures.py): records, nested values, Unicode strings,
+numeric arrays, scientific-notation floats, a large collection, a telemetry
+batch, and an ASCII article. All use ordinary JSON-compatible types. Before
+timing, each implementation's decode result is checked against the source
+value. JSON uses UTF-8, `ensure_ascii=False`, compact separators, and
+`allow_nan=False`.
 CBOR decoding uses bytes encoded by that same implementation. Round-trip timing
 includes exactly one encode followed by one decode. Strict validation is
 excluded because the libraries' validation operations and guarantees differ.
 
 ## Reading the graph
 
-![Three operation matrices compare the six codecs across six fixtures. Each cell shows median latency relative to Python json for the same fixture and operation; 1× is parity, lower is faster, and higher is slower.](../../.github/assets/graphs/latency.svg)
+![Three panels compare dCBOR and the fastest generic CBOR mode with Python JSON for encode, decode, and round-trip latency across eight fixtures. Lower ratios are faster; 1× is parity.](../../.github/assets/graphs/latency.svg)
 
-The graph groups results by encode, decode, and round trip. Each cell shows a
-codec's median divided by Python `json` for the same fixture and operation.
-The `1×` reference means equal medians; values below it are faster than JSON,
-and values above it are slower. Read across a fixture row to compare codec
-modes, or down a codec column to see how its result varies by fixture.
+The graph groups results by encode, decode, and round trip. It shows dCBOR and
+the fastest generic-CBOR median for each fixture and operation, each divided by
+the Python `json` median for that same fixture and operation. The generic mode
+is selected independently for every row and operation. It uses a shared
+log-ratio axis; the `1×` reference
+means equal medians; values below it are faster than JSON and values above it
+are slower. The full report retains medians for every codec mode.
 
 The graph summarizes one recorded host and run. It does not show dispersion:
 the raw report retains the exact medians, median absolute deviations (MAD),
@@ -52,7 +53,7 @@ no general speed, memory, or format-superiority ranking.
 
 ## Reproduce
 
-Use the same CPython interpreter and host for all six measured series. The
+Use the same CPython interpreter and host for all six measured codec modes. The
 runner refuses to time a `dcbor` extension unless its bytes match the Cargo
 release artifact at `target/release/lib_dcbor.so`.
 

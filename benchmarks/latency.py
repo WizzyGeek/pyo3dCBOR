@@ -30,6 +30,7 @@ from pathlib import Path
 from typing import Callable
 
 from chart_style import COMMON_STYLE, PALETTE, ratio_fill, sha256_file, xml_text
+from fixtures import fixtures
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -44,42 +45,6 @@ IMPLEMENTATIONS = (
     "json", "dcbor", "cbor2_default", "cbor2_canonical",
     "cborx_default", "cborx_canonical",
 )
-
-
-def fixtures() -> dict[str, object]:
-    """Keep these values and names aligned with benchmarks/encoded_size.py."""
-    return {
-        "small_record": {
-            "id": 42,
-            "name": "Ada",
-            "active": True,
-            "nickname": None,
-        },
-        "nested_document": {
-            "user": {"id": 731, "name": "Mira"},
-            "roles": ["reader", "editor"],
-            "settings": {"theme": "dark", "alerts": False},
-            "scores": [3, 8, 13],
-        },
-        "repeated_unicode_strings": [
-            {"city": city, "label": "café", "unit": "km"}
-            for city in ("Zürich", "Montréal", "Zürich", "Montréal") * 8
-        ],
-        "numeric_array": [
-            -1000000, -257, -24, -1, 0, 1, 23, 256, 65536, 2**32,
-            0.25, -1.5, 3.125, 1.1, 1e20,
-        ] * 12,
-        "compact_scientific_notation": [1e100, 1e-100],
-        "large_collection": [
-            {
-                "item": index,
-                "group": f"group-{index % 8}",
-                "enabled": index % 3 != 0,
-                "values": [index, index + 1, index + 2],
-            }
-            for index in range(128)
-        ],
-    }
 
 
 def sha256(data: bytes) -> str:
@@ -411,6 +376,7 @@ def metadata(warmup: int, rounds: int, repetitions: int) -> dict[str, object]:
             "git_worktree_dirty": source_worktree_dirty(),
             "generator_path": source_path.resolve().relative_to(ROOT).as_posix(),
             "generator_sha256": sha256(source_path.read_bytes()),
+            "fixtures_sha256": sha256(Path(__file__).with_name("fixtures.py").read_bytes()),
             "chart_style_path": "benchmarks/chart_style.py",
             "chart_style_sha256": sha256_file(Path(__file__).with_name("chart_style.py")),
             "chart_path": SVG_PATH.relative_to(ROOT).as_posix(),
@@ -506,16 +472,14 @@ def chart(results: dict[str, object]) -> str:
   <title id="title">Latency comparison unavailable</title>
   <desc id="desc">No complete comparison is shown. The machine-readable report records the reason: {reason}</desc>
   <style>{COMMON_STYLE}</style>
-  <rect width="900" height="220" fill="{PALETTE["canvas"]}" />
-  <rect x="1" y="1" width="898" height="218" rx="12" fill="{PALETTE["paper"]}" stroke="{PALETTE["line"]}" />
-  <text x="28" y="48" class="title">Latency comparison unavailable</text>
-  <text x="28" y="82" class="subtitle">No measurements are plotted: {reason}</text>
-  <text x="28" y="126" class="caption">Install the benchmark requirements, build the release extension, and rerun benchmarks/latency.py.</text>
-  <text x="28" y="157" class="caption">Raw reports preserve status and completed process samples; unavailable values are not inferred.</text>
+  <rect width="900" height="220" fill="{PALETTE["paper"]}" />
+  <text x="32" y="54" class="title">Latency comparison unavailable</text>
+  <text x="32" y="88" class="subtitle">No measurements are inferred: {reason}</text>
 </svg>
 '''
 
-    fixtures_result = results["fixtures"]
+    from math import ceil, floor, log2
+
     fixture_labels = {
         "small_record": "Small record",
         "nested_document": "Nested document",
@@ -523,73 +487,111 @@ def chart(results: dict[str, object]) -> str:
         "numeric_array": "Numeric array",
         "compact_scientific_notation": "Compact scientific notation",
         "large_collection": "Large collection",
+        "telemetry_batch": "Telemetry batch",
+        "ascii_article": "ASCII article",
     }
-    codec_labels = {
-        "json": "Python JSON",
-        "dcbor": "dCBOR",
-        "cbor2_default": "cbor2 default",
-        "cbor2_canonical": "cbor2 canonical",
-        "cborx_default": "cborx default",
-        "cborx_canonical": "cborx canonical",
-    }
-    width, height = 1080, 822
+    generic_modes = ("cbor2_default", "cbor2_canonical", "cborx_default", "cborx_canonical")
     operations = ("encode", "decode", "round_trip")
     operation_titles = {"encode": "Encode", "decode": "Decode", "round_trip": "Round trip"}
-    panel_y = (125, 347, 569)
-    panel_height = 208
-    label_x, cell_x, cell_width, cell_gap = 48, 229, 126, 8
-    matrix_panels = []
+    fixtures_result = results["fixtures"]
+    count = len(fixtures_result)
+    rows_by_operation = {}
+    selected_ratios = []
+    aliases = {
+        "cbor2_default": "c2 def",
+        "cbor2_canonical": "c2 canon",
+        "cborx_default": "cx def",
+        "cborx_canonical": "cx canon",
+    }
+    for operation in operations:
+        operation_rows = []
+        for fixture_name, details in fixtures_result.items():
+            baseline = details["json"][operation]["median_ns_per_operation"]
+            dcbor_value = details["dcbor"][operation]["median_ns_per_operation"]
+            winner = min(
+                generic_modes,
+                key=lambda mode: details[mode][operation]["median_ns_per_operation"],
+            )
+            generic_value = details[winner][operation]["median_ns_per_operation"]
+            dcbor_ratio = dcbor_value / baseline
+            generic_ratio = generic_value / baseline
+            selected_ratios.extend((dcbor_ratio, generic_ratio))
+            operation_rows.append({
+                "name": fixture_name,
+                "dcbor_ratio": dcbor_ratio,
+                "generic_ratio": generic_ratio,
+                "generic_label": aliases[winner],
+            })
+        rows_by_operation[operation] = operation_rows
+
+    min_power = min(-3, floor(log2(min(selected_ratios))))
+    max_power = max(3, ceil(log2(max(selected_ratios))))
+    if max_power <= min_power:
+        max_power = min_power + 1
+    width = 1100
+    plot_x, plot_width = 300, 420
+    row_top, row_pitch = 78, 22
+    panel_height = max(220, row_top + count * row_pitch)
+    panel_gap = 12
+    panel_y = tuple(124 + index * (panel_height + panel_gap) for index in range(3))
+    height = panel_y[-1] + panel_height + 64
+    dcb_value_x, generic_value_x = 804, 932
+
+    def x_for_ratio(ratio: float) -> float:
+        return plot_x + (log2(ratio) - min_power) / (max_power - min_power) * plot_width
+
+    tick_powers = range(min_power, max_power + 1)
+    panels = []
     for operation_index, operation in enumerate(operations):
         y = panel_y[operation_index]
         elements = [
-            f'<rect x="32" y="{y}" width="1016" height="{panel_height}" rx="12" class="card" />',
-            f'<text x="{label_x}" y="{y + 27}" class="fixture">{operation_titles[operation]}</text>',
-            f'<text x="{label_x + 104}" y="{y + 27}" class="caption">median ratio to Python JSON</text>',
+            f'<line x1="48" y1="{y + panel_height}" x2="1052" y2="{y + panel_height}" class="rule" />',
+            f'<text x="48" y="{y + 28}" class="operation">{operation_titles[operation]}</text>',
+            f'<text x="{dcb_value_x}" y="{y + 28}" text-anchor="middle" class="column-head">dCBOR</text>',
+            f'<text x="{generic_value_x + 52}" y="{y + 28}" text-anchor="middle" class="column-head">Lowest generic</text>',
         ]
-        for codec_index, implementation in enumerate(IMPLEMENTATIONS):
-            x = cell_x + codec_index * (cell_width + cell_gap)
-            if implementation == "dcbor":
-                elements.extend([
-                    f'<rect x="{x + 2}" y="{y + 39}" width="{cell_width - 4}" height="19" rx="5" fill="{PALETTE["dcbor"]}" />',
-                    f'<text x="{x + cell_width / 2}" y="{y + 52}" text-anchor="middle" font-size="11" font-weight="650" style="fill:#FFFFFF">{codec_labels[implementation]}</text>',
-                ])
-            else:
-                elements.append(
-                    f'<text x="{x + cell_width / 2}" y="{y + 52}" text-anchor="middle" class="small">{codec_labels[implementation]}</text>'
-                )
-        for fixture_index, (fixture_name, details) in enumerate(fixtures_result.items()):
-            row_y = y + 77 + fixture_index * 20
-            fixture_label = xml_text(fixture_labels.get(fixture_name, fixture_name.replace("_", " ")))
-            elements.append(
-                f'<text x="{label_x}" y="{row_y + 14}" class="small">{fixture_label}</text>'
-            )
-            json_median = details["json"][operation]["median_ns_per_operation"]
-            for codec_index, implementation in enumerate(IMPLEMENTATIONS):
-                x = cell_x + codec_index * (cell_width + cell_gap)
-                value = details[implementation][operation]["median_ns_per_operation"]
-                ratio = value / json_median
-                emphasized = implementation == "dcbor"
-                elements.extend([
-                    f'<rect x="{x + 2}" y="{row_y}" width="{cell_width - 4}" height="18" rx="5" fill="{ratio_fill(ratio)}" stroke="{PALETTE["dcbor"] if emphasized else PALETTE["line"]}" stroke-width="{2 if emphasized else 0.8}" />',
-                    f'<text x="{x + cell_width / 2}" y="{row_y + 13}" text-anchor="middle" class="value">{ratio:.2f}×</text>',
-                ])
-        matrix_panels.append("".join(elements))
+        for power in tick_powers:
+            ratio = 2 ** power
+            x = x_for_ratio(ratio)
+            baseline = power == 0
+            label = f"{ratio:g}×"
+            elements.extend([
+                f'<line x1="{x:.2f}" y1="{y + 44}" x2="{x:.2f}" y2="{y + panel_height - 6}" stroke="{PALETTE["ink"] if baseline else PALETTE["line"]}" stroke-width="{2 if baseline else 1}" stroke-dasharray="{"0" if baseline else "2 5"}" />',
+                f'<text x="{x:.2f}" y="{y + 58}" text-anchor="middle" class="axis">{label}</text>',
+            ])
+        for fixture_index, row in enumerate(rows_by_operation[operation]):
+            row_y = y + row_top + fixture_index * row_pitch
+            label = xml_text(fixture_labels.get(row["name"], row["name"].replace("_", " ")))
+            dcbor_x = x_for_ratio(row["dcbor_ratio"])
+            generic_x = x_for_ratio(row["generic_ratio"])
+            elements.extend([
+                f'<text x="48" y="{row_y + 5}" class="row-label">{label}</text>',
+                f'<circle cx="{dcbor_x:.2f}" cy="{row_y - 2}" r="6.5" fill="{PALETTE["dcbor"]}"><title>dCBOR {row["dcbor_ratio"]:.2f}×</title></circle>',
+                f'<polygon points="{generic_x:.2f},{row_y - 9:.2f} {generic_x + 7:.2f},{row_y - 2:.2f} {generic_x:.2f},{row_y + 5:.2f} {generic_x - 7:.2f},{row_y - 2:.2f}" fill="{PALETTE["generic_range"]}"><title>{row["generic_label"]} {row["generic_ratio"]:.2f}×</title></polygon>',
+                f'<text x="{dcb_value_x}" y="{row_y + 5}" text-anchor="middle" class="ratio-dcbor">{row["dcbor_ratio"]:.2f}×</text>',
+                f'<text x="{generic_value_x}" y="{row_y + 5}" class="ratio-generic">{row["generic_ratio"]:.2f}× <tspan class="muted">{row["generic_label"]}</tspan></text>',
+            ])
+        panels.append("".join(elements))
     return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-labelledby="title desc">
-  <title id="title">Serialization latency relative to Python JSON</title>
-  <desc id="desc">Three matrix panels show median latency ratios for six fixtures, six codec modes, and encode, decode, and round-trip operations. Each ratio compares a codec median with Python JSON for the same fixture and operation; 1.00 times is parity, values below one are faster. Teal/coral color strength follows log2 ratio and caps at 0.125× and 8×. The dCBOR column is outlined in teal. Raw medians, median absolute deviations, and process samples remain in the JSON report.</desc>
-  <style>{COMMON_STYLE}</style>
-  <rect width="1080" height="{height}" fill="{PALETTE["canvas"]}" />
-  <text x="32" y="39" class="title">Latency relative to Python JSON</text>
-  <text x="32" y="63" class="subtitle">Median per-call time ÷ same-fixture JSON median · 1.00× is parity · lower is faster</text>
-  <rect x="32" y="82" width="13" height="13" rx="4" fill="{PALETTE["fast_pale"]}" stroke="{PALETTE["line"]}" />
-  <text x="52" y="93" class="caption">Faster than JSON</text>
-  <rect x="164" y="82" width="13" height="13" rx="4" fill="{PALETTE["parity"]}" stroke="{PALETTE["line"]}" />
-  <text x="184" y="93" class="caption">Near parity</text>
-  <rect x="278" y="82" width="13" height="13" rx="4" fill="{PALETTE["slow_pale"]}" stroke="{PALETTE["line"]}" />
-  <text x="298" y="93" class="caption">Slower than JSON</text>
-  <text x="1048" y="93" text-anchor="end" class="caption">dCBOR column highlighted</text>
-  {''.join(matrix_panels)}
-  <text x="32" y="801" class="caption">Medians of process batch means · one host. Decode: precomputed bytes; round trip: encode + decode. Raw values/MAD: benchmarks/latency/results.json.</text>
+  <title id="title">Latency wins and trade-offs by fixture</title>
+  <desc id="desc">Three logarithmic dot plots compare dCBOR and the lowest measured generic CBOR median with the Python JSON median for the same fixture and operation. Each direct ratio is printed at right; the vertical 1× guide marks the JSON baseline. The generic mode label identifies the smallest measured cbor2/cborx median for that fixture on this host. Other codec medians, MAD, and all process samples remain in the JSON report; these measurements do not establish a universal winner.</desc>
+  <style>{COMMON_STYLE}
+    .hero {{ font-size: 30px; font-weight: 760; letter-spacing: -0.55px; }}
+    .dek {{ font-size: 15px; fill: {PALETTE["muted"]}; }}
+    .operation {{ font-size: 20px; font-weight: 720; }}
+    .row-label {{ font-size: 16px; font-weight: 580; }}
+    .ratio-dcbor {{ font-size: 16px; font-weight: 700; fill: {PALETTE["dcbor"]}; font-variant-numeric: tabular-nums; }}
+    .ratio-generic {{ font-size: 15px; font-weight: 650; fill: {PALETTE["generic_range"]}; font-variant-numeric: tabular-nums; }}
+  </style>
+  <rect width="{width}" height="{height}" fill="{PALETTE["paper"]}" />
+  <text x="48" y="47" class="hero">Latency: wins and trade-offs</text>
+  <text x="48" y="76" class="dek">dCBOR and the lowest measured generic CBOR median vs Python JSON · 1× is the baseline</text>
+  <circle cx="56" cy="103" r="6.5" fill="{PALETTE["dcbor"]}" />
+  <text x="72" y="108" class="legend">dCBOR median</text>
+  <polygon points="223,96 230,103 223,110 216,103" fill="{PALETTE["generic_range"]}" />
+  <text x="240" y="108" class="legend">Lowest measured generic CBOR median</text>
+  {''.join(panels)}
+  <text x="48" y="{height - 16}" class="caption">Medians of process batch means · one host · do not read as a universal speed ranking. Other codec medians and MAD: raw JSON report.</text>
 </svg>
 '''
 

@@ -9,14 +9,17 @@ from pathlib import Path
 
 
 PALETTE = {
-    "ink": "#172B3A",
-    "muted": "#607482",
-    "line": "#D8E1E4",
+    "ink": "#142B39",
+    "muted": "#586D79",
+    "line": "#E0E7EA",
+    "line_strong": "#B8C7CE",
     "paper": "#FFFFFF",
-    "canvas": "#F5F7F6",
-    "track": "#E8EDEE",
-    "json": "#315C7D",
-    "dcbor": "#087E78",
+    "canvas": "#FFFFFF",
+    "track": "#E8EEF0",
+    "json": "#255B75",
+    "dcbor": "#08766F",
+    "coral": "#C94E47",
+    "generic_range": "#738B9D",
     "cbor2_default": "#477EA8",
     "cbor2_canonical": "#8AAAC1",
     "cborx_default": "#D96B57",
@@ -28,16 +31,19 @@ PALETTE = {
 
 
 COMMON_STYLE = """
-  text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif; fill: #172B3A; }
-  .title { font-size: 23px; font-weight: 700; letter-spacing: -0.35px; }
-  .subtitle { font-size: 13px; fill: #435B6A; }
-  .caption { font-size: 11.5px; fill: #607482; }
-  .fixture { font-size: 13px; font-weight: 650; }
-  .small { font-size: 11.5px; fill: #435B6A; }
-  .value { font-size: 12px; font-weight: 560; font-variant-numeric: tabular-nums; }
-  .muted { fill: #607482; }
-  .card { fill: #FFFFFF; stroke: #D8E1E4; stroke-width: 1; }
-  .rule { stroke: #D8E1E4; stroke-width: 1; }
+  text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif; fill: #142B39; }
+  .title { font-size: 27px; font-weight: 740; letter-spacing: -0.45px; }
+  .subtitle { font-size: 15px; fill: #586D79; }
+  .caption { font-size: 13px; fill: #586D79; }
+  .fixture { font-size: 16px; font-weight: 650; }
+  .small { font-size: 14px; fill: #586D79; }
+  .value { font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .muted { fill: #586D79; }
+  .card { fill: #FFFFFF; stroke: #E0E7EA; stroke-width: 1; }
+  .rule { stroke: #E0E7EA; stroke-width: 1; }
+  .legend { font-size: 15px; fill: #435967; }
+  .column-head { font-size: 14px; fill: #586D79; font-weight: 650; }
+  .axis { font-size: 14px; fill: #586D79; font-variant-numeric: tabular-nums; }
 """
 
 

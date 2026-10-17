@@ -209,6 +209,7 @@ def make_report(dcbor: object, cbor2: object, cborx: object) -> dict[str, object
             "git_worktree_dirty": source_worktree_dirty(),
             "generator_path": source_path.resolve().relative_to(ROOT).as_posix(),
             "generator_sha256": sha256(source_path.read_bytes()),
+            "fixtures_sha256": sha256(Path(__file__).with_name("fixtures.py").read_bytes()),
             "chart_style_path": "benchmarks/chart_style.py",
             "chart_style_sha256": sha256_file(Path(__file__).with_name("chart_style.py")),
             "chart_path": SVG_PATH.relative_to(ROOT).as_posix(),
@@ -238,12 +239,9 @@ def chart(report: dict[str, object]) -> str:
   <title id="title">CBOR wire-size comparison unavailable</title>
   <desc id="desc">No complete codec comparison is plotted. The report records: {reason}</desc>
   <style>{COMMON_STYLE}</style>
-  <rect width="900" height="220" fill="{PALETTE["canvas"]}" />
-  <rect x="1" y="1" width="898" height="218" rx="12" fill="{PALETTE["paper"]}" stroke="{PALETTE["line"]}" />
-  <text x="28" y="48" class="title">Wire-size comparison unavailable</text>
-  <text x="28" y="82" class="subtitle">No complete codec comparison is plotted: {reason}</text>
-  <text x="28" y="126" class="caption">Install the benchmark requirements, build the release extension, and rerun benchmarks/wire_size.py.</text>
-  <text x="28" y="157" class="caption">No values are inferred for unavailable libraries.</text>
+  <rect width="900" height="220" fill="{PALETTE["paper"]}" />
+  <text x="32" y="54" class="title">Wire-size comparison unavailable</text>
+  <text x="32" y="88" class="subtitle">No values are inferred for unavailable libraries: {reason}</text>
 </svg>
 '''
 
@@ -255,60 +253,145 @@ def chart(report: dict[str, object]) -> str:
         "numeric_array": "Numeric array",
         "compact_scientific_notation": "Compact scientific notation",
         "large_collection": "Large collection",
+        "telemetry_batch": "Telemetry batch",
+        "ascii_article": "ASCII article",
     }
-    width, height = 1000, 835
-    card_width, card_height = 460, 204
-    x_positions = (32, 508)
-    y_positions = (134, 354, 574)
-    cards = []
-    for fixture_index, (fixture_name, details) in enumerate(fixtures_result.items()):
-        x = x_positions[fixture_index % 2]
-        y = y_positions[fixture_index // 2]
-        maximum = max(details[series]["bytes"] for series in SERIES)
-        bar_x, plot_width = x + 109, 104
-        rows = []
-        for series_index, series in enumerate(SERIES):
-            row = details[series]
-            baseline = y + 57 + series_index * 21
-            bar_width = max(2.0, plot_width * row["bytes"] / maximum)
-            rows.append(
-                f'<text x="{x + 14}" y="{baseline + 4}" class="small" fill="{PALETTE[series]}">{SHORT_LABELS[series]}</text>'
-                f'<rect x="{bar_x}" y="{baseline - 6}" width="{plot_width}" height="8" rx="4" fill="{PALETTE["track"]}" />'
-                f'<rect x="{bar_x}" y="{baseline - 6}" width="{bar_width:.2f}" height="8" rx="4" fill="{PALETTE[series]}" />'
-                f'<text x="{x + 225}" y="{baseline + 4}" class="value">{row["bytes"]:,} B · {row["percent_vs_json"]:+.2f}%</text>'
-            )
-        fixture_label = xml_text(fixture_labels.get(fixture_name, fixture_name.replace("_", " ")))
-        cards.append(
-            f'<g aria-label="{fixture_label}">'
-            f'<rect x="{x}" y="{y}" width="{card_width}" height="{card_height}" rx="12" class="card" />'
-            f'<text x="{x + 14}" y="{y + 29}" class="fixture">{fixture_label}</text>'
-            f'<text x="{x + card_width - 14}" y="{y + 29}" text-anchor="end" class="caption">bytes · % vs JSON</text>'
-            f'{"".join(rows)}'
-            f'</g>'
+    generic_modes = ("cbor2_default", "cbor2_canonical", "cborx_default", "cborx_canonical")
+    count = len(fixtures_result)
+    ratios = []
+    for details in fixtures_result.values():
+        baseline = details["json"]["bytes"]
+        ratios.extend(details[series]["bytes"] * 100 / baseline for series in ("dcbor", *generic_modes))
+    low = min(50, int(min(ratios) // 25) * 25)
+    high = max(150, ((int(max(ratios)) + 24) // 25) * 25)
+    if high <= low:
+        high = low + 100
+    width = 1100
+    plot_x, plot_width = 300, 410
+    top, row_pitch = 222, 36
+    row_end = top + count * row_pitch
+    axis_y = row_end + 14
+    height = max(606, axis_y + 82)
+
+    def x_for_percent(percent: float) -> float:
+        return plot_x + (percent - low) / (high - low) * plot_width
+
+    def mode_size(values: list[int]) -> str:
+        if len(set(values)) == 1:
+            return f"{values[0]:,} B"
+        return f"{min(values):,}–{max(values):,} B"
+
+    numeric = fixtures_result.get("numeric_array")
+    if numeric:
+        default_values = [numeric["cbor2_default"]["bytes"], numeric["cborx_default"]["bytes"]]
+        canonical_values = [numeric["dcbor"]["bytes"], numeric["cbor2_canonical"]["bytes"], numeric["cborx_canonical"]["bytes"]]
+        if len(set(default_values)) == 1:
+            defaults_note = f"cbor2/cborx defaults {default_values[0]:,} B"
+        else:
+            defaults_note = f"cbor2 {default_values[0]:,} B · cborx {default_values[1]:,} B"
+        if len(set(canonical_values)) == 1:
+            canonical_note = f"dCBOR/canonical {canonical_values[0]:,} B"
+        else:
+            canonical_note = f"dCBOR {canonical_values[0]:,} · canonical {canonical_values[1]:,}/{canonical_values[2]:,} B"
+        numeric_note = f"{defaults_note} · {canonical_note}"
+    else:
+        numeric_note = "Default and canonical modes can produce different byte counts."
+
+    scientific = fixtures_result.get("compact_scientific_notation")
+    if scientific:
+        json_bytes = scientific["json"]["bytes"]
+        dcbor_bytes = scientific["dcbor"]["bytes"]
+        generic_values = [scientific[series]["bytes"] for series in generic_modes]
+        delta = (dcbor_bytes / json_bytes - 1) * 100
+        sign = "+" if delta >= 0 else "−"
+        scientific_note = (
+            f"dCBOR {dcbor_bytes:,} B vs JSON {json_bytes:,} B ({sign}{abs(delta):.2f}%) · "
+            f"generic {mode_size(generic_values)}"
         )
-    colors = PALETTE
-    legend = []
-    legend_x = (32, 153, 265, 399, 554, 682)
-    legend_labels = ("JSON", "dCBOR", "cbor2 default", "cbor2 canonical", "cborx default", "cborx canonical")
-    for x, series, label in zip(legend_x, SERIES, legend_labels):
-        legend.append(
-            f'<rect x="{x}" y="84" width="10" height="10" rx="3" fill="{colors[series]}" />'
-            f'<text x="{x + 16}" y="93" class="caption">{label}</text>'
+    else:
+        scientific_note = "The report includes the compact scientific-notation fixture."
+
+    grid = []
+    ticks = list(range(low, high + 1, 25))
+    for tick in ticks:
+        x = x_for_percent(tick)
+        baseline = tick == 100
+        grid.append(
+            f'<line x1="{x:.2f}" y1="{top - 11}" x2="{x:.2f}" y2="{row_end - 4}" '
+            f'stroke="{PALETTE["ink"] if baseline else PALETTE["line"]}" '
+            f'stroke-width="{2 if baseline else 1}" stroke-dasharray="{"0" if baseline else "2 5"}" />'
+            f'<text x="{x:.2f}" y="{axis_y + 22}" text-anchor="middle" class="axis">{tick}%</text>'
+        )
+    rows = []
+    for index, (name, details) in enumerate(fixtures_result.items()):
+        label = xml_text(fixture_labels.get(name, name.replace("_", " ")))
+        center_y = top + index * row_pitch + row_pitch / 2
+        baseline = details["json"]["bytes"]
+        dcbor_bytes = details["dcbor"]["bytes"]
+        dcbor_percent = dcbor_bytes * 100 / baseline
+        generic_bytes = [details[series]["bytes"] for series in generic_modes]
+        generic_low, generic_high = min(generic_bytes), max(generic_bytes)
+        generic_low_percent = generic_low * 100 / baseline
+        generic_high_percent = generic_high * 100 / baseline
+        dcbor_x = x_for_percent(dcbor_percent)
+        generic_low_x = x_for_percent(generic_low_percent)
+        generic_high_x = x_for_percent(generic_high_percent)
+        if generic_low == generic_high:
+            generic_mark = f'<circle cx="{generic_low_x:.2f}" cy="{center_y + 4}" r="6" fill="{PALETTE["generic_range"]}" />'
+        else:
+            generic_mark = (
+                f'<line x1="{generic_low_x:.2f}" y1="{center_y + 4}" x2="{generic_high_x:.2f}" y2="{center_y + 4}" '
+                f'stroke="{PALETTE["generic_range"]}" stroke-width="8" stroke-linecap="round" />'
+                f'<line x1="{generic_low_x:.2f}" y1="{center_y - 3}" x2="{generic_low_x:.2f}" y2="{center_y + 11}" stroke="{PALETTE["generic_range"]}" stroke-width="2" />'
+                f'<line x1="{generic_high_x:.2f}" y1="{center_y - 3}" x2="{generic_high_x:.2f}" y2="{center_y + 11}" stroke="{PALETTE["generic_range"]}" stroke-width="2" />'
+            )
+        byte_summary = f"{baseline:,} · {dcbor_bytes:,} · {mode_size(generic_bytes)}"
+        generic_tooltip = ", ".join(
+            "{} {:,} B".format(series, details[series]["bytes"])
+            for series in generic_modes
+        )
+        tooltip = xml_text(
+            f"{fixture_labels.get(name, name.replace('_', ' '))}: JSON {baseline:,} B; dCBOR {dcbor_bytes:,} B; "
+            f"generic modes {generic_tooltip}"
+        )
+        rows.append(
+            f'<line x1="48" y1="{center_y + 18}" x2="1052" y2="{center_y + 18}" class="rule" />'
+            f'<text x="48" y="{center_y + 6}" class="row-label">{label}</text>'
+            f'{generic_mark}'
+            f'<circle cx="{dcbor_x:.2f}" cy="{center_y - 4}" r="7" fill="{PALETTE["dcbor"]}" stroke="#FFFFFF" stroke-width="2"><title>{tooltip}</title></circle>'
+            f'<text x="756" y="{center_y + 6}" class="bytes">{byte_summary}</text>'
         )
     return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-labelledby="title desc">
-  <title id="title">Wire size by Python codec and fixture</title>
-  <desc id="desc">Six fixture cards show exact payload byte counts and percentage differences from compact JSON for JSON, dCBOR, cbor2 default and canonical, and cborx default and canonical. Each card has its own zero-based scale. The chart measures serialized payload bytes only.</desc>
-  <style>{COMMON_STYLE}</style>
-  <rect width="1000" height="{height}" fill="{PALETTE["canvas"]}" />
-  <text x="32" y="39" class="title">Wire size across six codec modes</text>
-  <text x="32" y="62" class="subtitle">Exact payload bytes and difference from compact JSON · lower is smaller</text>
-  {''.join(legend)}
-  <text x="32" y="117" class="caption">Each fixture card uses its own zero-based scale. Values show bytes · percent versus JSON.</text>
-  {''.join(cards)}
-  <text x="32" y="811" class="caption">cbor2 {PINNED_CBOR2} and cborx {PINNED_CBORX}; canonical modes follow their respective ordering rules. See report for methodology and hashes.</text>
+  <title id="title">Wire size by fixture, dCBOR and generic CBOR modes</title>
+  <desc id="desc">For each of {count} fixtures, the normalized chart shows compact JSON at 100 percent, a teal dCBOR point, and the min-to-max range across cbor2/cborx default and canonical modes. When all four generic byte counts are equal, the range collapses to one point. Each row prints exact JSON and dCBOR bytes and the generic range; the full six-mode measurements remain in the raw JSON report.</desc>
+  <style>{COMMON_STYLE}
+    .hero {{ font-size: 29px; font-weight: 750; letter-spacing: -0.5px; }}
+    .dek {{ font-size: 15px; fill: {PALETTE["muted"]}; }}
+    .row-label {{ font-size: 15px; font-weight: 620; }}
+    .bytes {{ font-size: 14px; font-variant-numeric: tabular-nums; }}
+  </style>
+  <rect width="{width}" height="{height}" fill="{PALETTE["paper"]}" />
+  <text x="48" y="43" class="hero">Wire size: where the modes split</text>
+  <text x="48" y="70" class="dek">JSON = 100% · generic band spans four cbor2/cborx modes</text>
+  <circle cx="56" cy="98" r="6" fill="{PALETTE["dcbor"]}" />
+  <text x="72" y="103" class="legend">dCBOR</text>
+  <line x1="153" y1="98" x2="187" y2="98" stroke="{PALETTE["generic_range"]}" stroke-width="7" stroke-linecap="round" />
+  <text x="198" y="103" class="legend">Generic CBOR min–max; equal byte counts collapse to a point</text>
+  <line x1="740" y1="89" x2="740" y2="107" stroke="{PALETTE["ink"]}" stroke-width="2" />
+  <text x="752" y="103" class="legend">JSON baseline: 100%</text>
+  <rect x="48" y="117" width="488" height="70" rx="8" fill="#F6F9FA" />
+  <rect x="562" y="117" width="490" height="70" rx="8" fill="#F6F9FA" />
+  <text x="64" y="142" class="callout-label">NUMERIC ARRAY · DEFAULT WIDTH</text>
+  <text x="64" y="167" class="callout-value">{xml_text(numeric_note)}</text>
+  <text x="580" y="142" class="callout-label">COMPACT SCIENTIFIC NOTATION</text>
+  <text x="580" y="167" class="callout-value" fill="{PALETTE["coral"]}">{xml_text(scientific_note)}</text>
+  <text x="48" y="210" class="column-head">Fixture</text>
+  <text x="756" y="210" class="column-head">Exact bytes · JSON / dCBOR / generic range</text>
+  {''.join(grid)}
+  {''.join(rows)}
+  <text x="48" y="{height - 20}" class="caption">Generic range covers cbor2 and cborx, default and canonical. Raw JSON retains every mode, sample value, and hash.</text>
 </svg>
 '''
-
 
 def write_report(report: dict[str, object]) -> None:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -336,6 +419,7 @@ def main() -> int:
                 "git_worktree_dirty": source_worktree_dirty(),
                 "generator_path": Path(__file__).resolve().relative_to(ROOT).as_posix(),
                 "generator_sha256": sha256(Path(__file__).read_bytes()),
+                "fixtures_sha256": sha256(Path(__file__).with_name("fixtures.py").read_bytes()),
                 "chart_style_path": "benchmarks/chart_style.py",
                 "chart_style_sha256": sha256_file(Path(__file__).with_name("chart_style.py")),
                 "chart_path": SVG_PATH.relative_to(ROOT).as_posix(),
@@ -380,6 +464,7 @@ def main() -> int:
                 "git_worktree_dirty": source_worktree_dirty(),
                 "generator_path": Path(__file__).resolve().relative_to(ROOT).as_posix(),
                 "generator_sha256": sha256(Path(__file__).read_bytes()),
+                "fixtures_sha256": sha256(Path(__file__).with_name("fixtures.py").read_bytes()),
                 "chart_style_path": "benchmarks/chart_style.py",
                 "chart_style_sha256": sha256_file(Path(__file__).with_name("chart_style.py")),
                 "chart_path": SVG_PATH.relative_to(ROOT).as_posix(),
@@ -404,6 +489,7 @@ def main() -> int:
                 "git_worktree_dirty": source_worktree_dirty(),
                 "generator_path": Path(__file__).resolve().relative_to(ROOT).as_posix(),
                 "generator_sha256": sha256(Path(__file__).read_bytes()),
+                "fixtures_sha256": sha256(Path(__file__).with_name("fixtures.py").read_bytes()),
                 "chart_style_path": "benchmarks/chart_style.py",
                 "chart_style_sha256": sha256_file(Path(__file__).with_name("chart_style.py")),
                 "chart_path": SVG_PATH.relative_to(ROOT).as_posix(),

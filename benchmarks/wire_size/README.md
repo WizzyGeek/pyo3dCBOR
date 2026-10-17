@@ -1,6 +1,6 @@
 # CBOR competitor wire-size comparison
 
-This benchmark measures serialized payload bytes for the six shared
+This benchmark measures serialized payload bytes for the eight shared
 JSON-compatible fixtures using compact UTF-8 JSON, dCBOR 0.1.0, `cbor2` 6.1.5
 default and `canonical=True` modes, and `cborx` 0.2.5 default and
 `canonical=True` modes. It does not measure Python object memory, PostgreSQL
@@ -11,14 +11,10 @@ The main [encoded-size report](../encoded_size/README.md) retains the compact
 JSON versus dCBOR chart and calls out the scientific-notation fixture where
 JSON is smaller. This report adds generic CBOR codec results. The
 [machine-readable output](results.json) records each implementation's version,
-backend, payload hash, and absolute byte count. The stable
-[wire-size graph](../../.github/assets/graphs/wire-size.svg) presents one panel
-per fixture, with six codec rows, exact byte counts, and the percentage
-difference from compact JSON. Every panel starts at zero and has its own scale;
-use the printed values for comparisons across panels. Lower means fewer payload
-bytes.
-
-![Six fixture panels compare compact JSON and five CBOR codec modes. Each row shows exact bytes and the percentage difference from JSON on a local zero-based scale.](../../.github/assets/graphs/wire-size.svg)
+backend, payload hash, and absolute byte count. A compact visual summary is in
+the [benchmark overview](../../docs/benchmarks.md); it shows dCBOR beside the
+generic-codec size range for each fixture. The JSON report keeps every
+codec-by-fixture value.
 
 ## Reproduce
 
@@ -62,16 +58,16 @@ The compared series are intentionally distinct:
 | `cborx` canonical | `canonical=True`; project documentation specifies bytewise encoded-key order. |
 
 The fixtures cover records, nesting, repeated Unicode text, common numeric
-values, compact scientific-notation floats, and a larger collection. The
+values, compact scientific-notation floats, a larger collection, telemetry
+samples, and an ASCII article. The
 scientific-notation example is an unfavorable size case for binary CBOR: JSON
 can write some large or small finite floats in fewer bytes than float64 CBOR.
 The benchmark includes it alongside the other fixtures. In the recorded run,
 compact JSON used 15 bytes for this fixture and all five CBOR modes used 19
-bytes (+26.67%); this difference is called out in the graph. On the numeric
-array,
-`cbor2`/`cborx` default modes used 902 bytes (0.1% larger than JSON's 901),
-while dCBOR and both generic canonical modes used 686 bytes. The full
-fixture-by-fixture byte counts and hashes are in the raw report and graph.
+bytes (+26.67%); the complete set is visible in the comparison. On the numeric
+array, `cbor2`/`cborx` default modes used 902 bytes (0.1% larger than JSON's
+901), while dCBOR and both generic canonical modes used 686 bytes. The full
+fixture-by-fixture byte counts and hashes are in the raw report.
 
 These are payload-size measurements for the listed Python values and codecs.
 The generic libraries have different accepted values, defaults, and

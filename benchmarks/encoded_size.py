@@ -21,47 +21,12 @@ import sys
 from pathlib import Path
 
 from chart_style import COMMON_STYLE, PALETTE, sha256_file, xml_text
+from fixtures import fixtures
 
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = Path(__file__).resolve().parent / "encoded_size"
 SVG_PATH = ROOT / ".github" / "assets" / "graphs" / "encoded-size.svg"
-
-
-def fixtures() -> dict[str, object]:
-    """Return documented, ordinary JSON-compatible logical values."""
-    return {
-        "small_record": {
-            "id": 42,
-            "name": "Ada",
-            "active": True,
-            "nickname": None,
-        },
-        "nested_document": {
-            "user": {"id": 731, "name": "Mira"},
-            "roles": ["reader", "editor"],
-            "settings": {"theme": "dark", "alerts": False},
-            "scores": [3, 8, 13],
-        },
-        "repeated_unicode_strings": [
-            {"city": city, "label": "café", "unit": "km"}
-            for city in ("Zürich", "Montréal", "Zürich", "Montréal") * 8
-        ],
-        "numeric_array": [
-            -1000000, -257, -24, -1, 0, 1, 23, 256, 65536, 2**32,
-            0.25, -1.5, 3.125, 1.1, 1e20,
-        ] * 12,
-        "compact_scientific_notation": [1e100, 1e-100],
-        "large_collection": [
-            {
-                "item": index,
-                "group": f"group-{index % 8}",
-                "enabled": index % 3 != 0,
-                "values": [index, index + 1, index + 2],
-            }
-            for index in range(128)
-        ],
-    }
 
 
 def sha256(data: bytes) -> str:
@@ -205,6 +170,7 @@ def build_results(dcbor: object) -> dict[str, object]:
             "git_worktree_dirty": source_worktree_dirty(),
             "generator_path": Path(__file__).resolve().relative_to(ROOT).as_posix(),
             "generator_sha256": sha256(Path(__file__).read_bytes()),
+            "fixtures_sha256": sha256(Path(__file__).with_name("fixtures.py").read_bytes()),
             "chart_style_path": "benchmarks/chart_style.py",
             "chart_style_sha256": sha256_file(Path(__file__).with_name("chart_style.py")),
             "chart_path": SVG_PATH.relative_to(ROOT).as_posix(),
@@ -257,58 +223,86 @@ def svg_chart(results: dict[str, object]) -> str:
         "numeric_array": "Numeric array",
         "compact_scientific_notation": "Compact scientific notation",
         "large_collection": "Large collection",
+        "telemetry_batch": "Telemetry batch",
+        "ascii_article": "ASCII article",
     }
-    width, height = 1000, 690
-    card_width, card_height = 300, 246
-    x_positions = (32, 350, 668)
-    y_positions = (116, 380)
-    cards = []
+    height = max(510, 258 + len(rows) * 42)
+    width = 1100
+    count = len(rows)
+    smaller = sum(row["dcbor_wire_bytes"] < row["json_utf8_bytes"] for row in rows.values())
+    top = 169
+    row_pitch = 42
+    row_end = top + count * row_pitch
+    percentages = [row["dcbor_wire_bytes"] * 100 / row["json_utf8_bytes"] for row in rows.values()]
+    low = min(50, int(min(percentages) // 25) * 25)
+    high = max(150, ((int(max(percentages)) + 24) // 25) * 25)
+    if high <= low:
+        high = low + 100
+    plot_x, plot_width = 322, 380
+
+    def x_for_percent(percent: float) -> float:
+        return plot_x + (percent - low) / (high - low) * plot_width
+
+    grid = []
+    ticks = list(range(low, high + 1, 25))
+    for tick in ticks:
+        x = x_for_percent(tick)
+        baseline = tick == 100
+        grid.append(
+            f'<line x1="{x:.2f}" y1="{top - 8}" x2="{x:.2f}" y2="{row_end - 7}" '
+            f'stroke="{PALETTE["ink"] if baseline else PALETTE["line"]}" '
+            f'stroke-width="{2 if baseline else 1}" stroke-dasharray="{"0" if baseline else "2 5"}" />'
+            f'<text x="{x:.2f}" y="{row_end + 19}" text-anchor="middle" class="axis">{tick}%</text>'
+        )
+    chart_rows = []
     for index, (name, row) in enumerate(rows.items()):
-        x = x_positions[index % 3]
-        y = y_positions[index // 3]
-        maximum = max(row["json_utf8_bytes"], row["dcbor_wire_bytes"])
-        plot_width = card_width - 32
-        json_width = max(3, plot_width * row["json_utf8_bytes"] / maximum)
-        cbor_width = max(3, plot_width * row["dcbor_wire_bytes"] / maximum)
-        delta = row["json_utf8_bytes"] - row["dcbor_wire_bytes"]
-        note = (
-            f'{delta:,} B fewer than JSON' if delta >= 0
-            else f'{abs(delta):,} B more than JSON'
+        label = xml_text(labels.get(name, name.replace("_", " ")))
+        y = top + index * row_pitch + row_pitch / 2
+        json_x = x_for_percent(100)
+        dcbor_percent = row["dcbor_wire_bytes"] * 100 / row["json_utf8_bytes"]
+        dcbor_x = x_for_percent(dcbor_percent)
+        improved = dcbor_percent < 100
+        accent = PALETTE["dcbor"] if improved else PALETTE["coral"]
+        signed_delta = dcbor_percent - 100
+        delta = f'{"−" if signed_delta < 0 else "+"}{abs(signed_delta):.2f}%'
+        title = xml_text(f'{labels.get(name, name.replace("_", " "))}: JSON {row["json_utf8_bytes"]:,} B, dCBOR {row["dcbor_wire_bytes"]:,} B, {delta}')
+        chart_rows.append(
+            f'<line x1="48" y1="{y + 20}" x2="1052" y2="{y + 20}" class="rule" />'
+            f'<text x="48" y="{y + 6}" class="row-label">{label}</text>'
+            f'<line x1="{min(json_x, dcbor_x):.2f}" y1="{y}" x2="{max(json_x, dcbor_x):.2f}" y2="{y}" stroke="{PALETTE["line_strong"]}" stroke-width="3" />'
+            f'<circle cx="{json_x:.2f}" cy="{y}" r="7" fill="{PALETTE["json"]}" />'
+            f'<circle cx="{dcbor_x:.2f}" cy="{y}" r="8" fill="{accent}" stroke="#FFFFFF" stroke-width="2"><title>{title}</title></circle>'
+            f'<text x="728" y="{y + 6}" class="bytes">{row["json_utf8_bytes"]:,} B <tspan class="muted">→</tspan> {row["dcbor_wire_bytes"]:,} B</text>'
+            f'<text x="1052" y="{y + 7}" text-anchor="end" class="delta" fill="{accent}">{delta}</text>'
         )
-        cards.append(
-            f'<g aria-label="{xml_text(labels.get(name, name.replace("_", " ")))}">'
-            f'<rect x="{x}" y="{y}" width="{card_width}" height="{card_height}" rx="12" class="card" />'
-            f'<text x="{x + 16}" y="{y + 28}" class="fixture">{xml_text(labels.get(name, name.replace("_", " ")))}</text>'
-            f'<text x="{x + 16}" y="{y + 70}" class="small">Compact JSON</text>'
-            f'<text x="{x + card_width - 16}" y="{y + 70}" text-anchor="end" class="value">{row["json_utf8_bytes"]:,} B</text>'
-            f'<rect x="{x + 16}" y="{y + 79}" width="{plot_width}" height="9" rx="4.5" fill="{PALETTE["track"]}" />'
-            f'<rect x="{x + 16}" y="{y + 79}" width="{json_width:.2f}" height="9" rx="4.5" fill="{PALETTE["json"]}" />'
-            f'<text x="{x + 16}" y="{y + 127}" class="small">dCBOR · {row["dcbor_vs_json_percent"]:+.2f}% vs JSON</text>'
-            f'<text x="{x + card_width - 16}" y="{y + 127}" text-anchor="end" class="value">{row["dcbor_wire_bytes"]:,} B</text>'
-            f'<rect x="{x + 16}" y="{y + 136}" width="{plot_width}" height="9" rx="4.5" fill="{PALETTE["track"]}" />'
-            f'<rect x="{x + 16}" y="{y + 136}" width="{cbor_width:.2f}" height="9" rx="4.5" fill="{PALETTE["dcbor"]}" />'
-            f'<line x1="{x + 16}" y1="{y + 170}" x2="{x + card_width - 16}" y2="{y + 170}" class="rule" />'
-            f'<text x="{x + 16}" y="{y + 195}" class="caption">{xml_text(note)}</text>'
-            f'</g>'
-        )
-    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}"
- viewBox="0 0 {width} {height}" role="img" aria-labelledby="title desc">
-  <title id="title">Compact JSON and dCBOR payload sizes</title>
-  <desc id="desc">Six fixture cards compare exact compact JSON UTF-8 bytes with dCBOR wire bytes. Each card has its own zero-based scale, plus the exact dCBOR percentage difference versus JSON. The chart measures serialized payload size, not process memory.</desc>
-  <style>{COMMON_STYLE}</style>
-  <rect width="1000" height="690" fill="{PALETTE["canvas"]}" />
-  <text x="32" y="39" class="title">Payload size, fixture by fixture</text>
-  <text x="32" y="63" class="subtitle">Compact UTF-8 JSON and dCBOR wire bytes · lower is smaller</text>
-  <rect x="32" y="82" width="12" height="12" rx="3" fill="{PALETTE["json"]}" />
-  <text x="51" y="92" class="caption">Compact JSON</text>
-  <rect x="155" y="82" width="12" height="12" rx="3" fill="{PALETTE["dcbor"]}" />
-  <text x="174" y="92" class="caption">dCBOR</text>
-  <text x="968" y="92" text-anchor="end" class="caption">Each fixture card uses its own zero-based scale</text>
-  {''.join(cards)}
-  <text x="32" y="665" class="caption">Difference = (dCBOR bytes − JSON bytes) / JSON bytes. See the report for hashes, fixture definitions, and method.</text>
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-labelledby="title desc">
+  <title id="title">Compact JSON and dCBOR payload size comparison</title>
+  <desc id="desc">A normalized dumbbell plot compares dCBOR with compact UTF-8 JSON across {count} fixtures. JSON is 100 percent; dCBOR points left when it uses fewer bytes and right when it uses more. Exact byte counts and percentage differences are printed for every fixture. {smaller} of {count} fixtures are smaller with dCBOR.</desc>
+  <style>{COMMON_STYLE}
+    .hero {{ font-size: 30px; font-weight: 760; letter-spacing: -0.55px; }}
+    .dek {{ font-size: 16px; fill: {PALETTE["muted"]}; }}
+    .row-label {{ font-size: 16px; font-weight: 620; }}
+    .bytes {{ font-size: 15px; font-variant-numeric: tabular-nums; }}
+    .delta {{ font-size: 20px; font-weight: 750; font-variant-numeric: tabular-nums; }}
+    .axis {{ font-size: 13px; fill: {PALETTE["muted"]}; }}
+  </style>
+  <rect width="{width}" height="{height}" fill="{PALETTE["paper"]}" />
+  <text x="48" y="51" class="hero">dCBOR uses fewer bytes in {smaller} of {count} fixtures</text>
+  <text x="48" y="81" class="dek">Compact UTF-8 JSON = 100% · dCBOR left of 100% uses fewer bytes</text>
+  <line x1="48" y1="119" x2="78" y2="119" stroke="{PALETTE["line_strong"]}" stroke-width="3" />
+  <circle cx="48" cy="119" r="6" fill="{PALETTE["json"]}" />
+  <text x="90" y="124" class="legend">Compact JSON · 100%</text>
+  <circle cx="278" cy="119" r="7" fill="{PALETTE["dcbor"]}" />
+  <text x="295" y="124" class="legend">dCBOR</text>
+  <circle cx="391" cy="119" r="7" fill="{PALETTE["coral"]}" />
+  <text x="408" y="124" class="legend">dCBOR increase</text>
+  <text x="728" y="148" class="column-head">JSON → dCBOR bytes</text>
+  <text x="1052" y="148" text-anchor="end" class="column-head">Change</text>
+  {''.join(grid)}
+  {''.join(chart_rows)}
+  <text x="48" y="{height - 23}" class="caption">Each row shares one percent axis. Positive change marks the scientific-notation size loss; details and hashes are in the report.</text>
 </svg>
 '''
-
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)

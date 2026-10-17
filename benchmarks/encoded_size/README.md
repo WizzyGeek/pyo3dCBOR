@@ -2,21 +2,19 @@
 
 This evidence bundle compares **serialized payload bytes** from Python's
 standard-library JSON encoder with canonical dCBOR wire bytes for the same
-six logical values. It measures neither Python object size nor process memory.
-The committed [`results.json`](results.json) records every byte count and hash,
+eight JSON-compatible workloads. It measures neither Python object size nor
+process memory. The companion [`results.json`](results.json) records every byte count and hash,
 the source commit, Python/platform details, dcbor package version, and the
 loaded extension's SHA-256. The generated
-[encoded-size.svg](../../.github/assets/graphs/encoded-size.svg) shows six
-fixture cards with JSON and dCBOR byte counts and dCBOR's percentage difference
-from JSON. Each card uses its own byte scale, so compare the values printed on
-the bars rather than their lengths across cards; lower means fewer payload
-bytes.
+[encoded-size.svg](../../.github/assets/graphs/encoded-size.svg) uses a shared
+horizontal scale normalized to compact JSON at 100%. Each row labels both
+exact byte counts and dCBOR's percentage difference; values below 100% mean
+fewer dCBOR payload bytes and values above 100% mean more.
 
-![Six fixture cards compare compact JSON and dCBOR payload bytes, with exact counts and the dCBOR percentage difference. Each card has its own scale.](../../.github/assets/graphs/encoded-size.svg)
+![Eight fixture rows compare compact JSON and dCBOR payload bytes on a shared scale with JSON at 100%; exact byte counts and percentage differences are labeled.](../../.github/assets/graphs/encoded-size.svg)
 
-The compact scientific-notation fixture is an explicit counterexample: JSON is
-15 bytes and dCBOR is 19 bytes (+26.67%). The graph includes this result with
-the five fixtures where dCBOR uses fewer bytes.
+The compact scientific-notation fixture is one counterexample: JSON is 15
+bytes and dCBOR is 19 bytes (+26.67%). The figure keeps each workload visible.
 
 ## Reproduce
 
@@ -65,6 +63,8 @@ measures the bytes returned by `dcbor.dumps()`.
 | `numeric_array` | Signed and unsigned integers plus finite, non-integral floats. |
 | `compact_scientific_notation` | Two large-magnitude finite floats whose compact JSON scientific notation may use fewer bytes than CBOR's float64 representation. |
 | `large_collection` | 128 object records with repeated group labels and small arrays. |
+| `telemetry_batch` | 64 sensor samples with integer timestamps, fractional readings, status flags, and device IDs. |
+| `ascii_article` | An object with article-length plain ASCII text. |
 
 All fixtures use only JSON-compatible values. This makes each comparison use
 the same Python logical value and allows round-trip checks on both encoders.
