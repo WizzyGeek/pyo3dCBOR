@@ -1,0 +1,2611 @@
+{
+  "generated_at_utc": "2026-10-17T21:20:38.554547+00:00",
+  "source": {
+    "git_commit": "0b3627e16f38b52519667ef76d7039d5e259ea64",
+    "git_worktree_dirty": false,
+    "generator_path": "benchmarks/rust_core.py",
+    "generator_sha256": "a9af3ba8b4f8e7f06b0dc955fa9056bdabad30e3a1918c91eedba6f8e911c84d",
+    "rust_source_sha256": "63e7fc073c6c1be648396a3ba77e96490267e45df11b9ae931ca098058a122d3",
+    "cargo_toml_sha256": "946bc74cc3d171367bcf7f98f4f23206c9050eae566e970512799e4ecef237cb",
+    "cargo_lock_sha256": "9fcd311c804f038f3b2da73c5b81f42e990b01dd267acdbc1a1f17af8fd16cf7",
+    "fixtures_sha256": "d29a87868226898a33a240edcbe832d2e2ecb115c1e302c5ee3b1bfd41bf58e4",
+    "chart_renderer_sha256": "3b8468102d2fdd044ab92ac6d152e97382dab40153b22ba652865b1b57407ccc",
+    "native_binary_path": "target/release/examples/benchmark-core",
+    "native_binary_sha256": "64ba0b7fc658efe92c677b698c83c038d880d9b13050108860cb555bd3edc50d",
+    "chart_path": ".github/assets/graphs/rust-core.svg",
+    "chart_sha256": "dbbee2f5ecaad810c6cf05f6c8a11229f38b2f188a8e198073169f9b0dd45188",
+    "chart_generator_path": "benchmarks/comparison_charts.py",
+    "chart_generator_sha256": "3b8468102d2fdd044ab92ac6d152e97382dab40153b22ba652865b1b57407ccc",
+    "chart_style_path": "benchmarks/chart_style.py",
+    "chart_style_sha256": "ff592d67401fbb7c45f66b03d53fa60c62fe4f6b6da7fb990353b44f902bc68d"
+  },
+  "methodology": {
+    "timed_operations": [
+      "rust_core.encode",
+      "rust_core.decode",
+      "python_dcbor.encode",
+      "python_dcbor.decode"
+    ],
+    "warmup_calls_per_operation_per_process": 500,
+    "timed_calls_per_operation_per_process": 1000,
+    "independent_process_repetitions": 9,
+    "summary": "median of per-process batch means; dispersion is median absolute deviation (MAD)",
+    "clock": "std::time::Instant for Rust; time.perf_counter_ns for Python",
+    "Rust core": "CBOR::to_cbor_data() on a CBOR tree parsed before timing; CBOR::try_from_data() on prepared wire bytes",
+    "Python binding": "dcbor.dumps(value) includes Python-to-CBOR value conversion; dcbor.loads(prepared_wire) decodes the Python dcbor wire bytes",
+    "shared_inputs": "Eight fixtures from benchmarks/fixtures.py; each wire is produced once per worker by the installed Python dcbor package and passed as hex to the Rust process",
+    "correctness_gates": "Python loads each prepared wire to the original type-sensitive fixture; Rust parses each wire and requires byte-identical re-encoding; the driver checks the Rust-reported re-encoded wire against the Python wire",
+    "process_boundary": "Python worker and native executable startup, CLI parsing, fixture construction, and wire preparation are outside timed regions",
+    "map_key_behavior": "Rust CBOR trees are parsed before encoding measurements and hold encoded map-key sort bytes; Python dcbor.dumps converts Python maps during each timed operation, so map tree/cache work differs",
+    "comparison_limit": "Paired timings are whole-operation comparisons, not isolated FFI cost; Rust tree construction is excluded while Python value conversion is included",
+    "implementation_order": "Fixture and encode/decode order rotate across fresh processes; Python and Rust measurement groups alternate order across repetitions",
+    "python_hash_seed": 0
+  },
+  "fixture_hashes": {
+    "small_record": "b96dab4694093dca9a465f95749d3400a09654f4d903bbd0b0de0a23c9736b88",
+    "nested_document": "77377904fe48d4957572ff2c5ed31fb690d273b48698ab3c8959f7467547c48e",
+    "repeated_unicode_strings": "ed087497547c7489e6318cc48d486cf6d92cc8c1fb9ff08b0a0b51c6fd571cc5",
+    "numeric_array": "cfcfcf48beb7d8cc4f49c54f1ee7d6a247b8d40ffb993aa6b6d3ebb0105adbfd",
+    "compact_scientific_notation": "207fb530d5d0b6e574528d086b78d55b7fd588d4ae899fa81fc675897a0864b0",
+    "large_collection": "ad15bde003ba59842e9aebb03d8746947a8d9bd7b2e061710d67df7e909b4c89",
+    "telemetry_batch": "41f2372f2fcd87607474bb411c0fa01d6175388b6ff38b38ddc21129e0b665d1",
+    "ascii_article": "dcb3c49017f313b243adb1508fee917741fc1782413b5dde813ca6459a21b754"
+  },
+  "fixture_wire_sha256": {
+    "small_record": "b55a8f161e8172663017efdf13c2d095259d5ed48dc3243668a17d17ea2a5ce1",
+    "nested_document": "7ecf21b19217a7a0e920a115ed051f8242de35746e2dd4dc992a8e0a906c575e",
+    "repeated_unicode_strings": "1b9d17871bd3fba70a77f429bfd6f046f6ae7742c7c8b6a098232edffff15d47",
+    "numeric_array": "867f526ac65459b8d9ac3e6b7b3acf8fa221509a17f566abb86bf476c392856f",
+    "compact_scientific_notation": "56e4d805bb919d04e695fcb5bd9dec9b371ba61b0f53a5ed213cb35ebb4ce3f5",
+    "large_collection": "14a8b5fe0a9feccf03ebd7cfb71ccaf925d7b8cecd49bb3d4bb74e88279fe795",
+    "telemetry_batch": "5d1eb97957d0cd05a050c758c1e8446fe8eec4114ea9e1e5c1093ebd105d89ed",
+    "ascii_article": "ed709f11501789286b56c7dc236b6b2a559398259f219082a8eddbb94754ff88"
+  },
+  "status": "complete",
+  "environment": {
+    "python_version": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+    "python_implementation": "CPython",
+    "python_executable": "/usr/bin/python3.14",
+    "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+    "system": "Linux",
+    "release": "7.2.4-200.fc44.x86_64",
+    "machine": "x86_64",
+    "processor": "AMD Ryzen 7 7435HS",
+    "dcbor_version": "0.1.0",
+    "dcbor_build": {
+      "profile": "release",
+      "verified_by": "SHA-256 equality with target/release/lib_dcbor.so",
+      "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+      "extension_sha256": "0cf305e9b25f460a20cf87f6e6a4c6c8966d849ca404a45caed539f448239735",
+      "release_artifact_path": "target/release/lib_dcbor.so",
+      "release_artifact_sha256": "0cf305e9b25f460a20cf87f6e6a4c6c8966d849ca404a45caed539f448239735"
+    },
+    "rustc_version_verbose": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+    "cargo_version": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+    "cargo_lock_sha256": "9fcd311c804f038f3b2da73c5b81f42e990b01dd267acdbc1a1f17af8fd16cf7",
+    "native_binary_path": "/home/wizzygeek/code/AIdCBOR/target/release/examples/benchmark-core",
+    "native_binary_sha256": "64ba0b7fc658efe92c677b698c83c038d880d9b13050108860cb555bd3edc50d",
+    "native_binary_profile": "release",
+    "native_build_command": "cargo build --release --locked --example benchmark-core",
+    "native_build_configuration": {
+      "profile": "release",
+      "lto": true,
+      "dcbor_features": [
+        "multithreaded"
+      ]
+    }
+  },
+  "fixtures": {
+    "small_record": {
+      "rust_core": {
+        "encode": {
+          "samples_ns_per_operation": [
+            208.262,
+            212.69,
+            197.291,
+            205.647,
+            196.52,
+            198.994,
+            200.147,
+            201.619,
+            218.822
+          ],
+          "median_ns_per_operation": 201.619,
+          "mad_ns_per_operation": 4.328000000000003,
+          "minimum_ns_per_operation": 196.52,
+          "maximum_ns_per_operation": 218.822
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            416.133,
+            490.133,
+            443.734,
+            466.088,
+            437.884,
+            450.558,
+            435.73,
+            412.857,
+            420.641
+          ],
+          "median_ns_per_operation": 437.884,
+          "mad_ns_per_operation": 17.242999999999995,
+          "minimum_ns_per_operation": 412.857,
+          "maximum_ns_per_operation": 490.133
+        }
+      },
+      "python_dcbor": {
+        "encode": {
+          "samples_ns_per_operation": [
+            1323.911,
+            1477.631,
+            1394.764,
+            1513.739,
+            1549.215,
+            1412.497,
+            1602.736,
+            1475.577,
+            1340.232
+          ],
+          "median_ns_per_operation": 1475.577,
+          "mad_ns_per_operation": 73.63799999999992,
+          "minimum_ns_per_operation": 1323.911,
+          "maximum_ns_per_operation": 1602.736
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            810.064,
+            863.364,
+            1045.718,
+            916.014,
+            883.453,
+            898.26,
+            921.013,
+            875.678,
+            844.63
+          ],
+          "median_ns_per_operation": 883.453,
+          "mad_ns_per_operation": 32.561000000000035,
+          "minimum_ns_per_operation": 810.064,
+          "maximum_ns_per_operation": 1045.718
+        }
+      }
+    },
+    "nested_document": {
+      "rust_core": {
+        "encode": {
+          "samples_ns_per_operation": [
+            594.108,
+            553.261,
+            547.54,
+            547.46,
+            573.829,
+            562.329,
+            561.556,
+            532.733,
+            581.975
+          ],
+          "median_ns_per_operation": 561.556,
+          "mad_ns_per_operation": 14.016000000000076,
+          "minimum_ns_per_operation": 532.733,
+          "maximum_ns_per_operation": 594.108
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            1186.563,
+            1164.742,
+            1353.356,
+            1289.066,
+            1202.142,
+            1199.948,
+            1162.978,
+            1182.595,
+            1212.271
+          ],
+          "median_ns_per_operation": 1199.948,
+          "mad_ns_per_operation": 17.353000000000065,
+          "minimum_ns_per_operation": 1162.978,
+          "maximum_ns_per_operation": 1353.356
+        }
+      },
+      "python_dcbor": {
+        "encode": {
+          "samples_ns_per_operation": [
+            3573.715,
+            3431.608,
+            3685.806,
+            3506.359,
+            3400.97,
+            3475.851,
+            3640.941,
+            3326.079,
+            3459.861
+          ],
+          "median_ns_per_operation": 3475.851,
+          "mad_ns_per_operation": 74.88100000000031,
+          "minimum_ns_per_operation": 3326.079,
+          "maximum_ns_per_operation": 3685.806
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            2166.367,
+            1991.878,
+            2041.642,
+            2261.636,
+            2030.311,
+            2213.476,
+            2075.295,
+            2189.08,
+            2017.416
+          ],
+          "median_ns_per_operation": 2075.295,
+          "mad_ns_per_operation": 83.41700000000014,
+          "minimum_ns_per_operation": 1991.878,
+          "maximum_ns_per_operation": 2261.636
+        }
+      }
+    },
+    "repeated_unicode_strings": {
+      "rust_core": {
+        "encode": {
+          "samples_ns_per_operation": [
+            13210.94,
+            12796.39,
+            12762.487,
+            12960.649,
+            13155.396,
+            13279.67,
+            13067.831,
+            13956.272,
+            13620.08
+          ],
+          "median_ns_per_operation": 13155.396,
+          "mad_ns_per_operation": 194.7470000000012,
+          "minimum_ns_per_operation": 12762.487,
+          "maximum_ns_per_operation": 13956.272
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            21122.759,
+            20656.441,
+            20282.327,
+            21618.362,
+            21945.046,
+            22312.488,
+            21399.119,
+            20542.987,
+            21799.412
+          ],
+          "median_ns_per_operation": 21399.119,
+          "mad_ns_per_operation": 545.9269999999997,
+          "minimum_ns_per_operation": 20282.327,
+          "maximum_ns_per_operation": 22312.488
+        }
+      },
+      "python_dcbor": {
+        "encode": {
+          "samples_ns_per_operation": [
+            51607.364,
+            47340.375,
+            49162.764,
+            48209.02,
+            50841.844,
+            48214.62,
+            48359.613,
+            48934.324,
+            48145.319
+          ],
+          "median_ns_per_operation": 48359.613,
+          "mad_ns_per_operation": 574.711000000003,
+          "minimum_ns_per_operation": 47340.375,
+          "maximum_ns_per_operation": 51607.364
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            31763.853,
+            31592.701,
+            32177.751,
+            32532.77,
+            31563.646,
+            31776.827,
+            31555.881,
+            31791.915,
+            31052.755
+          ],
+          "median_ns_per_operation": 31763.853,
+          "mad_ns_per_operation": 200.20699999999852,
+          "minimum_ns_per_operation": 31052.755,
+          "maximum_ns_per_operation": 32532.77
+        }
+      }
+    },
+    "numeric_array": {
+      "rust_core": {
+        "encode": {
+          "samples_ns_per_operation": [
+            2639.688,
+            2829.545,
+            2733.845,
+            2934.162,
+            2728.103,
+            2866.014,
+            2814.597,
+            2698.097,
+            3089.203
+          ],
+          "median_ns_per_operation": 2814.597,
+          "mad_ns_per_operation": 86.49400000000014,
+          "minimum_ns_per_operation": 2639.688,
+          "maximum_ns_per_operation": 3089.203
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            5422.474,
+            5522.963,
+            5414.489,
+            4936.329,
+            5544.564,
+            5570.904,
+            5260.829,
+            5833.727,
+            5915.492
+          ],
+          "median_ns_per_operation": 5522.963,
+          "mad_ns_per_operation": 108.47400000000016,
+          "minimum_ns_per_operation": 4936.329,
+          "maximum_ns_per_operation": 5915.492
+        }
+      },
+      "python_dcbor": {
+        "encode": {
+          "samples_ns_per_operation": [
+            10524.084,
+            10853.935,
+            10592.974,
+            10663.235,
+            10804.462,
+            10937.071,
+            10771.429,
+            10929.827,
+            11110.348
+          ],
+          "median_ns_per_operation": 10804.462,
+          "mad_ns_per_operation": 132.60900000000038,
+          "minimum_ns_per_operation": 10524.084,
+          "maximum_ns_per_operation": 11110.348
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            13968.947,
+            9724.369,
+            9418.694,
+            9215.321,
+            9568.807,
+            9577.052,
+            9720.692,
+            9837.682,
+            9623.749
+          ],
+          "median_ns_per_operation": 9623.749,
+          "mad_ns_per_operation": 100.6200000000008,
+          "minimum_ns_per_operation": 9215.321,
+          "maximum_ns_per_operation": 13968.947
+        }
+      }
+    },
+    "compact_scientific_notation": {
+      "rust_core": {
+        "encode": {
+          "samples_ns_per_operation": [
+            46.358,
+            46.949,
+            50.085,
+            48.08,
+            48.872,
+            49.423,
+            50.776,
+            46.658,
+            49.212
+          ],
+          "median_ns_per_operation": 48.872,
+          "mad_ns_per_operation": 1.213000000000001,
+          "minimum_ns_per_operation": 46.358,
+          "maximum_ns_per_operation": 50.776
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            62.107,
+            55.665,
+            73.598,
+            56.045,
+            55.996,
+            55.775,
+            56.316,
+            55.885,
+            59.893
+          ],
+          "median_ns_per_operation": 56.045,
+          "mad_ns_per_operation": 0.2710000000000008,
+          "minimum_ns_per_operation": 55.665,
+          "maximum_ns_per_operation": 73.598
+        }
+      },
+      "python_dcbor": {
+        "encode": {
+          "samples_ns_per_operation": [
+            274.376,
+            279.676,
+            398.6,
+            281.319,
+            598.657,
+            273.515,
+            331.784,
+            276.531,
+            287.03
+          ],
+          "median_ns_per_operation": 281.319,
+          "mad_ns_per_operation": 6.9430000000000405,
+          "minimum_ns_per_operation": 273.515,
+          "maximum_ns_per_operation": 598.657
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            242.206,
+            223.26,
+            226.877,
+            211.057,
+            220.575,
+            215.827,
+            254.359,
+            211.779,
+            220.835
+          ],
+          "median_ns_per_operation": 220.835,
+          "mad_ns_per_operation": 6.042000000000002,
+          "minimum_ns_per_operation": 211.057,
+          "maximum_ns_per_operation": 254.359
+        }
+      }
+    },
+    "large_collection": {
+      "rust_core": {
+        "encode": {
+          "samples_ns_per_operation": [
+            33299.041,
+            35938.949,
+            35251.315,
+            32061.984,
+            32489.218,
+            32610.556,
+            34705.088,
+            35126.531,
+            33456.398
+          ],
+          "median_ns_per_operation": 33456.398,
+          "mad_ns_per_operation": 1248.6900000000023,
+          "minimum_ns_per_operation": 32061.984,
+          "maximum_ns_per_operation": 35938.949
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            109180.535,
+            109623.438,
+            112217.67,
+            107499.091,
+            109148.925,
+            109220.66,
+            111240.371,
+            108265.362,
+            115947.839
+          ],
+          "median_ns_per_operation": 109220.66,
+          "mad_ns_per_operation": 955.2980000000098,
+          "minimum_ns_per_operation": 107499.091,
+          "maximum_ns_per_operation": 115947.839
+        }
+      },
+      "python_dcbor": {
+        "encode": {
+          "samples_ns_per_operation": [
+            176566.24,
+            178533.242,
+            177994.628,
+            175929.562,
+            176600.655,
+            184926.251,
+            178695.166,
+            178748.056,
+            178849.818
+          ],
+          "median_ns_per_operation": 178533.242,
+          "mad_ns_per_operation": 538.6140000000014,
+          "minimum_ns_per_operation": 175929.562,
+          "maximum_ns_per_operation": 184926.251
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            152251.955,
+            152723.183,
+            152002.727,
+            153989.265,
+            150995.662,
+            154130.4,
+            153875.741,
+            149585.969,
+            155114.493
+          ],
+          "median_ns_per_operation": 152723.183,
+          "mad_ns_per_operation": 1266.082000000024,
+          "minimum_ns_per_operation": 149585.969,
+          "maximum_ns_per_operation": 155114.493
+        }
+      }
+    },
+    "telemetry_batch": {
+      "rust_core": {
+        "encode": {
+          "samples_ns_per_operation": [
+            20609.723,
+            17965.948,
+            17858.606,
+            17783.104,
+            17831.375,
+            17745.954,
+            18522.275,
+            18774.129,
+            20044.089
+          ],
+          "median_ns_per_operation": 17965.948,
+          "mad_ns_per_operation": 219.99399999999878,
+          "minimum_ns_per_operation": 17745.954,
+          "maximum_ns_per_operation": 20609.723
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            65514.635,
+            64587.831,
+            64009.022,
+            63611.353,
+            64372.976,
+            63707.264,
+            62955.168,
+            65688.932,
+            64901.391
+          ],
+          "median_ns_per_operation": 64372.976,
+          "mad_ns_per_operation": 665.7119999999995,
+          "minimum_ns_per_operation": 62955.168,
+          "maximum_ns_per_operation": 65688.932
+        }
+      },
+      "python_dcbor": {
+        "encode": {
+          "samples_ns_per_operation": [
+            97658.653,
+            97443.858,
+            98032.727,
+            97209.748,
+            98477.032,
+            99335.278,
+            94772.411,
+            97214.677,
+            99299.631
+          ],
+          "median_ns_per_operation": 97658.653,
+          "mad_ns_per_operation": 448.90499999999884,
+          "minimum_ns_per_operation": 94772.411,
+          "maximum_ns_per_operation": 99335.278
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            87385.961,
+            103575.447,
+            88718.009,
+            89121.207,
+            87328.103,
+            87562.945,
+            88025.305,
+            87009.093,
+            89436.11
+          ],
+          "median_ns_per_operation": 88025.305,
+          "mad_ns_per_operation": 697.2019999999902,
+          "minimum_ns_per_operation": 87009.093,
+          "maximum_ns_per_operation": 103575.447
+        }
+      }
+    },
+    "ascii_article": {
+      "rust_core": {
+        "encode": {
+          "samples_ns_per_operation": [
+            466.658,
+            456.76,
+            473.401,
+            446.551,
+            448.404,
+            544.485,
+            454.385,
+            366.419,
+            485.333
+          ],
+          "median_ns_per_operation": 456.76,
+          "mad_ns_per_operation": 10.209000000000003,
+          "minimum_ns_per_operation": 366.419,
+          "maximum_ns_per_operation": 544.485
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            3073.454,
+            3046.052,
+            2876.163,
+            2900.839,
+            2876.694,
+            2891.512,
+            3032.827,
+            2830.055,
+            2927.669
+          ],
+          "median_ns_per_operation": 2900.839,
+          "mad_ns_per_operation": 26.829999999999927,
+          "minimum_ns_per_operation": 2830.055,
+          "maximum_ns_per_operation": 3073.454
+        }
+      },
+      "python_dcbor": {
+        "encode": {
+          "samples_ns_per_operation": [
+            2135.76,
+            2008.98,
+            1929.821,
+            2194.509,
+            1934.28,
+            2012.127,
+            2069.535,
+            2200.03,
+            2201.001
+          ],
+          "median_ns_per_operation": 2069.535,
+          "mad_ns_per_operation": 124.97400000000016,
+          "minimum_ns_per_operation": 1929.821,
+          "maximum_ns_per_operation": 2201.001
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            3733.165,
+            3786.135,
+            3826.992,
+            3718.848,
+            3756.959,
+            3842.37,
+            3758.192,
+            3641.171,
+            5859.927
+          ],
+          "median_ns_per_operation": 3758.192,
+          "mad_ns_per_operation": 39.34400000000005,
+          "minimum_ns_per_operation": 3641.171,
+          "maximum_ns_per_operation": 5859.927
+        }
+      }
+    }
+  },
+  "raw_process_runs": [
+    {
+      "process": {
+        "pid": 493,
+        "order_offset": 0,
+        "fixture_order": [
+          "small_record",
+          "nested_document",
+          "repeated_unicode_strings",
+          "numeric_array",
+          "compact_scientific_notation",
+          "large_collection",
+          "telemetry_batch",
+          "ascii_article"
+        ],
+        "rust_fixture_order": [
+          "small_record",
+          "nested_document",
+          "repeated_unicode_strings",
+          "numeric_array",
+          "compact_scientific_notation",
+          "large_collection",
+          "telemetry_batch",
+          "ascii_article"
+        ],
+        "implementation_group_order": [
+          "python_dcbor",
+          "rust_core"
+        ],
+        "python_operation_order": {
+          "small_record": [
+            "encode",
+            "decode"
+          ],
+          "nested_document": [
+            "decode",
+            "encode"
+          ],
+          "repeated_unicode_strings": [
+            "encode",
+            "decode"
+          ],
+          "numeric_array": [
+            "decode",
+            "encode"
+          ],
+          "compact_scientific_notation": [
+            "encode",
+            "decode"
+          ],
+          "large_collection": [
+            "decode",
+            "encode"
+          ],
+          "telemetry_batch": [
+            "encode",
+            "decode"
+          ],
+          "ascii_article": [
+            "decode",
+            "encode"
+          ]
+        },
+        "rust_operation_order": {
+          "small_record": [
+            "encode",
+            "decode"
+          ],
+          "nested_document": [
+            "decode",
+            "encode"
+          ],
+          "repeated_unicode_strings": [
+            "encode",
+            "decode"
+          ],
+          "numeric_array": [
+            "decode",
+            "encode"
+          ],
+          "compact_scientific_notation": [
+            "encode",
+            "decode"
+          ],
+          "large_collection": [
+            "decode",
+            "encode"
+          ],
+          "telemetry_batch": [
+            "encode",
+            "decode"
+          ],
+          "ascii_article": [
+            "decode",
+            "encode"
+          ]
+        }
+      },
+      "environment": {
+        "python_version": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+        "python_implementation": "CPython",
+        "python_executable": "/usr/bin/python3.14",
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "system": "Linux",
+        "release": "7.2.4-200.fc44.x86_64",
+        "machine": "x86_64",
+        "processor": "AMD Ryzen 7 7435HS",
+        "dcbor_version": "0.1.0",
+        "dcbor_build": {
+          "profile": "release",
+          "verified_by": "SHA-256 equality with target/release/lib_dcbor.so",
+          "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+          "extension_sha256": "0cf305e9b25f460a20cf87f6e6a4c6c8966d849ca404a45caed539f448239735",
+          "release_artifact_path": "target/release/lib_dcbor.so",
+          "release_artifact_sha256": "0cf305e9b25f460a20cf87f6e6a4c6c8966d849ca404a45caed539f448239735"
+        },
+        "rustc_version_verbose": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo_version": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+        "cargo_lock_sha256": "9fcd311c804f038f3b2da73c5b81f42e990b01dd267acdbc1a1f17af8fd16cf7",
+        "native_binary_path": "/home/wizzygeek/code/AIdCBOR/target/release/examples/benchmark-core",
+        "native_binary_sha256": "64ba0b7fc658efe92c677b698c83c038d880d9b13050108860cb555bd3edc50d",
+        "native_binary_profile": "release",
+        "native_build_command": "cargo build --release --locked --example benchmark-core",
+        "native_build_configuration": {
+          "profile": "release",
+          "lto": true,
+          "dcbor_features": [
+            "multithreaded"
+          ]
+        }
+      },
+      "fixtures": {
+        "small_record": {
+          "rust_core": {
+            "encode": 208.262,
+            "decode": 416.133
+          },
+          "python_dcbor": {
+            "encode": 1323.911,
+            "decode": 810.064
+          }
+        },
+        "nested_document": {
+          "rust_core": {
+            "encode": 594.108,
+            "decode": 1186.563
+          },
+          "python_dcbor": {
+            "decode": 2166.367,
+            "encode": 3573.715
+          }
+        },
+        "repeated_unicode_strings": {
+          "rust_core": {
+            "encode": 13210.94,
+            "decode": 21122.759
+          },
+          "python_dcbor": {
+            "encode": 51607.364,
+            "decode": 31763.853
+          }
+        },
+        "numeric_array": {
+          "rust_core": {
+            "encode": 2639.688,
+            "decode": 5422.474
+          },
+          "python_dcbor": {
+            "decode": 13968.947,
+            "encode": 10524.084
+          }
+        },
+        "compact_scientific_notation": {
+          "rust_core": {
+            "encode": 46.358,
+            "decode": 62.107
+          },
+          "python_dcbor": {
+            "encode": 274.376,
+            "decode": 242.206
+          }
+        },
+        "large_collection": {
+          "rust_core": {
+            "encode": 33299.041,
+            "decode": 109180.535
+          },
+          "python_dcbor": {
+            "decode": 152251.955,
+            "encode": 176566.24
+          }
+        },
+        "telemetry_batch": {
+          "rust_core": {
+            "encode": 20609.723,
+            "decode": 65514.635
+          },
+          "python_dcbor": {
+            "encode": 97658.653,
+            "decode": 87385.961
+          }
+        },
+        "ascii_article": {
+          "rust_core": {
+            "encode": 466.658,
+            "decode": 3073.454
+          },
+          "python_dcbor": {
+            "decode": 3733.165,
+            "encode": 2135.76
+          }
+        }
+      }
+    },
+    {
+      "process": {
+        "pid": 515,
+        "order_offset": 1,
+        "fixture_order": [
+          "nested_document",
+          "repeated_unicode_strings",
+          "numeric_array",
+          "compact_scientific_notation",
+          "large_collection",
+          "telemetry_batch",
+          "ascii_article",
+          "small_record"
+        ],
+        "rust_fixture_order": [
+          "nested_document",
+          "repeated_unicode_strings",
+          "numeric_array",
+          "compact_scientific_notation",
+          "large_collection",
+          "telemetry_batch",
+          "ascii_article",
+          "small_record"
+        ],
+        "implementation_group_order": [
+          "rust_core",
+          "python_dcbor"
+        ],
+        "python_operation_order": {
+          "nested_document": [
+            "decode",
+            "encode"
+          ],
+          "repeated_unicode_strings": [
+            "encode",
+            "decode"
+          ],
+          "numeric_array": [
+            "decode",
+            "encode"
+          ],
+          "compact_scientific_notation": [
+            "encode",
+            "decode"
+          ],
+          "large_collection": [
+            "decode",
+            "encode"
+          ],
+          "telemetry_batch": [
+            "encode",
+            "decode"
+          ],
+          "ascii_article": [
+            "decode",
+            "encode"
+          ],
+          "small_record": [
+            "encode",
+            "decode"
+          ]
+        },
+        "rust_operation_order": {
+          "nested_document": [
+            "decode",
+            "encode"
+          ],
+          "repeated_unicode_strings": [
+            "encode",
+            "decode"
+          ],
+          "numeric_array": [
+            "decode",
+            "encode"
+          ],
+          "compact_scientific_notation": [
+            "encode",
+            "decode"
+          ],
+          "large_collection": [
+            "decode",
+            "encode"
+          ],
+          "telemetry_batch": [
+            "encode",
+            "decode"
+          ],
+          "ascii_article": [
+            "decode",
+            "encode"
+          ],
+          "small_record": [
+            "encode",
+            "decode"
+          ]
+        }
+      },
+      "environment": {
+        "python_version": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+        "python_implementation": "CPython",
+        "python_executable": "/usr/bin/python3.14",
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "system": "Linux",
+        "release": "7.2.4-200.fc44.x86_64",
+        "machine": "x86_64",
+        "processor": "AMD Ryzen 7 7435HS",
+        "dcbor_version": "0.1.0",
+        "dcbor_build": {
+          "profile": "release",
+          "verified_by": "SHA-256 equality with target/release/lib_dcbor.so",
+          "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+          "extension_sha256": "0cf305e9b25f460a20cf87f6e6a4c6c8966d849ca404a45caed539f448239735",
+          "release_artifact_path": "target/release/lib_dcbor.so",
+          "release_artifact_sha256": "0cf305e9b25f460a20cf87f6e6a4c6c8966d849ca404a45caed539f448239735"
+        },
+        "rustc_version_verbose": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo_version": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+        "cargo_lock_sha256": "9fcd311c804f038f3b2da73c5b81f42e990b01dd267acdbc1a1f17af8fd16cf7",
+        "native_binary_path": "/home/wizzygeek/code/AIdCBOR/target/release/examples/benchmark-core",
+        "native_binary_sha256": "64ba0b7fc658efe92c677b698c83c038d880d9b13050108860cb555bd3edc50d",
+        "native_binary_profile": "release",
+        "native_build_command": "cargo build --release --locked --example benchmark-core",
+        "native_build_configuration": {
+          "profile": "release",
+          "lto": true,
+          "dcbor_features": [
+            "multithreaded"
+          ]
+        }
+      },
+      "fixtures": {
+        "small_record": {
+          "rust_core": {
+            "encode": 212.69,
+            "decode": 490.133
+          },
+          "python_dcbor": {
+            "encode": 1477.631,
+            "decode": 863.364
+          }
+        },
+        "nested_document": {
+          "rust_core": {
+            "encode": 553.261,
+            "decode": 1164.742
+          },
+          "python_dcbor": {
+            "decode": 1991.878,
+            "encode": 3431.608
+          }
+        },
+        "repeated_unicode_strings": {
+          "rust_core": {
+            "encode": 12796.39,
+            "decode": 20656.441
+          },
+          "python_dcbor": {
+            "encode": 47340.375,
+            "decode": 31592.701
+          }
+        },
+        "numeric_array": {
+          "rust_core": {
+            "encode": 2829.545,
+            "decode": 5522.963
+          },
+          "python_dcbor": {
+            "decode": 9724.369,
+            "encode": 10853.935
+          }
+        },
+        "compact_scientific_notation": {
+          "rust_core": {
+            "encode": 46.949,
+            "decode": 55.665
+          },
+          "python_dcbor": {
+            "encode": 279.676,
+            "decode": 223.26
+          }
+        },
+        "large_collection": {
+          "rust_core": {
+            "encode": 35938.949,
+            "decode": 109623.438
+          },
+          "python_dcbor": {
+            "decode": 152723.183,
+            "encode": 178533.242
+          }
+        },
+        "telemetry_batch": {
+          "rust_core": {
+            "encode": 17965.948,
+            "decode": 64587.831
+          },
+          "python_dcbor": {
+            "encode": 97443.858,
+            "decode": 103575.447
+          }
+        },
+        "ascii_article": {
+          "rust_core": {
+            "encode": 456.76,
+            "decode": 3046.052
+          },
+          "python_dcbor": {
+            "decode": 3786.135,
+            "encode": 2008.98
+          }
+        }
+      }
+    },
+    {
+      "process": {
+        "pid": 537,
+        "order_offset": 2,
+        "fixture_order": [
+          "repeated_unicode_strings",
+          "numeric_array",
+          "compact_scientific_notation",
+          "large_collection",
+          "telemetry_batch",
+          "ascii_article",
+          "small_record",
+          "nested_document"
+        ],
+        "rust_fixture_order": [
+          "repeated_unicode_strings",
+          "numeric_array",
+          "compact_scientific_notation",
+          "large_collection",
+          "telemetry_batch",
+          "ascii_article",
+          "small_record",
+          "nested_document"
+        ],
+        "implementation_group_order": [
+          "python_dcbor",
+          "rust_core"
+        ],
+        "python_operation_order": {
+          "repeated_unicode_strings": [
+            "encode",
+            "decode"
+          ],
+          "numeric_array": [
+            "decode",
+            "encode"
+          ],
+          "compact_scientific_notation": [
+            "encode",
+            "decode"
+          ],
+          "large_collection": [
+            "decode",
+            "encode"
+          ],
+          "telemetry_batch": [
+            "encode",
+            "decode"
+          ],
+          "ascii_article": [
+            "decode",
+            "encode"
+          ],
+          "small_record": [
+            "encode",
+            "decode"
+          ],
+          "nested_document": [
+            "decode",
+            "encode"
+          ]
+        },
+        "rust_operation_order": {
+          "repeated_unicode_strings": [
+            "encode",
+            "decode"
+          ],
+          "numeric_array": [
+            "decode",
+            "encode"
+          ],
+          "compact_scientific_notation": [
+            "encode",
+            "decode"
+          ],
+          "large_collection": [
+            "decode",
+            "encode"
+          ],
+          "telemetry_batch": [
+            "encode",
+            "decode"
+          ],
+          "ascii_article": [
+            "decode",
+            "encode"
+          ],
+          "small_record": [
+            "encode",
+            "decode"
+          ],
+          "nested_document": [
+            "decode",
+            "encode"
+          ]
+        }
+      },
+      "environment": {
+        "python_version": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+        "python_implementation": "CPython",
+        "python_executable": "/usr/bin/python3.14",
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "system": "Linux",
+        "release": "7.2.4-200.fc44.x86_64",
+        "machine": "x86_64",
+        "processor": "AMD Ryzen 7 7435HS",
+        "dcbor_version": "0.1.0",
+        "dcbor_build": {
+          "profile": "release",
+          "verified_by": "SHA-256 equality with target/release/lib_dcbor.so",
+          "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+          "extension_sha256": "0cf305e9b25f460a20cf87f6e6a4c6c8966d849ca404a45caed539f448239735",
+          "release_artifact_path": "target/release/lib_dcbor.so",
+          "release_artifact_sha256": "0cf305e9b25f460a20cf87f6e6a4c6c8966d849ca404a45caed539f448239735"
+        },
+        "rustc_version_verbose": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo_version": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+        "cargo_lock_sha256": "9fcd311c804f038f3b2da73c5b81f42e990b01dd267acdbc1a1f17af8fd16cf7",
+        "native_binary_path": "/home/wizzygeek/code/AIdCBOR/target/release/examples/benchmark-core",
+        "native_binary_sha256": "64ba0b7fc658efe92c677b698c83c038d880d9b13050108860cb555bd3edc50d",
+        "native_binary_profile": "release",
+        "native_build_command": "cargo build --release --locked --example benchmark-core",
+        "native_build_configuration": {
+          "profile": "release",
+          "lto": true,
+          "dcbor_features": [
+            "multithreaded"
+          ]
+        }
+      },
+      "fixtures": {
+        "small_record": {
+          "rust_core": {
+            "encode": 197.291,
+            "decode": 443.734
+          },
+          "python_dcbor": {
+            "encode": 1394.764,
+            "decode": 1045.718
+          }
+        },
+        "nested_document": {
+          "rust_core": {
+            "encode": 547.54,
+            "decode": 1353.356
+          },
+          "python_dcbor": {
+            "decode": 2041.642,
+            "encode": 3685.806
+          }
+        },
+        "repeated_unicode_strings": {
+          "rust_core": {
+            "encode": 12762.487,
+            "decode": 20282.327
+          },
+          "python_dcbor": {
+            "encode": 49162.764,
+            "decode": 32177.751
+          }
+        },
+        "numeric_array": {
+          "rust_core": {
+            "encode": 2733.845,
+            "decode": 5414.489
+          },
+          "python_dcbor": {
+            "decode": 9418.694,
+            "encode": 10592.974
+          }
+        },
+        "compact_scientific_notation": {
+          "rust_core": {
+            "encode": 50.085,
+            "decode": 73.598
+          },
+          "python_dcbor": {
+            "encode": 398.6,
+            "decode": 226.877
+          }
+        },
+        "large_collection": {
+          "rust_core": {
+            "encode": 35251.315,
+            "decode": 112217.67
+          },
+          "python_dcbor": {
+            "decode": 152002.727,
+            "encode": 177994.628
+          }
+        },
+        "telemetry_batch": {
+          "rust_core": {
+            "encode": 17858.606,
+            "decode": 64009.022
+          },
+          "python_dcbor": {
+            "encode": 98032.727,
+            "decode": 88718.009
+          }
+        },
+        "ascii_article": {
+          "rust_core": {
+            "encode": 473.401,
+            "decode": 2876.163
+          },
+          "python_dcbor": {
+            "decode": 3826.992,
+            "encode": 1929.821
+          }
+        }
+      }
+    },
+    {
+      "process": {
+        "pid": 559,
+        "order_offset": 3,
+        "fixture_order": [
+          "numeric_array",
+          "compact_scientific_notation",
+          "large_collection",
+          "telemetry_batch",
+          "ascii_article",
+          "small_record",
+          "nested_document",
+          "repeated_unicode_strings"
+        ],
+        "rust_fixture_order": [
+          "numeric_array",
+          "compact_scientific_notation",
+          "large_collection",
+          "telemetry_batch",
+          "ascii_article",
+          "small_record",
+          "nested_document",
+          "repeated_unicode_strings"
+        ],
+        "implementation_group_order": [
+          "rust_core",
+          "python_dcbor"
+        ],
+        "python_operation_order": {
+          "numeric_array": [
+            "decode",
+            "encode"
+          ],
+          "compact_scientific_notation": [
+            "encode",
+            "decode"
+          ],
+          "large_collection": [
+            "decode",
+            "encode"
+          ],
+          "telemetry_batch": [
+            "encode",
+            "decode"
+          ],
+          "ascii_article": [
+            "decode",
+            "encode"
+          ],
+          "small_record": [
+            "encode",
+            "decode"
+          ],
+          "nested_document": [
+            "decode",
+            "encode"
+          ],
+          "repeated_unicode_strings": [
+            "encode",
+            "decode"
+          ]
+        },
+        "rust_operation_order": {
+          "numeric_array": [
+            "decode",
+            "encode"
+          ],
+          "compact_scientific_notation": [
+            "encode",
+            "decode"
+          ],
+          "large_collection": [
+            "decode",
+            "encode"
+          ],
+          "telemetry_batch": [
+            "encode",
+            "decode"
+          ],
+          "ascii_article": [
+            "decode",
+            "encode"
+          ],
+          "small_record": [
+            "encode",
+            "decode"
+          ],
+          "nested_document": [
+            "decode",
+            "encode"
+          ],
+          "repeated_unicode_strings": [
+            "encode",
+            "decode"
+          ]
+        }
+      },
+      "environment": {
+        "python_version": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+        "python_implementation": "CPython",
+        "python_executable": "/usr/bin/python3.14",
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "system": "Linux",
+        "release": "7.2.4-200.fc44.x86_64",
+        "machine": "x86_64",
+        "processor": "AMD Ryzen 7 7435HS",
+        "dcbor_version": "0.1.0",
+        "dcbor_build": {
+          "profile": "release",
+          "verified_by": "SHA-256 equality with target/release/lib_dcbor.so",
+          "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+          "extension_sha256": "0cf305e9b25f460a20cf87f6e6a4c6c8966d849ca404a45caed539f448239735",
+          "release_artifact_path": "target/release/lib_dcbor.so",
+          "release_artifact_sha256": "0cf305e9b25f460a20cf87f6e6a4c6c8966d849ca404a45caed539f448239735"
+        },
+        "rustc_version_verbose": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo_version": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+        "cargo_lock_sha256": "9fcd311c804f038f3b2da73c5b81f42e990b01dd267acdbc1a1f17af8fd16cf7",
+        "native_binary_path": "/home/wizzygeek/code/AIdCBOR/target/release/examples/benchmark-core",
+        "native_binary_sha256": "64ba0b7fc658efe92c677b698c83c038d880d9b13050108860cb555bd3edc50d",
+        "native_binary_profile": "release",
+        "native_build_command": "cargo build --release --locked --example benchmark-core",
+        "native_build_configuration": {
+          "profile": "release",
+          "lto": true,
+          "dcbor_features": [
+            "multithreaded"
+          ]
+        }
+      },
+      "fixtures": {
+        "small_record": {
+          "rust_core": {
+            "encode": 205.647,
+            "decode": 466.088
+          },
+          "python_dcbor": {
+            "encode": 1513.739,
+            "decode": 916.014
+          }
+        },
+        "nested_document": {
+          "rust_core": {
+            "encode": 547.46,
+            "decode": 1289.066
+          },
+          "python_dcbor": {
+            "decode": 2261.636,
+            "encode": 3506.359
+          }
+        },
+        "repeated_unicode_strings": {
+          "rust_core": {
+            "encode": 12960.649,
+            "decode": 21618.362
+          },
+          "python_dcbor": {
+            "encode": 48209.02,
+            "decode": 32532.77
+          }
+        },
+        "numeric_array": {
+          "rust_core": {
+            "encode": 2934.162,
+            "decode": 4936.329
+          },
+          "python_dcbor": {
+            "decode": 9215.321,
+            "encode": 10663.235
+          }
+        },
+        "compact_scientific_notation": {
+          "rust_core": {
+            "encode": 48.08,
+            "decode": 56.045
+          },
+          "python_dcbor": {
+            "encode": 281.319,
+            "decode": 211.057
+          }
+        },
+        "large_collection": {
+          "rust_core": {
+            "encode": 32061.984,
+            "decode": 107499.091
+          },
+          "python_dcbor": {
+            "decode": 153989.265,
+            "encode": 175929.562
+          }
+        },
+        "telemetry_batch": {
+          "rust_core": {
+            "encode": 17783.104,
+            "decode": 63611.353
+          },
+          "python_dcbor": {
+            "encode": 97209.748,
+            "decode": 89121.207
+          }
+        },
+        "ascii_article": {
+          "rust_core": {
+            "encode": 446.551,
+            "decode": 2900.839
+          },
+          "python_dcbor": {
+            "decode": 3718.848,
+            "encode": 2194.509
+          }
+        }
+      }
+    },
+    {
+      "process": {
+        "pid": 581,
+        "order_offset": 4,
+        "fixture_order": [
+          "compact_scientific_notation",
+          "large_collection",
+          "telemetry_batch",
+          "ascii_article",
+          "small_record",
+          "nested_document",
+          "repeated_unicode_strings",
+          "numeric_array"
+        ],
+        "rust_fixture_order": [
+          "compact_scientific_notation",
+          "large_collection",
+          "telemetry_batch",
+          "ascii_article",
+          "small_record",
+          "nested_document",
+          "repeated_unicode_strings",
+          "numeric_array"
+        ],
+        "implementation_group_order": [
+          "python_dcbor",
+          "rust_core"
+        ],
+        "python_operation_order": {
+          "compact_scientific_notation": [
+            "encode",
+            "decode"
+          ],
+          "large_collection": [
+            "decode",
+            "encode"
+          ],
+          "telemetry_batch": [
+            "encode",
+            "decode"
+          ],
+          "ascii_article": [
+            "decode",
+            "encode"
+          ],
+          "small_record": [
+            "encode",
+            "decode"
+          ],
+          "nested_document": [
+            "decode",
+            "encode"
+          ],
+          "repeated_unicode_strings": [
+            "encode",
+            "decode"
+          ],
+          "numeric_array": [
+            "decode",
+            "encode"
+          ]
+        },
+        "rust_operation_order": {
+          "compact_scientific_notation": [
+            "encode",
+            "decode"
+          ],
+          "large_collection": [
+            "decode",
+            "encode"
+          ],
+          "telemetry_batch": [
+            "encode",
+            "decode"
+          ],
+          "ascii_article": [
+            "decode",
+            "encode"
+          ],
+          "small_record": [
+            "encode",
+            "decode"
+          ],
+          "nested_document": [
+            "decode",
+            "encode"
+          ],
+          "repeated_unicode_strings": [
+            "encode",
+            "decode"
+          ],
+          "numeric_array": [
+            "decode",
+            "encode"
+          ]
+        }
+      },
+      "environment": {
+        "python_version": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+        "python_implementation": "CPython",
+        "python_executable": "/usr/bin/python3.14",
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "system": "Linux",
+        "release": "7.2.4-200.fc44.x86_64",
+        "machine": "x86_64",
+        "processor": "AMD Ryzen 7 7435HS",
+        "dcbor_version": "0.1.0",
+        "dcbor_build": {
+          "profile": "release",
+          "verified_by": "SHA-256 equality with target/release/lib_dcbor.so",
+          "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+          "extension_sha256": "0cf305e9b25f460a20cf87f6e6a4c6c8966d849ca404a45caed539f448239735",
+          "release_artifact_path": "target/release/lib_dcbor.so",
+          "release_artifact_sha256": "0cf305e9b25f460a20cf87f6e6a4c6c8966d849ca404a45caed539f448239735"
+        },
+        "rustc_version_verbose": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo_version": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+        "cargo_lock_sha256": "9fcd311c804f038f3b2da73c5b81f42e990b01dd267acdbc1a1f17af8fd16cf7",
+        "native_binary_path": "/home/wizzygeek/code/AIdCBOR/target/release/examples/benchmark-core",
+        "native_binary_sha256": "64ba0b7fc658efe92c677b698c83c038d880d9b13050108860cb555bd3edc50d",
+        "native_binary_profile": "release",
+        "native_build_command": "cargo build --release --locked --example benchmark-core",
+        "native_build_configuration": {
+          "profile": "release",
+          "lto": true,
+          "dcbor_features": [
+            "multithreaded"
+          ]
+        }
+      },
+      "fixtures": {
+        "small_record": {
+          "rust_core": {
+            "encode": 196.52,
+            "decode": 437.884
+          },
+          "python_dcbor": {
+            "encode": 1549.215,
+            "decode": 883.453
+          }
+        },
+        "nested_document": {
+          "rust_core": {
+            "encode": 573.829,
+            "decode": 1202.142
+          },
+          "python_dcbor": {
+            "decode": 2030.311,
+            "encode": 3400.97
+          }
+        },
+        "repeated_unicode_strings": {
+          "rust_core": {
+            "encode": 13155.396,
+            "decode": 21945.046
+          },
+          "python_dcbor": {
+            "encode": 50841.844,
+            "decode": 31563.646
+          }
+        },
+        "numeric_array": {
+          "rust_core": {
+            "encode": 2728.103,
+            "decode": 5544.564
+          },
+          "python_dcbor": {
+            "decode": 9568.807,
+            "encode": 10804.462
+          }
+        },
+        "compact_scientific_notation": {
+          "rust_core": {
+            "encode": 48.872,
+            "decode": 55.996
+          },
+          "python_dcbor": {
+            "encode": 598.657,
+            "decode": 220.575
+          }
+        },
+        "large_collection": {
+          "rust_core": {
+            "encode": 32489.218,
+            "decode": 109148.925
+          },
+          "python_dcbor": {
+            "decode": 150995.662,
+            "encode": 176600.655
+          }
+        },
+        "telemetry_batch": {
+          "rust_core": {
+            "encode": 17831.375,
+            "decode": 64372.976
+          },
+          "python_dcbor": {
+            "encode": 98477.032,
+            "decode": 87328.103
+          }
+        },
+        "ascii_article": {
+          "rust_core": {
+            "encode": 448.404,
+            "decode": 2876.694
+          },
+          "python_dcbor": {
+            "decode": 3756.959,
+            "encode": 1934.28
+          }
+        }
+      }
+    },
+    {
+      "process": {
+        "pid": 603,
+        "order_offset": 5,
+        "fixture_order": [
+          "large_collection",
+          "telemetry_batch",
+          "ascii_article",
+          "small_record",
+          "nested_document",
+          "repeated_unicode_strings",
+          "numeric_array",
+          "compact_scientific_notation"
+        ],
+        "rust_fixture_order": [
+          "large_collection",
+          "telemetry_batch",
+          "ascii_article",
+          "small_record",
+          "nested_document",
+          "repeated_unicode_strings",
+          "numeric_array",
+          "compact_scientific_notation"
+        ],
+        "implementation_group_order": [
+          "rust_core",
+          "python_dcbor"
+        ],
+        "python_operation_order": {
+          "large_collection": [
+            "decode",
+            "encode"
+          ],
+          "telemetry_batch": [
+            "encode",
+            "decode"
+          ],
+          "ascii_article": [
+            "decode",
+            "encode"
+          ],
+          "small_record": [
+            "encode",
+            "decode"
+          ],
+          "nested_document": [
+            "decode",
+            "encode"
+          ],
+          "repeated_unicode_strings": [
+            "encode",
+            "decode"
+          ],
+          "numeric_array": [
+            "decode",
+            "encode"
+          ],
+          "compact_scientific_notation": [
+            "encode",
+            "decode"
+          ]
+        },
+        "rust_operation_order": {
+          "large_collection": [
+            "decode",
+            "encode"
+          ],
+          "telemetry_batch": [
+            "encode",
+            "decode"
+          ],
+          "ascii_article": [
+            "decode",
+            "encode"
+          ],
+          "small_record": [
+            "encode",
+            "decode"
+          ],
+          "nested_document": [
+            "decode",
+            "encode"
+          ],
+          "repeated_unicode_strings": [
+            "encode",
+            "decode"
+          ],
+          "numeric_array": [
+            "decode",
+            "encode"
+          ],
+          "compact_scientific_notation": [
+            "encode",
+            "decode"
+          ]
+        }
+      },
+      "environment": {
+        "python_version": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+        "python_implementation": "CPython",
+        "python_executable": "/usr/bin/python3.14",
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "system": "Linux",
+        "release": "7.2.4-200.fc44.x86_64",
+        "machine": "x86_64",
+        "processor": "AMD Ryzen 7 7435HS",
+        "dcbor_version": "0.1.0",
+        "dcbor_build": {
+          "profile": "release",
+          "verified_by": "SHA-256 equality with target/release/lib_dcbor.so",
+          "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+          "extension_sha256": "0cf305e9b25f460a20cf87f6e6a4c6c8966d849ca404a45caed539f448239735",
+          "release_artifact_path": "target/release/lib_dcbor.so",
+          "release_artifact_sha256": "0cf305e9b25f460a20cf87f6e6a4c6c8966d849ca404a45caed539f448239735"
+        },
+        "rustc_version_verbose": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo_version": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+        "cargo_lock_sha256": "9fcd311c804f038f3b2da73c5b81f42e990b01dd267acdbc1a1f17af8fd16cf7",
+        "native_binary_path": "/home/wizzygeek/code/AIdCBOR/target/release/examples/benchmark-core",
+        "native_binary_sha256": "64ba0b7fc658efe92c677b698c83c038d880d9b13050108860cb555bd3edc50d",
+        "native_binary_profile": "release",
+        "native_build_command": "cargo build --release --locked --example benchmark-core",
+        "native_build_configuration": {
+          "profile": "release",
+          "lto": true,
+          "dcbor_features": [
+            "multithreaded"
+          ]
+        }
+      },
+      "fixtures": {
+        "small_record": {
+          "rust_core": {
+            "encode": 198.994,
+            "decode": 450.558
+          },
+          "python_dcbor": {
+            "encode": 1412.497,
+            "decode": 898.26
+          }
+        },
+        "nested_document": {
+          "rust_core": {
+            "encode": 562.329,
+            "decode": 1199.948
+          },
+          "python_dcbor": {
+            "decode": 2213.476,
+            "encode": 3475.851
+          }
+        },
+        "repeated_unicode_strings": {
+          "rust_core": {
+            "encode": 13279.67,
+            "decode": 22312.488
+          },
+          "python_dcbor": {
+            "encode": 48214.62,
+            "decode": 31776.827
+          }
+        },
+        "numeric_array": {
+          "rust_core": {
+            "encode": 2866.014,
+            "decode": 5570.904
+          },
+          "python_dcbor": {
+            "decode": 9577.052,
+            "encode": 10937.071
+          }
+        },
+        "compact_scientific_notation": {
+          "rust_core": {
+            "encode": 49.423,
+            "decode": 55.775
+          },
+          "python_dcbor": {
+            "encode": 273.515,
+            "decode": 215.827
+          }
+        },
+        "large_collection": {
+          "rust_core": {
+            "encode": 32610.556,
+            "decode": 109220.66
+          },
+          "python_dcbor": {
+            "decode": 154130.4,
+            "encode": 184926.251
+          }
+        },
+        "telemetry_batch": {
+          "rust_core": {
+            "encode": 17745.954,
+            "decode": 63707.264
+          },
+          "python_dcbor": {
+            "encode": 99335.278,
+            "decode": 87562.945
+          }
+        },
+        "ascii_article": {
+          "rust_core": {
+            "encode": 544.485,
+            "decode": 2891.512
+          },
+          "python_dcbor": {
+            "decode": 3842.37,
+            "encode": 2012.127
+          }
+        }
+      }
+    },
+    {
+      "process": {
+        "pid": 625,
+        "order_offset": 6,
+        "fixture_order": [
+          "telemetry_batch",
+          "ascii_article",
+          "small_record",
+          "nested_document",
+          "repeated_unicode_strings",
+          "numeric_array",
+          "compact_scientific_notation",
+          "large_collection"
+        ],
+        "rust_fixture_order": [
+          "telemetry_batch",
+          "ascii_article",
+          "small_record",
+          "nested_document",
+          "repeated_unicode_strings",
+          "numeric_array",
+          "compact_scientific_notation",
+          "large_collection"
+        ],
+        "implementation_group_order": [
+          "python_dcbor",
+          "rust_core"
+        ],
+        "python_operation_order": {
+          "telemetry_batch": [
+            "encode",
+            "decode"
+          ],
+          "ascii_article": [
+            "decode",
+            "encode"
+          ],
+          "small_record": [
+            "encode",
+            "decode"
+          ],
+          "nested_document": [
+            "decode",
+            "encode"
+          ],
+          "repeated_unicode_strings": [
+            "encode",
+            "decode"
+          ],
+          "numeric_array": [
+            "decode",
+            "encode"
+          ],
+          "compact_scientific_notation": [
+            "encode",
+            "decode"
+          ],
+          "large_collection": [
+            "decode",
+            "encode"
+          ]
+        },
+        "rust_operation_order": {
+          "telemetry_batch": [
+            "encode",
+            "decode"
+          ],
+          "ascii_article": [
+            "decode",
+            "encode"
+          ],
+          "small_record": [
+            "encode",
+            "decode"
+          ],
+          "nested_document": [
+            "decode",
+            "encode"
+          ],
+          "repeated_unicode_strings": [
+            "encode",
+            "decode"
+          ],
+          "numeric_array": [
+            "decode",
+            "encode"
+          ],
+          "compact_scientific_notation": [
+            "encode",
+            "decode"
+          ],
+          "large_collection": [
+            "decode",
+            "encode"
+          ]
+        }
+      },
+      "environment": {
+        "python_version": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+        "python_implementation": "CPython",
+        "python_executable": "/usr/bin/python3.14",
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "system": "Linux",
+        "release": "7.2.4-200.fc44.x86_64",
+        "machine": "x86_64",
+        "processor": "AMD Ryzen 7 7435HS",
+        "dcbor_version": "0.1.0",
+        "dcbor_build": {
+          "profile": "release",
+          "verified_by": "SHA-256 equality with target/release/lib_dcbor.so",
+          "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+          "extension_sha256": "0cf305e9b25f460a20cf87f6e6a4c6c8966d849ca404a45caed539f448239735",
+          "release_artifact_path": "target/release/lib_dcbor.so",
+          "release_artifact_sha256": "0cf305e9b25f460a20cf87f6e6a4c6c8966d849ca404a45caed539f448239735"
+        },
+        "rustc_version_verbose": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo_version": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+        "cargo_lock_sha256": "9fcd311c804f038f3b2da73c5b81f42e990b01dd267acdbc1a1f17af8fd16cf7",
+        "native_binary_path": "/home/wizzygeek/code/AIdCBOR/target/release/examples/benchmark-core",
+        "native_binary_sha256": "64ba0b7fc658efe92c677b698c83c038d880d9b13050108860cb555bd3edc50d",
+        "native_binary_profile": "release",
+        "native_build_command": "cargo build --release --locked --example benchmark-core",
+        "native_build_configuration": {
+          "profile": "release",
+          "lto": true,
+          "dcbor_features": [
+            "multithreaded"
+          ]
+        }
+      },
+      "fixtures": {
+        "small_record": {
+          "rust_core": {
+            "encode": 200.147,
+            "decode": 435.73
+          },
+          "python_dcbor": {
+            "encode": 1602.736,
+            "decode": 921.013
+          }
+        },
+        "nested_document": {
+          "rust_core": {
+            "encode": 561.556,
+            "decode": 1162.978
+          },
+          "python_dcbor": {
+            "decode": 2075.295,
+            "encode": 3640.941
+          }
+        },
+        "repeated_unicode_strings": {
+          "rust_core": {
+            "encode": 13067.831,
+            "decode": 21399.119
+          },
+          "python_dcbor": {
+            "encode": 48359.613,
+            "decode": 31555.881
+          }
+        },
+        "numeric_array": {
+          "rust_core": {
+            "encode": 2814.597,
+            "decode": 5260.829
+          },
+          "python_dcbor": {
+            "decode": 9720.692,
+            "encode": 10771.429
+          }
+        },
+        "compact_scientific_notation": {
+          "rust_core": {
+            "encode": 50.776,
+            "decode": 56.316
+          },
+          "python_dcbor": {
+            "encode": 331.784,
+            "decode": 254.359
+          }
+        },
+        "large_collection": {
+          "rust_core": {
+            "encode": 34705.088,
+            "decode": 111240.371
+          },
+          "python_dcbor": {
+            "decode": 153875.741,
+            "encode": 178695.166
+          }
+        },
+        "telemetry_batch": {
+          "rust_core": {
+            "encode": 18522.275,
+            "decode": 62955.168
+          },
+          "python_dcbor": {
+            "encode": 94772.411,
+            "decode": 88025.305
+          }
+        },
+        "ascii_article": {
+          "rust_core": {
+            "encode": 454.385,
+            "decode": 3032.827
+          },
+          "python_dcbor": {
+            "decode": 3758.192,
+            "encode": 2069.535
+          }
+        }
+      }
+    },
+    {
+      "process": {
+        "pid": 647,
+        "order_offset": 7,
+        "fixture_order": [
+          "ascii_article",
+          "small_record",
+          "nested_document",
+          "repeated_unicode_strings",
+          "numeric_array",
+          "compact_scientific_notation",
+          "large_collection",
+          "telemetry_batch"
+        ],
+        "rust_fixture_order": [
+          "ascii_article",
+          "small_record",
+          "nested_document",
+          "repeated_unicode_strings",
+          "numeric_array",
+          "compact_scientific_notation",
+          "large_collection",
+          "telemetry_batch"
+        ],
+        "implementation_group_order": [
+          "rust_core",
+          "python_dcbor"
+        ],
+        "python_operation_order": {
+          "ascii_article": [
+            "decode",
+            "encode"
+          ],
+          "small_record": [
+            "encode",
+            "decode"
+          ],
+          "nested_document": [
+            "decode",
+            "encode"
+          ],
+          "repeated_unicode_strings": [
+            "encode",
+            "decode"
+          ],
+          "numeric_array": [
+            "decode",
+            "encode"
+          ],
+          "compact_scientific_notation": [
+            "encode",
+            "decode"
+          ],
+          "large_collection": [
+            "decode",
+            "encode"
+          ],
+          "telemetry_batch": [
+            "encode",
+            "decode"
+          ]
+        },
+        "rust_operation_order": {
+          "ascii_article": [
+            "decode",
+            "encode"
+          ],
+          "small_record": [
+            "encode",
+            "decode"
+          ],
+          "nested_document": [
+            "decode",
+            "encode"
+          ],
+          "repeated_unicode_strings": [
+            "encode",
+            "decode"
+          ],
+          "numeric_array": [
+            "decode",
+            "encode"
+          ],
+          "compact_scientific_notation": [
+            "encode",
+            "decode"
+          ],
+          "large_collection": [
+            "decode",
+            "encode"
+          ],
+          "telemetry_batch": [
+            "encode",
+            "decode"
+          ]
+        }
+      },
+      "environment": {
+        "python_version": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+        "python_implementation": "CPython",
+        "python_executable": "/usr/bin/python3.14",
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "system": "Linux",
+        "release": "7.2.4-200.fc44.x86_64",
+        "machine": "x86_64",
+        "processor": "AMD Ryzen 7 7435HS",
+        "dcbor_version": "0.1.0",
+        "dcbor_build": {
+          "profile": "release",
+          "verified_by": "SHA-256 equality with target/release/lib_dcbor.so",
+          "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+          "extension_sha256": "0cf305e9b25f460a20cf87f6e6a4c6c8966d849ca404a45caed539f448239735",
+          "release_artifact_path": "target/release/lib_dcbor.so",
+          "release_artifact_sha256": "0cf305e9b25f460a20cf87f6e6a4c6c8966d849ca404a45caed539f448239735"
+        },
+        "rustc_version_verbose": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo_version": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+        "cargo_lock_sha256": "9fcd311c804f038f3b2da73c5b81f42e990b01dd267acdbc1a1f17af8fd16cf7",
+        "native_binary_path": "/home/wizzygeek/code/AIdCBOR/target/release/examples/benchmark-core",
+        "native_binary_sha256": "64ba0b7fc658efe92c677b698c83c038d880d9b13050108860cb555bd3edc50d",
+        "native_binary_profile": "release",
+        "native_build_command": "cargo build --release --locked --example benchmark-core",
+        "native_build_configuration": {
+          "profile": "release",
+          "lto": true,
+          "dcbor_features": [
+            "multithreaded"
+          ]
+        }
+      },
+      "fixtures": {
+        "small_record": {
+          "rust_core": {
+            "encode": 201.619,
+            "decode": 412.857
+          },
+          "python_dcbor": {
+            "encode": 1475.577,
+            "decode": 875.678
+          }
+        },
+        "nested_document": {
+          "rust_core": {
+            "encode": 532.733,
+            "decode": 1182.595
+          },
+          "python_dcbor": {
+            "decode": 2189.08,
+            "encode": 3326.079
+          }
+        },
+        "repeated_unicode_strings": {
+          "rust_core": {
+            "encode": 13956.272,
+            "decode": 20542.987
+          },
+          "python_dcbor": {
+            "encode": 48934.324,
+            "decode": 31791.915
+          }
+        },
+        "numeric_array": {
+          "rust_core": {
+            "encode": 2698.097,
+            "decode": 5833.727
+          },
+          "python_dcbor": {
+            "decode": 9837.682,
+            "encode": 10929.827
+          }
+        },
+        "compact_scientific_notation": {
+          "rust_core": {
+            "encode": 46.658,
+            "decode": 55.885
+          },
+          "python_dcbor": {
+            "encode": 276.531,
+            "decode": 211.779
+          }
+        },
+        "large_collection": {
+          "rust_core": {
+            "encode": 35126.531,
+            "decode": 108265.362
+          },
+          "python_dcbor": {
+            "decode": 149585.969,
+            "encode": 178748.056
+          }
+        },
+        "telemetry_batch": {
+          "rust_core": {
+            "encode": 18774.129,
+            "decode": 65688.932
+          },
+          "python_dcbor": {
+            "encode": 97214.677,
+            "decode": 87009.093
+          }
+        },
+        "ascii_article": {
+          "rust_core": {
+            "encode": 366.419,
+            "decode": 2830.055
+          },
+          "python_dcbor": {
+            "decode": 3641.171,
+            "encode": 2200.03
+          }
+        }
+      }
+    },
+    {
+      "process": {
+        "pid": 669,
+        "order_offset": 8,
+        "fixture_order": [
+          "small_record",
+          "nested_document",
+          "repeated_unicode_strings",
+          "numeric_array",
+          "compact_scientific_notation",
+          "large_collection",
+          "telemetry_batch",
+          "ascii_article"
+        ],
+        "rust_fixture_order": [
+          "small_record",
+          "nested_document",
+          "repeated_unicode_strings",
+          "numeric_array",
+          "compact_scientific_notation",
+          "large_collection",
+          "telemetry_batch",
+          "ascii_article"
+        ],
+        "implementation_group_order": [
+          "python_dcbor",
+          "rust_core"
+        ],
+        "python_operation_order": {
+          "small_record": [
+            "encode",
+            "decode"
+          ],
+          "nested_document": [
+            "decode",
+            "encode"
+          ],
+          "repeated_unicode_strings": [
+            "encode",
+            "decode"
+          ],
+          "numeric_array": [
+            "decode",
+            "encode"
+          ],
+          "compact_scientific_notation": [
+            "encode",
+            "decode"
+          ],
+          "large_collection": [
+            "decode",
+            "encode"
+          ],
+          "telemetry_batch": [
+            "encode",
+            "decode"
+          ],
+          "ascii_article": [
+            "decode",
+            "encode"
+          ]
+        },
+        "rust_operation_order": {
+          "small_record": [
+            "encode",
+            "decode"
+          ],
+          "nested_document": [
+            "decode",
+            "encode"
+          ],
+          "repeated_unicode_strings": [
+            "encode",
+            "decode"
+          ],
+          "numeric_array": [
+            "decode",
+            "encode"
+          ],
+          "compact_scientific_notation": [
+            "encode",
+            "decode"
+          ],
+          "large_collection": [
+            "decode",
+            "encode"
+          ],
+          "telemetry_batch": [
+            "encode",
+            "decode"
+          ],
+          "ascii_article": [
+            "decode",
+            "encode"
+          ]
+        }
+      },
+      "environment": {
+        "python_version": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+        "python_implementation": "CPython",
+        "python_executable": "/usr/bin/python3.14",
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "system": "Linux",
+        "release": "7.2.4-200.fc44.x86_64",
+        "machine": "x86_64",
+        "processor": "AMD Ryzen 7 7435HS",
+        "dcbor_version": "0.1.0",
+        "dcbor_build": {
+          "profile": "release",
+          "verified_by": "SHA-256 equality with target/release/lib_dcbor.so",
+          "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+          "extension_sha256": "0cf305e9b25f460a20cf87f6e6a4c6c8966d849ca404a45caed539f448239735",
+          "release_artifact_path": "target/release/lib_dcbor.so",
+          "release_artifact_sha256": "0cf305e9b25f460a20cf87f6e6a4c6c8966d849ca404a45caed539f448239735"
+        },
+        "rustc_version_verbose": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo_version": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+        "cargo_lock_sha256": "9fcd311c804f038f3b2da73c5b81f42e990b01dd267acdbc1a1f17af8fd16cf7",
+        "native_binary_path": "/home/wizzygeek/code/AIdCBOR/target/release/examples/benchmark-core",
+        "native_binary_sha256": "64ba0b7fc658efe92c677b698c83c038d880d9b13050108860cb555bd3edc50d",
+        "native_binary_profile": "release",
+        "native_build_command": "cargo build --release --locked --example benchmark-core",
+        "native_build_configuration": {
+          "profile": "release",
+          "lto": true,
+          "dcbor_features": [
+            "multithreaded"
+          ]
+        }
+      },
+      "fixtures": {
+        "small_record": {
+          "rust_core": {
+            "encode": 218.822,
+            "decode": 420.641
+          },
+          "python_dcbor": {
+            "encode": 1340.232,
+            "decode": 844.63
+          }
+        },
+        "nested_document": {
+          "rust_core": {
+            "encode": 581.975,
+            "decode": 1212.271
+          },
+          "python_dcbor": {
+            "decode": 2017.416,
+            "encode": 3459.861
+          }
+        },
+        "repeated_unicode_strings": {
+          "rust_core": {
+            "encode": 13620.08,
+            "decode": 21799.412
+          },
+          "python_dcbor": {
+            "encode": 48145.319,
+            "decode": 31052.755
+          }
+        },
+        "numeric_array": {
+          "rust_core": {
+            "encode": 3089.203,
+            "decode": 5915.492
+          },
+          "python_dcbor": {
+            "decode": 9623.749,
+            "encode": 11110.348
+          }
+        },
+        "compact_scientific_notation": {
+          "rust_core": {
+            "encode": 49.212,
+            "decode": 59.893
+          },
+          "python_dcbor": {
+            "encode": 287.03,
+            "decode": 220.835
+          }
+        },
+        "large_collection": {
+          "rust_core": {
+            "encode": 33456.398,
+            "decode": 115947.839
+          },
+          "python_dcbor": {
+            "decode": 155114.493,
+            "encode": 178849.818
+          }
+        },
+        "telemetry_batch": {
+          "rust_core": {
+            "encode": 20044.089,
+            "decode": 64901.391
+          },
+          "python_dcbor": {
+            "encode": 99299.631,
+            "decode": 89436.11
+          }
+        },
+        "ascii_article": {
+          "rust_core": {
+            "encode": 485.333,
+            "decode": 2927.669
+          },
+          "python_dcbor": {
+            "decode": 5859.927,
+            "encode": 2201.001
+          }
+        }
+      }
+    }
+  ]
+}

@@ -9,11 +9,13 @@ transport, or query cost.
 ![Eight fixtures compare compact JSON at 100%, dCBOR and DAG-CBOR points, and family ranges for generic CBOR, orjson, and msgspec MessagePack.](../../.github/assets/graphs/wire-size.svg)
 
 The figure normalizes each fixture to compact JSON at 100%. It shows dCBOR and
-DAG-CBOR as individual points and ranges across each library's measured
-modes. Where modes have the same size, their range collapses to one point.
-Direct labels show exact JSON, dCBOR, and range bytes. The scientific-notation
-fixture is included because JSON decimal text can be shorter than dCBOR's
-binary64 representation. All per-mode bytes and SHA-256 values are in the
+DAG-CBOR as individual points, plus ranges across named modes within each
+family. The generic-CBOR range combines `cbor2` and `cborx` default/canonical
+modes; `orjson` and `msgspec` have separate ranges. When modes share a size,
+their family range collapses to one point. Direct labels show exact JSON,
+dCBOR, and range bytes. The scientific-notation fixture is included because
+JSON decimal text can be shorter than dCBOR's binary64 representation. All
+per-mode bytes and SHA-256 values are in the
 [raw report](results.json).
 
 ## Measured modes

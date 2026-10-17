@@ -1,11 +1,11 @@
 {
   "measurement": "serialized payload bytes; not memory footprint",
-  "generated_at_utc": "2026-10-17T20:57:29.496972+00:00",
+  "generated_at_utc": "2026-10-17T21:18:15.046654+00:00",
   "source": {
-    "git_commit": "d2cc3fee8d2b56f1a8ae742fc1bf712f519563c1",
+    "git_commit": "0b3627e16f38b52519667ef76d7039d5e259ea64",
     "git_worktree_dirty": false,
     "generator_path": "benchmarks/encoded_size.py",
-    "generator_sha256": "77d3ff86650d753aa60b9025c05a86bfb1cb8292b371bae27c2f7bac040b7341",
+    "generator_sha256": "13eac0a85dcdbb0811997a675678e5159df718dcfe0ccaa2818935bbe454bfe2",
     "fixtures_sha256": "d29a87868226898a33a240edcbe832d2e2ecb115c1e302c5ee3b1bfd41bf58e4",
     "chart_style_path": "benchmarks/chart_style.py",
     "chart_style_sha256": "ff592d67401fbb7c45f66b03d53fa60c62fe4f6b6da7fb990353b44f902bc68d",

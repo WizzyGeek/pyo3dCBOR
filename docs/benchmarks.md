@@ -23,8 +23,9 @@ The [wire-size report](../benchmarks/wire_size/README.md) adds `cbor2`,
 `cborx`, `orjson`, `msgspec` MessagePack, and strict DAG-CBOR (`cbrrr`) to the
 JSON and dCBOR series. It records the default and deterministic/sorted modes
 separately. The plot uses compact JSON as the 100% reference, displays dCBOR
-and DAG-CBOR as points, and groups each library's measured modes into a range.
-Exact byte counts remain in the
+and DAG-CBOR as points. Its generic-CBOR range combines the named `cbor2` and
+`cborx` default/canonical modes; `orjson` and `msgspec` each have their own
+mode range. Exact byte counts remain in the
 [raw JSON](../benchmarks/wire_size/results.json).
 
 ![Eight fixtures compare JSON at 100%, dCBOR and DAG-CBOR points, and ranges for generic codec families.](../.github/assets/graphs/wire-size.svg)
