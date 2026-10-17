@@ -2,15 +2,17 @@
 
 Routine reduced Linux runs (PRs and branch pushes, CPython 3.12–3.14 on x86_64)
 use the maintained, digest-pinned images for a fixed build environment. Full
-manual, reusable, and release-tag matrices keep the existing upstream images.
+manual and release-tag matrices keep the existing upstream images. Reusable
+callers default to full coverage through `full_matrix`; PR callers always remain
+reduced, and non-PR callers may explicitly request reduced coverage.
 This is a reproducibility choice, not a claim of faster setup.
 
-`images.json` records all four reviewed image references by **registry manifest
+`images.json` records the two reviewed x86_64 references by **registry manifest
 digest**, plus the publisher source commit and Actions run. These are not the
 hashes of the Actions artifact ZIPs named `digest-*`. Resolve the reference and
 check the JSON artifact contents before updating any pin.
 
-The current four references were obtained from the JSON artifacts in
+The current two x86_64 references came from the initial four-image
 [publisher run 39051517661](https://github.com/WizzyGeek/pyo3dCBOR/actions/runs/39051517661).
 All four were anonymously readable from GHCR on 2026-10-18. Their returned
 manifest bytes match the recorded SHA-256 values; their configs report the
@@ -21,13 +23,14 @@ The trial establishes compatibility; it has not established a setup-speed win.
 
 ## Consumption policy and rollback
 
-The image mode uses the same event condition as the full/reduced wheel matrix.
+The matrix and image mode come from the same executable CI planner.
 Reduced jobs select the two pinned x86_64 libc images, pull and validate each,
 and then build and test wheels from the tested sdist. Their summaries record
 mode and digests; pull/validation logs include timestamps. Image access is
 anonymous; no package write permission or login is needed in the consumer.
-ARM pins remain recorded as provenance from the successful compatibility trial;
-the full ARM matrix uses upstream images under the current policy.
+Custom ARM publication and pins have been removed because no current reduced
+job consumes them. Full ARM wheel builds continue using upstream images.
+The historical four-image trial remains linked in the report.
 
 Maintained mode replaces cibuildwheel's Rust bootstrap with the shared
 `validate-image.sh`; it does not reinstall the toolchain. macOS and Windows
@@ -45,6 +48,9 @@ fail visibly if its pinned build environment is unavailable or invalid.
 
 The publisher builds and tests a local image once, tags/pushes that same image,
 then pulls and tests its registry digest before emitting the digest JSON.
+Only the two x86_64 libc variants are maintained. Registry inspection errors
+stop publication unless they explicitly identify the full versioned reference
+as missing; network or permission failures never authorize an overwrite.
 Reusing an existing versioned tag also requires validating that exact digest.
 Versioned tags include source commit, libc, architecture, Rust and base versions;
 the same-commit concurrency group serializes publication. Consumers still pin
@@ -53,7 +59,7 @@ digests because registry tags are mutable names.
 New builds pin Rustup 1.28.2 and verify its bootstrap script against a committed
 SHA-256 before executing it. This publisher hardening does not retroactively
 rebuild the existing images in `images.json`; trial consumption validates their
-runtime explicitly. Update the four pins together only after a new publisher
+runtime explicitly. Update both current pins together only after a new publisher
 run and anonymous access/runtime checks; never promote artifact ZIP hashes.
 
 ## Measurements still needed

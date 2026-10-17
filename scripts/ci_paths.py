@@ -17,7 +17,11 @@ BUILD_PATH = re.compile(
 
 
 def affects_build(paths):
-    return any(BUILD_PATH.search(path) for path in paths)
+    return any(
+        BUILD_PATH.search(path)
+        for path in paths
+        if not path.startswith("maintenance/")
+    )
 
 
 if __name__ == "__main__":

@@ -178,8 +178,10 @@ pushes to `master`/`main`, `v*` tags, and manual dispatches. Its stages are:
    in an isolated environment using [cibuildwheel](https://cibuildwheel.pypa.io/).
    Wheel tests exclude only tests marked `exhaustive`; all remaining conformance
    and safety tests run on every wheel.
-   Pull requests build Linux and Windows wheels; the macOS 3-core jobs run only
-   on branch pushes, tags, and manual dispatches.
+   Routine branch pushes and pull requests build reduced Linux wheels for
+   CPython 3.12–3.14 using pinned x86_64 build images. Manual dispatches and tags
+   build the full platform matrix using upstream images. Reusable callers
+   request full coverage by default; pull-request callers remain reduced.
 6. Check distribution metadata, require all 42 wheels, and generate `SHA256SUMS`.
 7. For version-tag pushes, publish a GitHub Release containing the tested wheels,
    source archive, and checksums. Ordinary CI runs retain downloadable artifacts.
@@ -195,11 +197,17 @@ ARM builds run on native ARM runners. Linux packaging images are selected by
 cibuildwheel; macOS and Windows use native runner images because their toolchains
 require those operating systems. Rust is pinned to 1.90.0 in the workflow and Linux
 container setup. Update both together. Dependabot checks action updates weekly.
-Compiler jobs are limited to two, and at most three wheel jobs run concurrently.
+Compiler jobs are limited to two; wheel jobs fan out by platform and interpreter.
 The workflow starts with a small Ubuntu change-detection job. If a push or pull
 request changes only Markdown files, the test, build, and release jobs are
 skipped; skipped job checks report success. Manual dispatches and tag pushes
 always run the full matrix.
+
+Separate [maintenance checks](maintenance/README.md) cover build/release tools
+in a path-filtered workflow. They do not run in the build pipeline or ship in
+source distributions. Branch push runs stay independent so a docs-only push
+cannot cancel earlier code validation; superseded PR runs may cancel because
+their diffs are cumulative.
 
 The patched `crates/dcbor` sources and license must be committed with the project.
 Do not replace them with the unpatched registry crate. The sdist includes this

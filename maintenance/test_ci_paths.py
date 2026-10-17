@@ -37,6 +37,7 @@ def test_build_inputs_trigger_ci(path):
     "docs/reviews/PERF_REVIEW.md", "docs/reviews/SPEC_REVIEW.md",
     "docs/allocation-plan.md", "",
     "docs/Cargo.toml.md", "docs/rust-toolchain.toml.txt",
+    "maintenance/test_foo.py",
 ])
 def test_docs_only_changes_skip_ci(path):
     assert not affects_build([path])

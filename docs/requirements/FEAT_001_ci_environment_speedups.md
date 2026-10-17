@@ -6,6 +6,13 @@ images only for reduced CI for reproducibility; full matrices retain upstream
 images. A setup-speed win has not been demonstrated. Native caching and broader
 adoption remain deferred pending comparable measurements and cost evidence.
 
+**Owner scope decision (2026-10-18):** maintain only x86_64 glibc/musl images
+for reduced CI. Custom ARM publication and pins are removed; full 42-wheel
+coverage, including ARM wheels on upstream images, remains required. The earlier
+four-image prototype below is historical evidence, not a requirement to continue
+maintaining unused ARM environments. Reusable callers request full coverage
+explicitly through the workflow input; pull-request callers always stay reduced.
+
 ## Problem
 
 The CI workflow builds 42 platform/Python wheel combinations. The build

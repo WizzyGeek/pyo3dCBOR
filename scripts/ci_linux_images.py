@@ -8,8 +8,8 @@ import re
 
 ROOT = Path(__file__).resolve().parents[1]
 IMAGE_KEYS = {
-    "manylinux_x86_64", "manylinux_aarch64",
-    "musllinux_x86_64", "musllinux_aarch64",
+    "manylinux_x86_64",
+    "musllinux_x86_64",
 }
 
 
@@ -22,7 +22,7 @@ def image_environment(mode, manifest):
         raise ValueError("Image Rust version must match the CI toolchain")
     images = manifest.get("images", {})
     if set(images) != IMAGE_KEYS:
-        raise ValueError("Expected all four Linux image variants")
+        raise ValueError("Expected both x86_64 Linux image variants")
     environment = {}
     for key, reference in sorted(images.items()):
         if not isinstance(reference, str) or not re.fullmatch(

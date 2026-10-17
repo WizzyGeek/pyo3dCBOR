@@ -41,7 +41,7 @@ include = [
     { path = "crates/dcbor/PATCHES.md", format = "sdist" },
     { path = "crates/dcbor/local.patch", format = "sdist" },
 ]
-exclude = ["crates/dcbor/SECURITY-REVIEW.md", "crates/dcbor/README.md"]
+exclude = ["maintenance/**", "crates/dcbor/SECURITY-REVIEW.md", "crates/dcbor/README.md"]
 
 [tool.cibuildwheel]
 # Regular CPython only: no implicit additions when new interpreters appear.

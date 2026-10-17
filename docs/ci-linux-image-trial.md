@@ -4,6 +4,8 @@ Subsequent owner decision: keep maintained images only for routine reduced
 Linux CI for reproducibility. Full manual/reusable/tag matrices use upstream
 images, and the trial's `linux_images` input is removed. The report below records
 the historical full-matrix compatibility experiment and its measurements.
+Custom ARM publication and pins were subsequently removed; current maintained
+images cover x86_64 only. Full ARM wheel builds continue with upstream images.
 
 ## Result
 

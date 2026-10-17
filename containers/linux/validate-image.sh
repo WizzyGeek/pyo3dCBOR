@@ -6,9 +6,7 @@ policy="${1:-${AUDITWHEEL_POLICY:?Missing image policy}}"
 arch="${2:-$(uname -m)}"
 case "$policy/$arch" in
   manylinux_2_28/x86_64) target=x86_64-unknown-linux-gnu ;;
-  manylinux_2_28/aarch64) target=aarch64-unknown-linux-gnu ;;
   musllinux_1_2/x86_64) target=x86_64-unknown-linux-musl ;;
-  musllinux_1_2/aarch64) target=aarch64-unknown-linux-musl ;;
   *) echo "Unsupported image: $policy/$arch" >&2; exit 1 ;;
 esac
 

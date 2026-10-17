@@ -7,14 +7,19 @@ on:
   pull_request:
   workflow_dispatch:
   workflow_call:
+    inputs:
+      full_matrix:
+        description: Request full coverage for non-PR callers (PRs remain reduced)
+        type: boolean
+        default: true
 
 permissions:
   contents: read
 
 concurrency:
-  # PRs and branch pushes share a ref-scoped group; tags and manual runs stay isolated.
-  group: wheels-${{ github.workflow }}-${{ (github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref_type == 'branch')) && github.ref || github.run_id }}
-  cancel-in-progress: true
+  # Docs-only pushes must not cancel or replace a run validating earlier code.
+  group: wheels-${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   CARGO_BUILD_JOBS: '2'
@@ -31,11 +36,21 @@ jobs:
     timeout-minutes: 5
     outputs:
       code_changed: ${{ steps.filter.outputs.code_changed }}
+      full_matrix: ${{ steps.plan.outputs.full_matrix }}
+      wheel_matrix: ${{ steps.plan.outputs.wheel_matrix }}
+      linux_image_mode: ${{ steps.plan.outputs.linux_image_mode }}
     steps:
       - uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
           persist-credentials: false
+      - name: Plan coverage and image policy
+        id: plan
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REF_TYPE: ${{ github.ref_type }}
+          FULL_MATRIX_REQUESTED: ${{ inputs.full_matrix || false }}
+        run: python3 scripts/ci_plan.py >> "$GITHUB_OUTPUT"
       - name: Check changed paths
         id: filter
         env:
@@ -45,8 +60,9 @@ jobs:
           HEAD_SHA: ${{ github.sha }}
           PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          FULL_MATRIX: ${{ steps.plan.outputs.full_matrix }}
         run: |
-          if [[ "$EVENT_NAME" == "workflow_dispatch" || "$REF_TYPE" == "tag" ]]; then
+          if [[ "$FULL_MATRIX" == "true" ]]; then
             echo "code_changed=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
@@ -75,9 +91,6 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.14'
-      - run: python -m pip install 'pytest>=8,<9'
-      - name: Verify version and changed-path guards
-        run: python -m pytest -q tests/test_ci_version.py tests/test_ci_paths.py
       - run: python scripts/ci.py versions
         env:
           RELEASE_TAG: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || '' }}
@@ -170,9 +183,7 @@ jobs:
     timeout-minutes: 90
     strategy:
       fail-fast: false
-      matrix:
-        os: ${{ (github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call' || (github.event_name == 'push' && github.ref_type == 'tag')) && fromJSON('["ubuntu-24.04","ubuntu-24.04-arm","windows-2022"]') || fromJSON('["ubuntu-latest"]') }}
-        python: ${{ (github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call' || (github.event_name == 'push' && github.ref_type == 'tag')) && fromJSON('["cp39","cp310","cp311","cp312","cp313","cp314"]') || fromJSON('["cp312","cp313","cp314"]') }}
+      matrix: ${{ fromJSON(needs.changes.outputs.wheel_matrix) }}
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -196,8 +207,7 @@ jobs:
       - name: Select Linux image mode
         if: runner.os == 'Linux'
         env:
-          # Match the full/reduced matrix condition: full runs stay upstream.
-          IMAGE_MODE: ${{ (github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call' || (github.event_name == 'push' && github.ref_type == 'tag')) && 'upstream' || 'maintained' }}
+          IMAGE_MODE: ${{ needs.changes.outputs.linux_image_mode }}
         run: |
           python scripts/ci_linux_images.py "$IMAGE_MODE" >> "$GITHUB_ENV"
           echo "Linux image mode: $IMAGE_MODE" >> "$GITHUB_STEP_SUMMARY"
@@ -206,11 +216,9 @@ jobs:
         if: runner.os == 'Linux' && env.LINUX_IMAGE_MODE == 'maintained'
         run: |
           set -euo pipefail
-          case "$(uname -m)" in
-            x86_64) manylinux="$CIBW_MANYLINUX_X86_64_IMAGE"; musllinux="$CIBW_MUSLLINUX_X86_64_IMAGE" ;;
-            aarch64) manylinux="$CIBW_MANYLINUX_AARCH64_IMAGE"; musllinux="$CIBW_MUSLLINUX_AARCH64_IMAGE" ;;
-            *) exit 1 ;;
-          esac
+          test "$(uname -m)" = x86_64
+          manylinux="$CIBW_MANYLINUX_X86_64_IMAGE"
+          musllinux="$CIBW_MUSLLINUX_X86_64_IMAGE"
           for family in manylinux_2_28 musllinux_1_2; do
             if [[ "$family" == manylinux_2_28 ]]; then image="$manylinux"; else image="$musllinux"; fi
             echo "Validating $image at $(date -u +%FT%TZ)"
@@ -237,7 +245,7 @@ jobs:
 
   macos-wheels:
     name: Wheels on ${{ matrix.os }} for ${{ matrix.python }}
-    if: (github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call' || (github.event_name == 'push' && github.ref_type == 'tag')) && needs.changes.outputs.code_changed == 'true'
+    if: needs.changes.outputs.full_matrix == 'true' && needs.changes.outputs.code_changed == 'true'
     needs: [changes, sdist]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
@@ -282,7 +290,7 @@ jobs:
 
   distributions:
     name: Validate complete release bundle
-    if: (github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call' || (github.event_name == 'push' && github.ref_type == 'tag')) && needs.changes.outputs.code_changed == 'true'
+    if: needs.changes.outputs.full_matrix == 'true' && needs.changes.outputs.code_changed == 'true'
     needs: [changes, test, rust, sdist, wheels, macos-wheels]
     runs-on: ubuntu-24.04
     timeout-minutes: 10

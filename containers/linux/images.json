@@ -4,8 +4,6 @@
   "publisher_run": "https://github.com/WizzyGeek/pyo3dCBOR/actions/runs/39051517661",
   "images": {
     "manylinux_x86_64": "ghcr.io/wizzygeek/pyo3dcbor@sha256:4c15058c5b2398c3db265299fcf9bf00d0828f781eb4d04e65dfc628b72a06ab",
-    "manylinux_aarch64": "ghcr.io/wizzygeek/pyo3dcbor@sha256:d21153cb6f82e6de2c8fb708cd50a707e4d6f94810e671ef2558e92d0e934f34",
-    "musllinux_x86_64": "ghcr.io/wizzygeek/pyo3dcbor@sha256:c924c185f9c41e2f6a69721b562346f733926e23277b7c7675272906082a7f0a",
-    "musllinux_aarch64": "ghcr.io/wizzygeek/pyo3dcbor@sha256:8f35d00468fec305108fcebd111e815e9de971724b9bb9363982c680c8802a3b"
+    "musllinux_x86_64": "ghcr.io/wizzygeek/pyo3dcbor@sha256:c924c185f9c41e2f6a69721b562346f733926e23277b7c7675272906082a7f0a"
   }
 }
