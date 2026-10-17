@@ -64,3 +64,31 @@ CI-input guard correction in `b9ad3ed`. The full Python suite still passes
 Continue delegating independent work with explicit file ownership. The current
 session supports eight workers plus the PM. Prefer Luna xhigh workers and Sol
 xhigh for critical independent review; model overrides need fresh task context.
+
+## Requirements
+
+Feature proposals and bug reports live in
+[`docs/requirements/`](../requirements/). Use `FEAT_NNN_short_title.md` for
+features and `BUG_NNN_short_title.md` for bugs, assigning the next available
+zero-padded number from one shared serial sequence across both types. The
+directory README records the conventions and current items.
+[`FEAT_001_ci_environment_speedups.md`](../requirements/FEAT_001_ci_environment_speedups.md)
+captures the research request for CI environment setup, macOS/Windows speedups,
+and sdist/wheel job parallelization. It is a proposal only; prioritize and
+assign it before implementation.
+
+[`FEAT_002_versioned_release_workflow.md`](../requirements/FEAT_002_versioned_release_workflow.md)
+captures the requested automated version-bump and release-fulfillment flow:
+produce commit-bound, version-identified bundles; on publication of a
+non-draft GitHub Release, reuse a verified bundle or build and validate one
+from the tag, then attach all 42 wheels, the sdist, and checksums. It proposes
+preparing version bumps as reviewable PRs and highlights artifact retention
+and the existing tag-push release job for PM/design review before
+implementation.
+
+[`FEAT_003_evidence_focused_readme.md`](../requirements/FEAT_003_evidence_focused_readme.md)
+captures the request for a human-scannable README backed by meaningful
+specification/test evidence, fair CBOR/dCBOR/JSON comparisons, and accessible
+graphs for encoded size, latency, and only well-defined memory metrics. It is
+a presentation and measurement proposal; benchmark evidence should be gathered
+before publishing comparative claims.
