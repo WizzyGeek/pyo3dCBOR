@@ -29,6 +29,8 @@ module-name = "dcbor._dcbor"
 features = ["pyo3/extension-module"]
 locked = true
 include = [
+    { path = "containers/linux/*.sh", format = "sdist" },
+    { path = "containers/linux/images.json", format = "sdist" },
     { path = "scripts/**/*.py", format = "sdist" },
     { path = "tests/**/*.py", format = "sdist" },
     { path = "pytest.ini", format = "sdist" },
@@ -39,7 +41,7 @@ include = [
     { path = "crates/dcbor/PATCHES.md", format = "sdist" },
     { path = "crates/dcbor/local.patch", format = "sdist" },
 ]
-exclude = ["crates/dcbor/SECURITY-REVIEW.md", "crates/dcbor/README.md"]
+exclude = ["maintenance/**", "crates/dcbor/SECURITY-REVIEW.md", "crates/dcbor/README.md"]
 
 [tool.cibuildwheel]
 # Regular CPython only: no implicit additions when new interpreters appear.

@@ -1,0 +1,41 @@
+name: CI tooling checks
+
+on:
+  push:
+    paths:
+      - '.github/workflows/**'
+      - '.github/actions/**'
+      - 'scripts/**'
+      - 'containers/linux/**'
+      - 'maintenance/**'
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+      - '.github/actions/**'
+      - 'scripts/**'
+      - 'containers/linux/**'
+      - 'maintenance/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-tooling-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  maintenance-tests:
+    name: CI maintenance checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.14'
+      - name: Install maintenance test dependencies
+        run: python -m pip install -r maintenance/requirements.txt
+      - name: Run maintenance tests
+        run: python -m pytest -q maintenance

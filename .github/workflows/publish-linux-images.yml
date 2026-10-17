@@ -5,8 +5,8 @@ on:
     branches: [master, main]
     paths:
       - ".github/workflows/publish-linux-images.yml"
-      - "containers/linux/**"
-      - "tests/test_ci_linux_images.py"
+      - "containers/linux/Dockerfile.*"
+      - "containers/linux/validate-image.sh"
   workflow_dispatch:
 
 permissions:
@@ -37,14 +37,6 @@ jobs:
             rust_target: x86_64-unknown-linux-gnu
             dockerfile: containers/linux/Dockerfile.manylinux
             base_image: quay.io/pypa/manylinux_2_28_x86_64:2026.10.16-1@sha256:1e7b8460ad8fb3fb0fbe1cd818845159ac896b4fd17452d56e892c291f3b97a8
-          - family: manylinux_2_28
-            arch: aarch64
-            runner: ubuntu-24.04-arm
-            platform: linux/arm64
-            policy: manylinux_2_28
-            rust_target: aarch64-unknown-linux-gnu
-            dockerfile: containers/linux/Dockerfile.manylinux
-            base_image: quay.io/pypa/manylinux_2_28_aarch64:2026.10.16-1@sha256:b873ffc316ffe8a154e3dc4872871de2ebd170db4876c8bbd983d42ff320001e
           - family: musllinux_1_2
             arch: x86_64
             runner: ubuntu-24.04
@@ -53,14 +45,6 @@ jobs:
             rust_target: x86_64-unknown-linux-musl
             dockerfile: containers/linux/Dockerfile.musllinux
             base_image: quay.io/pypa/musllinux_1_2_x86_64:2026.10.16-1@sha256:915d73c75b4551f98fd7b12de655ef2e27419a6441ea07472b6e25e0d868d18d
-          - family: musllinux_1_2
-            arch: aarch64
-            runner: ubuntu-24.04-arm
-            platform: linux/arm64
-            policy: musllinux_1_2
-            rust_target: aarch64-unknown-linux-musl
-            dockerfile: containers/linux/Dockerfile.musllinux
-            base_image: quay.io/pypa/musllinux_1_2_aarch64:2026.10.16-1@sha256:75a9ccd28ccc0abda65e462133f6e324943354e4e4936b51ba7c2ddc98352f86
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -86,22 +70,9 @@ jobs:
             --load \
             .
           docker run --rm \
-            --env ARCH \
-            --env EXPECTED_POLICY \
-            --env RUST_TARGET \
+            --volume "$PWD/containers/linux/validate-image.sh:/validate-image.sh:ro" \
             "$local_image" \
-            bash -euo pipefail -c '
-              test "$(uname -m)" = "$ARCH"
-              test "$AUDITWHEEL_ARCH" = "$ARCH"
-              test "$AUDITWHEEL_POLICY" = "$EXPECTED_POLICY"
-              test "$CARGO_BUILD_JOBS" = "2"
-              rustc --version | grep -Eq "^rustc 1\\.90\\.0([[:space:]]|$)"
-              rustup target list --installed | grep -Fx "$RUST_TARGET"
-              command -v auditwheel
-              for python in cp39 cp310 cp311 cp312 cp313 cp314; do
-                test -x "/opt/python/${python}-${python}/bin/python"
-              done
-            '
+            bash /validate-image.sh "$EXPECTED_POLICY" "$ARCH"
       - name: Log in to GHCR with the job token
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -124,28 +95,45 @@ jobs:
           base_tag="${BASE_IMAGE%%@*}"
           base_version="${base_tag##*:}"
           tag="linux-${FAMILY}-${ARCH}-rust-1.90.0-base-${base_version}-${GITHUB_SHA}"
+          inspect_output="$(mktemp)"
+          trap 'rm -f "$inspect_output"' EXIT
 
-          if existing="$(docker buildx imagetools inspect "${image}:${tag}" 2>/dev/null)"; then
+          if docker buildx imagetools inspect "${image}:${tag}" >"$inspect_output" 2>&1; then
+            existing="$(cat "$inspect_output")"
             digest="$(awk '$1 == "Digest:" { print $2; exit }' <<< "$existing")"
             echo "Reusing the existing versioned image tag ${image}:${tag}"
           else
-            docker buildx build \
-              --platform "$PLATFORM" \
-              --build-arg "BASE_IMAGE=$BASE_IMAGE" \
-              --build-arg RUST_VERSION=1.90.0 \
-              --build-arg "RUST_TARGET=$RUST_TARGET" \
-              --file "$DOCKERFILE" \
-              --tag "${image}:${tag}" \
-              --metadata-file build-metadata.json \
-              --push \
-              .
+            inspect_status=$?
+            if ! grep -Fxq \
+              -e "ERROR: ${image}:${tag}: not found" \
+              -e "${image}:${tag}: not found" \
+              "$inspect_output"; then
+              cat "$inspect_output" >&2
+              echo "Could not inspect ${image}:${tag}; refusing to publish after an ambiguous registry error" >&2
+              exit "$inspect_status"
+            fi
 
-            digest="$(jq -r '."containerimage.digest" // empty' build-metadata.json)"
+            # Push the loaded image already tested above; do not rebuild it.
+            docker tag "linux-image-check:${FAMILY}-${ARCH}" "${image}:${tag}"
+            docker push "${image}:${tag}"
+            if ! docker buildx imagetools inspect "${image}:${tag}" >"$inspect_output" 2>&1; then
+              cat "$inspect_output" >&2
+              echo "Could not inspect published image ${image}:${tag}" >&2
+              exit 1
+            fi
+            published="$(cat "$inspect_output")"
+            digest="$(awk '$1 == "Digest:" { print $2; exit }' <<< "$published")"
           fi
           if [[ ! "$digest" =~ ^sha256:[0-9a-f]{64}$ ]]; then
             echo "Could not obtain a valid digest for ${image}:${tag}" >&2
             exit 1
           fi
+
+          # Validate the exact registry object, including when reusing a tag.
+          docker pull "${image}@${digest}"
+          docker run --rm \
+            --volume "$PWD/containers/linux/validate-image.sh:/validate-image.sh:ro" \
+            "${image}@${digest}" bash /validate-image.sh "$FAMILY" "$ARCH"
 
           jq -n \
             --arg family "$FAMILY" \
@@ -185,7 +173,7 @@ jobs:
         run: |
           set -euo pipefail
           files=(digests/digest-*/image-digest.json)
-          test "${#files[@]}" -eq 4
+          test "${#files[@]}" -eq 2
           images="$(jq -cs 'sort_by(.family, .arch)' "${files[@]}")"
           printf 'image_digests=%s\n' "$images" >> "$GITHUB_OUTPUT"
           {

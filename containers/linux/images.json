@@ -1,0 +1,9 @@
+{
+  "rust_version": "1.90.0",
+  "source_commit": "dc3fdbf59ea471561a45cb27cd7c6ccceda7b244",
+  "publisher_run": "https://github.com/WizzyGeek/pyo3dCBOR/actions/runs/39051517661",
+  "images": {
+    "manylinux_x86_64": "ghcr.io/wizzygeek/pyo3dcbor@sha256:4c15058c5b2398c3db265299fcf9bf00d0828f781eb4d04e65dfc628b72a06ab",
+    "musllinux_x86_64": "ghcr.io/wizzygeek/pyo3dcbor@sha256:c924c185f9c41e2f6a69721b562346f733926e23277b7c7675272906082a7f0a"
+  }
+}

@@ -25,6 +25,8 @@ affects_build = runpy.run_path(str(SCRIPT))["affects_build"]
     "python/dcbor/py.typed", "pytest.ini", ".gitattributes",
     "tests/test_dcbor.py", "scripts/ci_paths.py", "scripts/vendor_dcbor.py",
     ".github/workflows/ci.yml",
+    "containers/linux/images.json", "containers/linux/validate-image.sh",
+    "containers/linux/Dockerfile.manylinux", "containers/linux/Dockerfile.musllinux",
 ])
 def test_build_inputs_trigger_ci(path):
     assert affects_build([path])
@@ -35,6 +37,7 @@ def test_build_inputs_trigger_ci(path):
     "docs/reviews/PERF_REVIEW.md", "docs/reviews/SPEC_REVIEW.md",
     "docs/allocation-plan.md", "",
     "docs/Cargo.toml.md", "docs/rust-toolchain.toml.txt",
+    "maintenance/test_foo.py",
 ])
 def test_docs_only_changes_skip_ci(path):
     assert not affects_build([path])
