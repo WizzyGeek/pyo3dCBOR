@@ -1,0 +1,101 @@
+{
+  "measurement": "serialized payload bytes; not memory footprint",
+  "generated_at_utc": "2026-10-17T20:57:29.496972+00:00",
+  "source": {
+    "git_commit": "d2cc3fee8d2b56f1a8ae742fc1bf712f519563c1",
+    "git_worktree_dirty": false,
+    "generator_path": "benchmarks/encoded_size.py",
+    "generator_sha256": "77d3ff86650d753aa60b9025c05a86bfb1cb8292b371bae27c2f7bac040b7341",
+    "fixtures_sha256": "d29a87868226898a33a240edcbe832d2e2ecb115c1e302c5ee3b1bfd41bf58e4",
+    "chart_style_path": "benchmarks/chart_style.py",
+    "chart_style_sha256": "ff592d67401fbb7c45f66b03d53fa60c62fe4f6b6da7fb990353b44f902bc68d",
+    "chart_path": ".github/assets/graphs/encoded-size.svg",
+    "chart_sha256": "180304fc65f6ec2c8223789ab0c6e7a7dca1d5347e5cf17992650c5390b70a80"
+  },
+  "build": {
+    "profile": "release",
+    "profile_verification": "imported extension SHA-256 matches the Cargo release artifact",
+    "reproduction_command": "CARGO_BUILD_JOBS=2 maturin develop --release --locked",
+    "release_artifact_path": "target/release/lib_dcbor.so",
+    "release_artifact_sha256": "0cf305e9b25f460a20cf87f6e6a4c6c8966d849ca404a45caed539f448239735",
+    "extension_matches_release_artifact": true,
+    "rustc_version": "rustc 1.98.1 (48a229cea 2026-09-01)",
+    "cargo_version": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+    "root_cargo_lock_sha256": "9fcd311c804f038f3b2da73c5b81f42e990b01dd267acdbc1a1f17af8fd16cf7"
+  },
+  "environment": {
+    "python_version": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+    "python_implementation": "CPython",
+    "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "processor": "AMD Ryzen 7 7435HS",
+    "dcbor_version": "0.1.0",
+    "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+    "extension_sha256": "0cf305e9b25f460a20cf87f6e6a4c6c8966d849ca404a45caed539f448239735"
+  },
+  "json_encoding": {
+    "implementation": "Python standard-library json",
+    "utf8": true,
+    "ensure_ascii": false,
+    "whitespace": "removed with separators=(',', ':')",
+    "nonfinite_numbers": "rejected"
+  },
+  "fixtures": {
+    "small_record": {
+      "json_utf8_bytes": 52,
+      "json_sha256": "b96dab4694093dca9a465f95749d3400a09654f4d903bbd0b0de0a23c9736b88",
+      "dcbor_wire_bytes": 33,
+      "dcbor_wire_sha256": "b55a8f161e8172663017efdf13c2d095259d5ed48dc3243668a17d17ea2a5ce1",
+      "dcbor_vs_json_percent": -36.54
+    },
+    "nested_document": {
+      "json_utf8_bytes": 122,
+      "json_sha256": "77377904fe48d4957572ff2c5ed31fb690d273b48698ab3c8959f7467547c48e",
+      "dcbor_wire_bytes": 84,
+      "dcbor_wire_sha256": "7ecf21b19217a7a0e920a115ed051f8242de35746e2dd4dc992a8e0a906c575e",
+      "dcbor_vs_json_percent": -31.15
+    },
+    "repeated_unicode_strings": {
+      "json_utf8_bytes": 1537,
+      "json_sha256": "ed087497547c7489e6318cc48d486cf6d92cc8c1fb9ff08b0a0b51c6fd571cc5",
+      "dcbor_wire_bytes": 1122,
+      "dcbor_wire_sha256": "1b9d17871bd3fba70a77f429bfd6f046f6ae7742c7c8b6a098232edffff15d47",
+      "dcbor_vs_json_percent": -27.0
+    },
+    "numeric_array": {
+      "json_utf8_bytes": 901,
+      "json_sha256": "cfcfcf48beb7d8cc4f49c54f1ee7d6a247b8d40ffb993aa6b6d3ebb0105adbfd",
+      "dcbor_wire_bytes": 686,
+      "dcbor_wire_sha256": "867f526ac65459b8d9ac3e6b7b3acf8fa221509a17f566abb86bf476c392856f",
+      "dcbor_vs_json_percent": -23.86
+    },
+    "compact_scientific_notation": {
+      "json_utf8_bytes": 15,
+      "json_sha256": "207fb530d5d0b6e574528d086b78d55b7fd588d4ae899fa81fc675897a0864b0",
+      "dcbor_wire_bytes": 19,
+      "dcbor_wire_sha256": "56e4d805bb919d04e695fcb5bd9dec9b371ba61b0f53a5ed213cb35ebb4ce3f5",
+      "dcbor_vs_json_percent": 26.67
+    },
+    "large_collection": {
+      "json_utf8_bytes": 8442,
+      "json_sha256": "ad15bde003ba59842e9aebb03d8746947a8d9bd7b2e061710d67df7e909b4c89",
+      "dcbor_wire_bytes": 5669,
+      "dcbor_wire_sha256": "14a8b5fe0a9feccf03ebd7cfb71ccaf925d7b8cecd49bb3d4bb74e88279fe795",
+      "dcbor_vs_json_percent": -32.85
+    },
+    "telemetry_batch": {
+      "json_utf8_bytes": 6860,
+      "json_sha256": "41f2372f2fcd87607474bb411c0fa01d6175388b6ff38b38ddc21129e0b665d1",
+      "dcbor_wire_bytes": 4960,
+      "dcbor_wire_sha256": "5d1eb97957d0cd05a050c758c1e8446fe8eec4114ea9e1e5c1093ebd105d89ed",
+      "dcbor_vs_json_percent": -27.7
+    },
+    "ascii_article": {
+      "json_utf8_bytes": 5019,
+      "json_sha256": "dcb3c49017f313b243adb1508fee917741fc1782413b5dde813ca6459a21b754",
+      "dcbor_wire_bytes": 4968,
+      "dcbor_wire_sha256": "ed709f11501789286b56c7dc236b6b2a559398259f219082a8eddbb94754ff88",
+      "dcbor_vs_json_percent": -1.02
+    }
+  }
+}

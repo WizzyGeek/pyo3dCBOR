@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="606" viewBox="0 0 1100 606" role="img" aria-labelledby="title desc">
+  <title id="title">Wire size by fixture, dCBOR and generic CBOR modes</title>
+  <desc id="desc">For each of 8 fixtures, the normalized chart shows compact JSON at 100 percent, a teal dCBOR point, and the min-to-max range across cbor2/cborx default and canonical modes. When all four generic byte counts are equal, the range collapses to one point. Each row prints exact JSON and dCBOR bytes and the generic range; the full six-mode measurements remain in the raw JSON report.</desc>
+  <style>
+  text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif; fill: #142B39; }
+  .title { font-size: 27px; font-weight: 740; letter-spacing: -0.45px; }
+  .subtitle { font-size: 15px; fill: #586D79; }
+  .caption { font-size: 13px; fill: #586D79; }
+  .fixture { font-size: 16px; font-weight: 650; }
+  .small { font-size: 14px; fill: #586D79; }
+  .value { font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .muted { fill: #586D79; }
+  .card { fill: #FFFFFF; stroke: #E0E7EA; stroke-width: 1; }
+  .rule { stroke: #E0E7EA; stroke-width: 1; }
+  .legend { font-size: 15px; fill: #435967; }
+  .column-head { font-size: 14px; fill: #586D79; font-weight: 650; }
+  .axis { font-size: 14px; fill: #586D79; font-variant-numeric: tabular-nums; }
+
+    .hero { font-size: 29px; font-weight: 750; letter-spacing: -0.5px; }
+    .dek { font-size: 15px; fill: #586D79; }
+    .row-label { font-size: 15px; font-weight: 620; }
+    .bytes { font-size: 14px; font-variant-numeric: tabular-nums; }
+  </style>
+  <rect width="1100" height="606" fill="#FFFFFF" />
+  <text x="48" y="43" class="hero">Wire size: where the modes split</text>
+  <text x="48" y="70" class="dek">JSON = 100% · generic band spans four cbor2/cborx modes</text>
+  <circle cx="56" cy="98" r="6" fill="#08766F" />
+  <text x="72" y="103" class="legend">dCBOR</text>
+  <line x1="153" y1="98" x2="187" y2="98" stroke="#738B9D" stroke-width="7" stroke-linecap="round" />
+  <text x="198" y="103" class="legend">Generic CBOR min–max; equal byte counts collapse to a point</text>
+  <line x1="740" y1="89" x2="740" y2="107" stroke="#142B39" stroke-width="2" />
+  <text x="752" y="103" class="legend">JSON baseline: 100%</text>
+  <rect x="48" y="117" width="488" height="70" rx="8" fill="#F6F9FA" />
+  <rect x="562" y="117" width="490" height="70" rx="8" fill="#F6F9FA" />
+  <text x="64" y="142" class="callout-label">NUMERIC ARRAY · DEFAULT WIDTH</text>
+  <text x="64" y="167" class="callout-value">cbor2/cborx defaults 902 B · dCBOR/canonical 686 B</text>
+  <text x="580" y="142" class="callout-label">COMPACT SCIENTIFIC NOTATION</text>
+  <text x="580" y="167" class="callout-value" fill="#C94E47">dCBOR 19 B vs JSON 15 B (+26.67%) · generic 19 B</text>
+  <text x="48" y="210" class="column-head">Fixture</text>
+  <text x="756" y="210" class="column-head">Exact bytes · JSON / dCBOR / generic range</text>
+  <line x1="300.00" y1="211" x2="300.00" y2="506" stroke="#E0E7EA" stroke-width="1" stroke-dasharray="2 5" /><text x="300.00" y="546" text-anchor="middle" class="axis">50%</text><line x1="402.50" y1="211" x2="402.50" y2="506" stroke="#E0E7EA" stroke-width="1" stroke-dasharray="2 5" /><text x="402.50" y="546" text-anchor="middle" class="axis">75%</text><line x1="505.00" y1="211" x2="505.00" y2="506" stroke="#142B39" stroke-width="2" stroke-dasharray="0" /><text x="505.00" y="546" text-anchor="middle" class="axis">100%</text><line x1="607.50" y1="211" x2="607.50" y2="506" stroke="#E0E7EA" stroke-width="1" stroke-dasharray="2 5" /><text x="607.50" y="546" text-anchor="middle" class="axis">125%</text><line x1="710.00" y1="211" x2="710.00" y2="506" stroke="#E0E7EA" stroke-width="1" stroke-dasharray="2 5" /><text x="710.00" y="546" text-anchor="middle" class="axis">150%</text>
+  <line x1="48" y1="258.0" x2="1052" y2="258.0" class="rule" /><text x="48" y="246.0" class="row-label">Small record</text><circle cx="355.19" cy="244.0" r="6" fill="#738B9D" /><circle cx="355.19" cy="236.0" r="7" fill="#08766F" stroke="#FFFFFF" stroke-width="2"><title>Small record: JSON 52 B; dCBOR 33 B; generic modes cbor2_default 33 B, cbor2_canonical 33 B, cborx_default 33 B, cborx_canonical 33 B</title></circle><text x="756" y="246.0" class="bytes">52 · 33 · 33 B</text><line x1="48" y1="294.0" x2="1052" y2="294.0" class="rule" /><text x="48" y="282.0" class="row-label">Nested document</text><circle cx="377.30" cy="280.0" r="6" fill="#738B9D" /><circle cx="377.30" cy="272.0" r="7" fill="#08766F" stroke="#FFFFFF" stroke-width="2"><title>Nested document: JSON 122 B; dCBOR 84 B; generic modes cbor2_default 84 B, cbor2_canonical 84 B, cborx_default 84 B, cborx_canonical 84 B</title></circle><text x="756" y="282.0" class="bytes">122 · 84 · 84 B</text><line x1="48" y1="330.0" x2="1052" y2="330.0" class="rule" /><text x="48" y="318.0" class="row-label">Repeated Unicode strings</text><circle cx="394.30" cy="316.0" r="6" fill="#738B9D" /><circle cx="394.30" cy="308.0" r="7" fill="#08766F" stroke="#FFFFFF" stroke-width="2"><title>Repeated Unicode strings: JSON 1,537 B; dCBOR 1,122 B; generic modes cbor2_default 1,122 B, cbor2_canonical 1,122 B, cborx_default 1,122 B, cborx_canonical 1,122 B</title></circle><text x="756" y="318.0" class="bytes">1,537 · 1,122 · 1,122 B</text><line x1="48" y1="366.0" x2="1052" y2="366.0" class="rule" /><text x="48" y="354.0" class="row-label">Numeric array</text><line x1="407.16" y1="352.0" x2="505.46" y2="352.0" stroke="#738B9D" stroke-width="8" stroke-linecap="round" /><line x1="407.16" y1="345.0" x2="407.16" y2="359.0" stroke="#738B9D" stroke-width="2" /><line x1="505.46" y1="345.0" x2="505.46" y2="359.0" stroke="#738B9D" stroke-width="2" /><circle cx="407.16" cy="344.0" r="7" fill="#08766F" stroke="#FFFFFF" stroke-width="2"><title>Numeric array: JSON 901 B; dCBOR 686 B; generic modes cbor2_default 902 B, cbor2_canonical 686 B, cborx_default 902 B, cborx_canonical 686 B</title></circle><text x="756" y="354.0" class="bytes">901 · 686 · 686–902 B</text><line x1="48" y1="402.0" x2="1052" y2="402.0" class="rule" /><text x="48" y="390.0" class="row-label">Compact scientific notation</text><circle cx="614.33" cy="388.0" r="6" fill="#738B9D" /><circle cx="614.33" cy="380.0" r="7" fill="#08766F" stroke="#FFFFFF" stroke-width="2"><title>Compact scientific notation: JSON 15 B; dCBOR 19 B; generic modes cbor2_default 19 B, cbor2_canonical 19 B, cborx_default 19 B, cborx_canonical 19 B</title></circle><text x="756" y="390.0" class="bytes">15 · 19 · 19 B</text><line x1="48" y1="438.0" x2="1052" y2="438.0" class="rule" /><text x="48" y="426.0" class="row-label">Large collection</text><circle cx="370.32" cy="424.0" r="6" fill="#738B9D" /><circle cx="370.32" cy="416.0" r="7" fill="#08766F" stroke="#FFFFFF" stroke-width="2"><title>Large collection: JSON 8,442 B; dCBOR 5,669 B; generic modes cbor2_default 5,669 B, cbor2_canonical 5,669 B, cborx_default 5,669 B, cborx_canonical 5,669 B</title></circle><text x="756" y="426.0" class="bytes">8,442 · 5,669 · 5,669 B</text><line x1="48" y1="474.0" x2="1052" y2="474.0" class="rule" /><text x="48" y="462.0" class="row-label">Telemetry batch</text><line x1="391.44" y1="460.0" x2="437.34" y2="460.0" stroke="#738B9D" stroke-width="8" stroke-linecap="round" /><line x1="391.44" y1="453.0" x2="391.44" y2="467.0" stroke="#738B9D" stroke-width="2" /><line x1="437.34" y1="453.0" x2="437.34" y2="467.0" stroke="#738B9D" stroke-width="2" /><circle cx="391.44" cy="452.0" r="7" fill="#08766F" stroke="#FFFFFF" stroke-width="2"><title>Telemetry batch: JSON 6,860 B; dCBOR 4,960 B; generic modes cbor2_default 5,728 B, cbor2_canonical 4,960 B, cborx_default 5,728 B, cborx_canonical 4,960 B</title></circle><text x="756" y="462.0" class="bytes">6,860 · 4,960 · 4,960–5,728 B</text><line x1="48" y1="510.0" x2="1052" y2="510.0" class="rule" /><text x="48" y="498.0" class="row-label">ASCII article</text><circle cx="500.83" cy="496.0" r="6" fill="#738B9D" /><circle cx="500.83" cy="488.0" r="7" fill="#08766F" stroke="#FFFFFF" stroke-width="2"><title>ASCII article: JSON 5,019 B; dCBOR 4,968 B; generic modes cbor2_default 4,968 B, cbor2_canonical 4,968 B, cborx_default 4,968 B, cborx_canonical 4,968 B</title></circle><text x="756" y="498.0" class="bytes">5,019 · 4,968 · 4,968 B</text>
+  <text x="48" y="586" class="caption">Generic range covers cbor2 and cborx, default and canonical. Raw JSON retains every mode, sample value, and hash.</text>
+</svg>
