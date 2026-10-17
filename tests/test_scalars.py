@@ -59,7 +59,7 @@ def test_nonnumeric_date_tag_stays_a_tag():
 
 def test_tzinfo_returning_none_is_naive():
     class NaiveTimezone(dt.tzinfo):
-        def utcoffset(self, value):
+        def utcoffset(self, _):
             return None
 
     value = dt.datetime(2023, 1, 1, tzinfo=NaiveTimezone())
@@ -69,7 +69,7 @@ def test_tzinfo_returning_none_is_naive():
 
 def test_timezone_errors_become_cbor_errors():
     class BrokenTimezone(dt.tzinfo):
-        def utcoffset(self, value):
+        def utcoffset(self, _):
             raise ValueError("broken timezone")
 
     with pytest.raises(dcbor.CBORError, match="broken timezone"):

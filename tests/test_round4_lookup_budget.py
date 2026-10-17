@@ -39,7 +39,7 @@ def test_oversized_composite_lookup_rejects_before_allocator_abort(shape, operat
 
         try:
             if OPERATION == "contains":
-                key in mapping
+                _ = key in mapping
             elif OPERATION == "getitem":
                 mapping[key]
             else:
@@ -70,9 +70,9 @@ def test_lookup_probe_exact_key_budget_boundary(container):
 
     over = container([b"x" * (LIMIT - 5)])
     with pytest.raises(dcbor.CBORError, match="map key cache"):
-        over in mapping
+        _ = over in mapping
     with pytest.raises(dcbor.CBORError, match="map key cache"):
-        mapping.get(over, marker)
+        _ = mapping.get(over, marker)
     with pytest.raises(dcbor.CBORError, match="map key cache"):
         mapping[over]
 
@@ -115,7 +115,7 @@ def test_lookup_probe_depth_limit_matches_map_key_conversion():
 
     rejected = [accepted]
     with pytest.raises(dcbor.CBORError, match="depth"):
-        rejected in mapping
+        _ = rejected in mapping
     with pytest.raises(dcbor.CBORError, match="depth"):
         mapping.get(rejected)
     with pytest.raises(dcbor.CBORError, match="depth"):

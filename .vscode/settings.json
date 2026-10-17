@@ -1,0 +1,12 @@
+{
+  "python.analysis.exclude": [
+    "**/target/**",
+    "**/dist/**",
+    "**/build/**"
+  ],
+  "python.analysis.ignore": [
+    "**/target/**",
+    "**/dist/**",
+    "**/build/**"
+  ]
+}

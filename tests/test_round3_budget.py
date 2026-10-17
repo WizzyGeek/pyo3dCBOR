@@ -1,5 +1,6 @@
 """Regression oracles for early composite-key budget and replacement accounting."""
 import subprocess
+import platform
 import sys
 import textwrap
 
@@ -9,7 +10,7 @@ import pytest
 
 @pytest.mark.parametrize("operation", ["dumps", "constructor_tuple", "constructor_list"])
 def test_composite_key_budget_rejects_before_large_materialization(operation):
-    if sys.platform != "linux":
+    if platform.system() != "Linux":
         pytest.skip("VmSize/RLIMIT_AS allocation regression is Linux specific")
     code = r'''
 import dcbor
@@ -83,7 +84,7 @@ def test_replacement_accounting_within_composite_key(snapshot):
 
 
 def test_replacement_subprocess_with_shared_large_value():
-    if sys.platform != "linux":
+    if platform.system() != "Linux":
         pytest.skip("VmSize/RLIMIT_AS allocation regression is Linux specific")
     code = r'''
 import dcbor

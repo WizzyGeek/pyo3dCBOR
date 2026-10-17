@@ -57,6 +57,8 @@ def main():
     if args.rounds < 1 or args.target_ms <= 0:
         parser.error("rounds and target-ms must be positive")
     spec = importlib.util.spec_from_file_location("_dcbor", args.extension)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"Could not load extension: {args.extension}")
     dcbor = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(dcbor)
 

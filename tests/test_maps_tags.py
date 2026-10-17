@@ -129,7 +129,7 @@ def test_tag_reference_cycle_is_collected():
     import weakref
 
     class Sentinel:
-        pass
+        tag: dcbor.CBORTag
 
     sentinel = Sentinel()
     observed = weakref.ref(sentinel)

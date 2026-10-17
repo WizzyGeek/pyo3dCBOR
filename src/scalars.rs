@@ -89,9 +89,18 @@ pub(crate) fn decode_datetime(
     };
     let datetime_mod = py.import("datetime")?;
     let utc = datetime_mod.getattr("timezone")?.getattr("utc")?;
-    let result = datetime_mod
-        .getattr("datetime")?
-        .call_method1("fromtimestamp", (timestamp, utc))
+    let datetime = datetime_mod.getattr("datetime")?;
+    let epoch_kwargs = PyDict::new(py);
+    epoch_kwargs.set_item("tzinfo", &utc)?;
+    let epoch = datetime
+        .call((1970, 1, 1), Some(&epoch_kwargs))
         .map_err(date_error)?;
+    let delta_kwargs = PyDict::new(py);
+    delta_kwargs.set_item("seconds", timestamp.bind(py))?;
+    let delta = datetime_mod
+        .getattr("timedelta")?
+        .call((), Some(&delta_kwargs))
+        .map_err(date_error)?;
+    let result = epoch.call_method1("__add__", (delta,)).map_err(date_error)?;
     Ok(Some(result.unbind()))
 }
