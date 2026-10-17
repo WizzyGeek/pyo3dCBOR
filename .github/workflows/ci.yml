@@ -11,8 +11,10 @@ permissions:
   contents: read
 
 concurrency:
-  group: wheels-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
+  # Only PRs share a group. Keep every push, including queued code pushes:
+  # a later docs-only push must neither cancel nor replace their checks.
+  group: wheels-${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   CARGO_BUILD_JOBS: '2'
