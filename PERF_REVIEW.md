@@ -1,5 +1,27 @@
 # Performance proposals for PM
 
+## Numeric-preflight implementation resolution — 2026-10-17
+
+**Proposal 4 is implemented in `dfe96bd`.** The iterative binding preflight
+still parses arguments, rejects truncation and trailing data, enforces depth,
+checks map-count overflow, and bounds aggregate encoded map-key caches. Numeric
+canonicality for major type 7 is now delegated to the pinned decoder, whose
+width-specific validators inspect the original payload before materialization
+or numeric reduction.
+
+Four current-tree benchmark comparisons preserve every workload wire hash.
+The 4,096-float workload improves by **1.86–1.90x for `validate()`** and
+**1.57–1.61x for `loads()`**. Integer and dictionary controls remain within a
+few percent. The short ASCII control varied by roughly 4–11% across these
+non-affinitized runs even though the removed work is specific to major type 7;
+no neutrality claim is made for that microbenchmark.
+
+The production release passed **1,558 Python tests**, including exhaustive
+binary16 coverage and independent binary32/binary64 oracles. The subsequent
+combined checkout passed **1,560 Python tests**. The vendored Rust codec passed
+**182 tests**, including 92 doctests. Independent post-implementation review
+found no correctness issue. Proposal 4 is closed.
+
 ## Spec response on numeric preflight — 2026-10-17
 
 **Proposal 4 is approved from a specification perspective.** The spec reviewer

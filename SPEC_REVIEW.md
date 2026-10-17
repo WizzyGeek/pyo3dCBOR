@@ -1,5 +1,30 @@
 # dCBOR specification and test review
 
+## PM implementation resolution — 2026-10-17
+
+Both follow-ups from the current-tree review are resolved in `dfe96bd`.
+
+The binding now delegates numeric canonicality to the pinned decoder while
+retaining its structural/truncation scan, complete-input check, depth limit,
+map-count overflow check, and aggregate key-cache limit. The decoder validates
+the original binary16, binary32, or binary64 payload before converting or
+reducing it. The production release passed **1,558 Python tests**, including
+the independent 113,184-pattern numeric coverage described below; the later
+combined checkout passed **1,560 Python tests**.
+
+The inherited Rust extraction bug is fixed separately. Negative major-type-1
+arguments are converted to their signed `-1 - n` value in `i128` before exact
+`f32`/`f64` cast-back checks. Direct tests cover `-1`, `-2`, `-17`, the
+binary32 and binary64 consecutive-integer boundaries, and the explicit
+`-2**64` endpoint. `crates/dcbor/PATCHES.md` records this additional divergence
+from published `dcbor` 0.25.2. The vendored codec passes **90 unit/integration
+tests and 92 doctests (182 total)** with the production feature set.
+
+Independent post-implementation audit found no blocking issue and confirmed
+that all four Python reader APIs still pass through structural preflight and
+the patched decoder. The numeric-preflight delegation and Rust extraction
+finding are closed.
+
 ## Current-tree and performance proposal review — 2026-10-17
 
 **The reviewed Python wire-format changes pass. Numeric-preflight delegation
