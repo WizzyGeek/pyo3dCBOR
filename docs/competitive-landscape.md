@@ -29,7 +29,28 @@ These codecs target general CBOR. Their canonical or deterministic options shoul
 | [cbor4ii](https://github.com/quininer/cbor4ii) | Rust; core API and optional serde support | Current docs.rs version 1.2.3 | Core documents RFC 8949 compatibility while omitting some extensions, including datetime and bignum. Its serde model encodes unit as an empty array; this can change wire shape relative to other serde codecs. It also offers zero-copy deserialization. |
 | [minicbor](https://github.com/twittner/minicbor) | Rust; type-directed `Encode` / `Decode`, derive; serde support is separate | Current docs.rs version 2.3.0 | Small `no_std`-capable codec with `CborLen`. Its type-directed API and derives may encode application-specific arrays/maps; compare an explicitly matched wire model rather than assuming serde-equivalent output. |
 
-Versions are point-in-time evidence and should be pinned in any measurement. The repository's Python codec comparison uses `cbor2` and `cborx` as two direct generic-CBOR comparators, with `cbor2pure` noted as a pure-Python reference but not treated as an independent codec design. `cbor` 1.0.0 is an older RFC 7049-era package and is omitted from the maintained shortlist. `msgspec-cbor` is a wrapper around `cbor2`, not an independent CBOR codec.
+Versions are point-in-time evidence and should be pinned in any measurement. `cbor2pure` remains a pure-Python reference, not an independent codec design; `cbor` 1.0.0 is an older RFC 7049-era package and is omitted from the maintained shortlist. `msgspec-cbor` is a wrapper around `cbor2`, not an independent CBOR codec.
+
+## Python comparators in the reports
+
+The expanded wire-size and latency reports measure these additional formats
+and modes on the same eight JSON-compatible fixtures. This table describes
+the measured calls, not a format or performance ranking.
+
+| Library | Measured modes | Scope and caveat |
+| --- | --- | --- |
+| [orjson](https://github.com/ijl/orjson) | Default JSON output; `OPT_SORT_KEYS` JSON output | The option sorts dictionary keys for stable output; it is a JSON serialization option, not a CBOR canonicalization rule. The library serializes NaN and infinities as `null`; the shared fixtures contain finite floats. |
+| [msgspec](https://msgspec.dev/usage) | MessagePack default; `order="deterministic"` | The report uses preconstructed `msgspec.msgpack.Encoder` / `Decoder` wrappers and untyped decoding to built-in Python values. It does not measure typed `Struct` decoding or schema-based array encoding. |
+| [cbrrr / dag-cbrrr](https://github.com/DavidBuchanan314/dag-cbrrr) | `encode_dag_cbor` / strict `decode_dag_cbor` | A Python binding for strict DAG-CBOR, not dCBOR. The format requires string map keys, minimal integers and lengths, binary64 floats, and tag 42 only. The [DAG-CBOR specification](https://ipld.io/specs/codecs/dag-cbor/spec/) excludes non-finite floats and negative zero; the measured `cbrrr==1.1.0` API rejects NaN/infinities but accepts and emits negative zero. |
+
+These modes answer different questions. `orjson` measures a JSON library and
+its sorted-key option. MessagePack is a separate binary format; deterministic
+ordering does not define dCBOR semantics. DAG-CBOR is a distinct restricted
+CBOR profile. dCBOR's accepted domain and normalization rules differ from
+generic CBOR and DAG-CBOR, so the reports use a common finite JSON-compatible
+fixture set rather than imply interchangeability. For exact pins and call
+details, see the [wire-size](../benchmarks/wire_size/README.md) and
+[latency](../benchmarks/latency/README.md) methods.
 
 ## CBOR format-level alternatives
 
@@ -53,7 +74,15 @@ In this grouping, MessagePack and Amazon Ion are schema-free binary alternatives
 
 This is a database feature comparison, not a wire-format or in-process codec comparison. PostgreSQL's internal `jsonb` representation is not a stable cross-system wire format; PostgreSQL notes that binary representations for complex types may change across server versions ([protocol formats](https://www.postgresql.org/docs/current/protocol-overview.html#PROTOCOL-FORMATS)). A useful measurement would need a separate design that states PostgreSQL version, schema, indexes, transaction and durability settings, client protocol, insert/query workload, and whether reported size includes indexes and table overhead. Do not compare database storage size with the Python benchmark's encoded payload bytes or combine SQL execution time with codec latency.
 
-The repository compares compact UTF-8 JSON and dCBOR payload bytes, and has a separate pinned codec wire-size/latency comparison for Python `cbor2` and `cborx`. The checked-in reports contain measured payload sizes and per-fixture encode, decode, and round-trip latency on one CPython 3.14.7 Linux host; several latency results favor the generic CBOR comparators. PostgreSQL storage and queries are not measured. See [benchmark status and scope](../benchmarks/README.md), the [wire-size report](../benchmarks/wire_size/README.md), and the [latency report](../benchmarks/latency/README.md).
+The repository compares compact JSON and dCBOR bytes, generic CBOR modes,
+`orjson` JSON, `msgspec` MessagePack, and strict DAG-CBOR. Separate reports
+cover dCBOR profile workloads and Rust-core versus Python binding operations.
+These reports measure one recorded host and fixture set; they do not measure
+PostgreSQL storage or queries. See [benchmark status and scope](../benchmarks/README.md),
+the [wire-size report](../benchmarks/wire_size/README.md), the
+[latency report](../benchmarks/latency/README.md), the
+[dCBOR profile](../benchmarks/profile/README.md), and
+[Rust core](../benchmarks/rust_core/README.md).
 
 ## Benchmark interpretation
 

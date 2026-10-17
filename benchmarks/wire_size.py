@@ -21,7 +21,7 @@ import sys
 from pathlib import Path
 from typing import Callable
 
-from chart_style import COMMON_STYLE, PALETTE, sha256_file, xml_text
+from chart_style import sha256_file
 from encoded_size import fixtures, equivalent_value
 
 
@@ -30,6 +30,9 @@ OUTPUT_DIR = Path(__file__).resolve().parent / "wire_size"
 SVG_PATH = ROOT / ".github" / "assets" / "graphs" / "wire-size.svg"
 PINNED_CBOR2 = "6.1.5"
 PINNED_CBORX = "0.2.5"
+PINNED_ORJSON = "3.13.0"
+PINNED_MSGSPEC = "0.22.0"
+PINNED_CBRRR = "1.1.0"
 SERIES = (
     "json",
     "dcbor",
@@ -37,14 +40,23 @@ SERIES = (
     "cbor2_canonical",
     "cborx_default",
     "cborx_canonical",
+    "orjson_default",
+    "orjson_sorted",
+    "msgspec_msgpack",
+    "msgspec_msgpack_deterministic",
+    "cbrrr_strictdagcbor",
 )
-SHORT_LABELS = {
-    "json": "JSON",
-    "dcbor": "dCBOR",
-    "cbor2_default": "cbor2 def",
-    "cbor2_canonical": "cbor2 canon",
-    "cborx_default": "cborx def",
-    "cborx_canonical": "cborx canon",
+OUTPUTS = {
+    b"benchmarks/encoded_size/results.json",
+    b"benchmarks/wire_size/results.json",
+    b"benchmarks/latency/results.json",
+    b"benchmarks/profile/results.json",
+    b"benchmarks/rust_core/results.json",
+    b".github/assets/graphs/encoded-size.svg",
+    b".github/assets/graphs/wire-size.svg",
+    b".github/assets/graphs/latency.svg",
+    b".github/assets/graphs/profile.svg",
+    b".github/assets/graphs/rust-core.svg",
 }
 
 
@@ -74,26 +86,27 @@ def source_worktree_dirty() -> bool | None:
         return None
     if result.returncode:
         return None
-    outputs = {
-        b"benchmarks/encoded_size/results.json",
-        b"benchmarks/wire_size/results.json",
-        b"benchmarks/latency/results.json",
-        b".github/assets/graphs/encoded-size.svg",
-        b".github/assets/graphs/wire-size.svg",
-        b".github/assets/graphs/latency.svg",
-    }
-    return any(entry and entry[3:] not in outputs for entry in result.stdout.split(b"\0"))
+    return any(entry and entry[3:] not in OUTPUTS for entry in result.stdout.split(b"\0"))
+
+
+def native_extensions(module: object) -> list[dict[str, str]]:
+    """Return native modules loaded by this package, with their file hashes."""
+    suffixes = tuple(importlib.machinery.EXTENSION_SUFFIXES)
+    module_name = getattr(module, "__name__", "")
+    names = {module_name, *(name for name in sys.modules if name.startswith(module_name + "."))}
+    found: list[dict[str, str]] = []
+    for name in sorted(names):
+        loaded = sys.modules.get(name)
+        module_file = getattr(loaded, "__file__", None) if loaded is not None else None
+        if module_file and str(module_file).endswith(suffixes):
+            path = Path(module_file).resolve()
+            found.append({"module": name, "path": str(path), "sha256": sha256(path.read_bytes())})
+    return found
 
 
 def extension_active(module: object) -> bool:
-    suffixes = tuple(importlib.machinery.EXTENSION_SUFFIXES)
-    for name, loaded in sys.modules.items():
-        if name.startswith(("cbor2", "cborx")):
-            module_file = getattr(loaded, "__file__", None)
-            if module_file and str(module_file).endswith(suffixes):
-                return True
-    module_file = getattr(module, "__file__", None)
-    return bool(module_file and str(module_file).endswith(suffixes))
+    """Report whether this package has its own native extension loaded."""
+    return bool(native_extensions(module))
 
 
 def command_version(*args: str) -> str | None:
@@ -133,7 +146,24 @@ def release_build(dcbor: object) -> dict[str, object]:
     }
 
 
-def environment(dcbor: object, cbor2: object, cborx: object) -> dict[str, object]:
+def environment(
+    dcbor: object,
+    cbor2: object,
+    cborx: object,
+    orjson: object,
+    msgspec: object,
+    cbrrr: object,
+) -> dict[str, object]:
+    native_backends = {
+        name: native_extensions(module)
+        for name, module in (
+            ("cbor2", cbor2),
+            ("cborx", cborx),
+            ("orjson", orjson),
+            ("msgspec", msgspec),
+            ("cbrrr", cbrrr),
+        )
+    }
     return {
         "python_version": sys.version,
         "python_implementation": platform.python_implementation(),
@@ -150,46 +180,93 @@ def environment(dcbor: object, cbor2: object, cborx: object) -> dict[str, object
         "dcbor_build": release_build(dcbor),
         "cbor2_version": importlib.metadata.version("cbor2"),
         "cbor2_module_path": getattr(cbor2, "__file__", None),
-        "cbor2_native_extension_active": extension_active(cbor2),
+        "cbor2_native_extension_active": bool(native_backends["cbor2"]),
+        "orjson_version": importlib.metadata.version("orjson"),
+        "orjson_module_path": getattr(orjson, "__file__", None),
+        "orjson_native_extension_active": bool(native_backends["orjson"]),
+        "msgspec_version": importlib.metadata.version("msgspec"),
+        "msgspec_module_path": getattr(msgspec, "__file__", None),
+        "msgspec_native_extension_active": bool(native_backends["msgspec"]),
+        "cbrrr_version": importlib.metadata.version("cbrrr"),
+        "cbrrr_module_path": getattr(cbrrr, "__file__", None),
+        "cbrrr_native_extension_active": bool(native_backends["cbrrr"]),
+        "native_backends": native_backends,
         "cborx_version": importlib.metadata.version("cborx"),
         "cborx_module_path": getattr(cborx, "__file__", None),
-        "cborx_native_extension_active": extension_active(cborx),
+        "cborx_native_extension_active": bool(native_backends["cborx"]),
     }
 
 
-def encode_all(value: object, dcbor: object, cbor2: object, cborx: object) -> dict[str, bytes]:
-    return {
-        "json": json.dumps(
+def codec_functions(
+    dcbor: object,
+    cbor2: object,
+    cborx: object,
+    orjson: object,
+    msgspec: object,
+    cbrrr: object,
+) -> tuple[dict[str, Callable[[object], bytes]], dict[str, Callable[[bytes], object]]]:
+    """Prepare wrappers once, including msgspec's reusable encoder objects."""
+    msgpack_encoder = msgspec.msgpack.Encoder()  # type: ignore[attr-defined]
+    msgpack_deterministic_encoder = msgspec.msgpack.Encoder(  # type: ignore[attr-defined]
+        order="deterministic"
+    )
+    msgpack_decoder = msgspec.msgpack.Decoder()  # type: ignore[attr-defined]
+    encoders: dict[str, Callable[[object], bytes]] = {
+        "json": lambda value: json.dumps(
             value, ensure_ascii=False, separators=(",", ":"), allow_nan=False
         ).encode("utf-8"),
-        "dcbor": dcbor.dumps(value),  # type: ignore[attr-defined]
-        "cbor2_default": cbor2.dumps(value),  # type: ignore[attr-defined]
-        "cbor2_canonical": cbor2.dumps(value, canonical=True),  # type: ignore[attr-defined]
-        "cborx_default": cborx.dumps(value),  # type: ignore[attr-defined]
-        "cborx_canonical": cborx.dumps(value, canonical=True),  # type: ignore[attr-defined]
+        "dcbor": lambda value: dcbor.dumps(value),  # type: ignore[attr-defined]
+        "cbor2_default": lambda value: cbor2.dumps(value),  # type: ignore[attr-defined]
+        "cbor2_canonical": lambda value: cbor2.dumps(value, canonical=True),  # type: ignore[attr-defined]
+        "cborx_default": lambda value: cborx.dumps(value),  # type: ignore[attr-defined]
+        "cborx_canonical": lambda value: cborx.dumps(value, canonical=True),  # type: ignore[attr-defined]
+        "orjson_default": lambda value: orjson.dumps(value),  # type: ignore[attr-defined]
+        "orjson_sorted": lambda value: orjson.dumps(  # type: ignore[attr-defined]
+            value, option=orjson.OPT_SORT_KEYS  # type: ignore[attr-defined]
+        ),
+        "msgspec_msgpack": lambda value: msgpack_encoder.encode(value),
+        "msgspec_msgpack_deterministic": lambda value: msgpack_deterministic_encoder.encode(value),
+        "cbrrr_strictdagcbor": lambda value: cbrrr.encode_dag_cbor(value),  # type: ignore[attr-defined]
     }
+    decoders: dict[str, Callable[[bytes], object]] = {
+        "json": lambda data: json.loads(data.decode("utf-8")),
+        "dcbor": lambda data: dcbor.loads(data),  # type: ignore[attr-defined]
+        "cbor2_default": lambda data: cbor2.loads(data),  # type: ignore[attr-defined]
+        "cbor2_canonical": lambda data: cbor2.loads(data),  # type: ignore[attr-defined]
+        "cborx_default": lambda data: cborx.loads(data),  # type: ignore[attr-defined]
+        "cborx_canonical": lambda data: cborx.loads(data),  # type: ignore[attr-defined]
+        "orjson_default": lambda data: orjson.loads(data),  # type: ignore[attr-defined]
+        "orjson_sorted": lambda data: orjson.loads(data),  # type: ignore[attr-defined]
+        "msgspec_msgpack": lambda data: msgpack_decoder.decode(data),
+        "msgspec_msgpack_deterministic": lambda data: msgpack_decoder.decode(data),
+        "cbrrr_strictdagcbor": lambda data: cbrrr.decode_dag_cbor(data),  # type: ignore[attr-defined]
+    }
+    return encoders, decoders
 
 
-def decode(series: str, data: bytes, dcbor: object, cbor2: object, cborx: object) -> object:
-    if series == "json":
-        return json.loads(data.decode("utf-8"))
-    if series == "dcbor":
-        return dcbor.loads(data)  # type: ignore[attr-defined]
-    if series.startswith("cbor2"):
-        return cbor2.loads(data)  # type: ignore[attr-defined]
-    return cborx.loads(data)  # type: ignore[attr-defined]
+def encode_all(value: object, encoders: dict[str, Callable[[object], bytes]]) -> dict[str, bytes]:
+    return {series: encoders[series](value) for series in SERIES}
 
 
-def make_report(dcbor: object, cbor2: object, cborx: object) -> dict[str, object]:
-    env = environment(dcbor, cbor2, cborx)
+def make_report(
+    dcbor: object,
+    cbor2: object,
+    cborx: object,
+    orjson: object,
+    msgspec: object,
+    cbrrr: object,
+) -> dict[str, object]:
+    env = environment(dcbor, cbor2, cborx, orjson, msgspec, cbrrr)
+    encoders, decoders = codec_functions(dcbor, cbor2, cborx, orjson, msgspec, cbrrr)
     rows: dict[str, object] = {}
     for name, value in fixtures().items():
-        encoded = encode_all(value, dcbor, cbor2, cborx)
+        encoded = encode_all(value, encoders)
         rows[name] = {}
         for series in SERIES:
-            if not equivalent_value(decode(series, encoded[series], dcbor, cbor2, cborx), value):
+            if not equivalent_value(decoders[series](encoded[series]), value):
                 raise ValueError(f"{series} round-trip changed fixture {name}")
             rows[name][series] = {
+                "status": "complete",
                 "bytes": len(encoded[series]),
                 "sha256": sha256(encoded[series]),
                 "percent_vs_json": round(
@@ -200,7 +277,7 @@ def make_report(dcbor: object, cbor2: object, cborx: object) -> dict[str, object
             }  # type: ignore[index]
 
     source_path = Path(__file__)
-    report: dict[str, object] = {
+    return {
         "status": "complete",
         "measurement": "serialized payload bytes; excludes process memory, database storage, and indexes",
         "generated_at_utc": dt.datetime.now(dt.timezone.utc).isoformat(),
@@ -221,186 +298,39 @@ def make_report(dcbor: object, cbor2: object, cborx: object) -> dict[str, object
             "cbor2_canonical": f"cbor2=={PINNED_CBOR2}, canonical=True; length-first ordering (RFC 8949 section 4.2.3)",
             "cborx_default": f"cborx=={PINNED_CBORX}, default dumps() options",
             "cborx_canonical": f"cborx=={PINNED_CBORX}, canonical=True; bytewise encoded-key ordering per project documentation",
+            "orjson_default": f"orjson=={PINNED_ORJSON}, dumps()/loads() wrappers; compact UTF-8 JSON defaults",
+            "orjson_sorted": f"orjson=={PINNED_ORJSON}, dumps(option=orjson.OPT_SORT_KEYS); sorted JSON string keys",
+            "msgspec_msgpack": f"msgspec=={PINNED_MSGSPEC}, preconstructed MessagePack Encoder()/Decoder() objects",
+            "msgspec_msgpack_deterministic": f"msgspec=={PINNED_MSGSPEC}, preconstructed Encoder(order='deterministic') and Decoder() objects",
+            "cbrrr_strictdagcbor": f"cbrrr=={PINNED_CBRRR}, encode_dag_cbor()/decode_dag_cbor() wrappers for its documented strict DAG-CBOR API, measured as shipped",
             "scope": "all fixtures are JSON-compatible; each codec is checked with type-sensitive round trips; generic CBOR modes are not dCBOR conformance claims",
             "percent_vs_json": "(series bytes - compact JSON bytes) / compact JSON bytes * 100; negative means fewer bytes than JSON",
+            "api_lifecycle": "msgspec uses preconstructed Encoder/Decoder objects; json, dcbor, cbor2, cborx, orjson, and cbrrr use their function wrappers directly",
+            "profile_differences": "MessagePack, DAG-CBOR, JSON, generic CBOR, and dCBOR use distinct formats and are not interchangeable conformance modes",
+            "cbrrr_scope": "This measures cbrrr's documented strict DAG-CBOR API as shipped, not an independent conformance certification; cbrrr==1.1.0 accepts and emits negative zero (absent from these common fixtures) and rejects NaN/Infinity. Profile guarantees differ.",
         },
         "environment": env,
         "fixtures": rows,
     }
-    svg = chart(report)
-    report["source"]["chart_sha256"] = sha256(svg.encode("utf-8"))  # type: ignore[index]
-    return report
 
 
 def chart(report: dict[str, object]) -> str:
-    if report.get("status") != "complete":
-        reason = xml_text(report.get("blocker", "benchmark unavailable"))
-        return f'''<svg xmlns="http://www.w3.org/2000/svg" width="900" height="220" viewBox="0 0 900 220" role="img" aria-labelledby="title desc">
-  <title id="title">CBOR wire-size comparison unavailable</title>
-  <desc id="desc">No complete codec comparison is plotted. The report records: {reason}</desc>
-  <style>{COMMON_STYLE}</style>
-  <rect width="900" height="220" fill="{PALETTE["paper"]}" />
-  <text x="32" y="54" class="title">Wire-size comparison unavailable</text>
-  <text x="32" y="88" class="subtitle">No values are inferred for unavailable libraries: {reason}</text>
-</svg>
-'''
+    from comparison_charts import wire_size_chart
 
-    fixtures_result = report["fixtures"]
-    fixture_labels = {
-        "small_record": "Small record",
-        "nested_document": "Nested document",
-        "repeated_unicode_strings": "Repeated Unicode strings",
-        "numeric_array": "Numeric array",
-        "compact_scientific_notation": "Compact scientific notation",
-        "large_collection": "Large collection",
-        "telemetry_batch": "Telemetry batch",
-        "ascii_article": "ASCII article",
-    }
-    generic_modes = ("cbor2_default", "cbor2_canonical", "cborx_default", "cborx_canonical")
-    count = len(fixtures_result)
-    ratios = []
-    for details in fixtures_result.values():
-        baseline = details["json"]["bytes"]
-        ratios.extend(details[series]["bytes"] * 100 / baseline for series in ("dcbor", *generic_modes))
-    low = min(50, int(min(ratios) // 25) * 25)
-    high = max(150, ((int(max(ratios)) + 24) // 25) * 25)
-    if high <= low:
-        high = low + 100
-    width = 1100
-    plot_x, plot_width = 300, 410
-    top, row_pitch = 222, 36
-    row_end = top + count * row_pitch
-    axis_y = row_end + 14
-    height = max(606, axis_y + 82)
+    return wire_size_chart(report)
 
-    def x_for_percent(percent: float) -> float:
-        return plot_x + (percent - low) / (high - low) * plot_width
-
-    def mode_size(values: list[int]) -> str:
-        if len(set(values)) == 1:
-            return f"{values[0]:,} B"
-        return f"{min(values):,}–{max(values):,} B"
-
-    numeric = fixtures_result.get("numeric_array")
-    if numeric:
-        default_values = [numeric["cbor2_default"]["bytes"], numeric["cborx_default"]["bytes"]]
-        canonical_values = [numeric["dcbor"]["bytes"], numeric["cbor2_canonical"]["bytes"], numeric["cborx_canonical"]["bytes"]]
-        if len(set(default_values)) == 1:
-            defaults_note = f"cbor2/cborx defaults {default_values[0]:,} B"
-        else:
-            defaults_note = f"cbor2 {default_values[0]:,} B · cborx {default_values[1]:,} B"
-        if len(set(canonical_values)) == 1:
-            canonical_note = f"dCBOR/canonical {canonical_values[0]:,} B"
-        else:
-            canonical_note = f"dCBOR {canonical_values[0]:,} · canonical {canonical_values[1]:,}/{canonical_values[2]:,} B"
-        numeric_note = f"{defaults_note} · {canonical_note}"
-    else:
-        numeric_note = "Default and canonical modes can produce different byte counts."
-
-    scientific = fixtures_result.get("compact_scientific_notation")
-    if scientific:
-        json_bytes = scientific["json"]["bytes"]
-        dcbor_bytes = scientific["dcbor"]["bytes"]
-        generic_values = [scientific[series]["bytes"] for series in generic_modes]
-        delta = (dcbor_bytes / json_bytes - 1) * 100
-        sign = "+" if delta >= 0 else "−"
-        scientific_note = (
-            f"dCBOR {dcbor_bytes:,} B vs JSON {json_bytes:,} B ({sign}{abs(delta):.2f}%) · "
-            f"generic {mode_size(generic_values)}"
-        )
-    else:
-        scientific_note = "The report includes the compact scientific-notation fixture."
-
-    grid = []
-    ticks = list(range(low, high + 1, 25))
-    for tick in ticks:
-        x = x_for_percent(tick)
-        baseline = tick == 100
-        grid.append(
-            f'<line x1="{x:.2f}" y1="{top - 11}" x2="{x:.2f}" y2="{row_end - 4}" '
-            f'stroke="{PALETTE["ink"] if baseline else PALETTE["line"]}" '
-            f'stroke-width="{2 if baseline else 1}" stroke-dasharray="{"0" if baseline else "2 5"}" />'
-            f'<text x="{x:.2f}" y="{axis_y + 22}" text-anchor="middle" class="axis">{tick}%</text>'
-        )
-    rows = []
-    for index, (name, details) in enumerate(fixtures_result.items()):
-        label = xml_text(fixture_labels.get(name, name.replace("_", " ")))
-        center_y = top + index * row_pitch + row_pitch / 2
-        baseline = details["json"]["bytes"]
-        dcbor_bytes = details["dcbor"]["bytes"]
-        dcbor_percent = dcbor_bytes * 100 / baseline
-        generic_bytes = [details[series]["bytes"] for series in generic_modes]
-        generic_low, generic_high = min(generic_bytes), max(generic_bytes)
-        generic_low_percent = generic_low * 100 / baseline
-        generic_high_percent = generic_high * 100 / baseline
-        dcbor_x = x_for_percent(dcbor_percent)
-        generic_low_x = x_for_percent(generic_low_percent)
-        generic_high_x = x_for_percent(generic_high_percent)
-        if generic_low == generic_high:
-            generic_mark = f'<circle cx="{generic_low_x:.2f}" cy="{center_y + 4}" r="6" fill="{PALETTE["generic_range"]}" />'
-        else:
-            generic_mark = (
-                f'<line x1="{generic_low_x:.2f}" y1="{center_y + 4}" x2="{generic_high_x:.2f}" y2="{center_y + 4}" '
-                f'stroke="{PALETTE["generic_range"]}" stroke-width="8" stroke-linecap="round" />'
-                f'<line x1="{generic_low_x:.2f}" y1="{center_y - 3}" x2="{generic_low_x:.2f}" y2="{center_y + 11}" stroke="{PALETTE["generic_range"]}" stroke-width="2" />'
-                f'<line x1="{generic_high_x:.2f}" y1="{center_y - 3}" x2="{generic_high_x:.2f}" y2="{center_y + 11}" stroke="{PALETTE["generic_range"]}" stroke-width="2" />'
-            )
-        byte_summary = f"{baseline:,} · {dcbor_bytes:,} · {mode_size(generic_bytes)}"
-        generic_tooltip = ", ".join(
-            "{} {:,} B".format(series, details[series]["bytes"])
-            for series in generic_modes
-        )
-        tooltip = xml_text(
-            f"{fixture_labels.get(name, name.replace('_', ' '))}: JSON {baseline:,} B; dCBOR {dcbor_bytes:,} B; "
-            f"generic modes {generic_tooltip}"
-        )
-        rows.append(
-            f'<line x1="48" y1="{center_y + 18}" x2="1052" y2="{center_y + 18}" class="rule" />'
-            f'<text x="48" y="{center_y + 6}" class="row-label">{label}</text>'
-            f'{generic_mark}'
-            f'<circle cx="{dcbor_x:.2f}" cy="{center_y - 4}" r="7" fill="{PALETTE["dcbor"]}" stroke="#FFFFFF" stroke-width="2"><title>{tooltip}</title></circle>'
-            f'<text x="756" y="{center_y + 6}" class="bytes">{byte_summary}</text>'
-        )
-    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-labelledby="title desc">
-  <title id="title">Wire size by fixture, dCBOR and generic CBOR modes</title>
-  <desc id="desc">For each of {count} fixtures, the normalized chart shows compact JSON at 100 percent, a teal dCBOR point, and the min-to-max range across cbor2/cborx default and canonical modes. When all four generic byte counts are equal, the range collapses to one point. Each row prints exact JSON and dCBOR bytes and the generic range; the full six-mode measurements remain in the raw JSON report.</desc>
-  <style>{COMMON_STYLE}
-    .hero {{ font-size: 29px; font-weight: 750; letter-spacing: -0.5px; }}
-    .dek {{ font-size: 15px; fill: {PALETTE["muted"]}; }}
-    .row-label {{ font-size: 15px; font-weight: 620; }}
-    .bytes {{ font-size: 14px; font-variant-numeric: tabular-nums; }}
-  </style>
-  <rect width="{width}" height="{height}" fill="{PALETTE["paper"]}" />
-  <text x="48" y="43" class="hero">Wire size: where the modes split</text>
-  <text x="48" y="70" class="dek">JSON = 100% · generic band spans four cbor2/cborx modes</text>
-  <circle cx="56" cy="98" r="6" fill="{PALETTE["dcbor"]}" />
-  <text x="72" y="103" class="legend">dCBOR</text>
-  <line x1="153" y1="98" x2="187" y2="98" stroke="{PALETTE["generic_range"]}" stroke-width="7" stroke-linecap="round" />
-  <text x="198" y="103" class="legend">Generic CBOR min–max; equal byte counts collapse to a point</text>
-  <line x1="740" y1="89" x2="740" y2="107" stroke="{PALETTE["ink"]}" stroke-width="2" />
-  <text x="752" y="103" class="legend">JSON baseline: 100%</text>
-  <rect x="48" y="117" width="488" height="70" rx="8" fill="#F6F9FA" />
-  <rect x="562" y="117" width="490" height="70" rx="8" fill="#F6F9FA" />
-  <text x="64" y="142" class="callout-label">NUMERIC ARRAY · DEFAULT WIDTH</text>
-  <text x="64" y="167" class="callout-value">{xml_text(numeric_note)}</text>
-  <text x="580" y="142" class="callout-label">COMPACT SCIENTIFIC NOTATION</text>
-  <text x="580" y="167" class="callout-value" fill="{PALETTE["coral"]}">{xml_text(scientific_note)}</text>
-  <text x="48" y="210" class="column-head">Fixture</text>
-  <text x="756" y="210" class="column-head">Exact bytes · JSON / dCBOR / generic range</text>
-  {''.join(grid)}
-  {''.join(rows)}
-  <text x="48" y="{height - 20}" class="caption">Generic range covers cbor2 and cborx, default and canonical. Raw JSON retains every mode, sample value, and hash.</text>
-</svg>
-'''
 
 def write_report(report: dict[str, object]) -> None:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    svg = chart(report)
+    from comparison_charts import stamp_chart_provenance
+
+    stamp_chart_provenance(report, svg, SVG_PATH.relative_to(ROOT).as_posix())
     (OUTPUT_DIR / "results.json").write_text(
-        json.dumps(report, indent=2, ensure_ascii=False, allow_nan=False) + "\n",
-        encoding="utf-8",
+        json.dumps(report, indent=2, ensure_ascii=False, allow_nan=False) + "\n", encoding="utf-8"
     )
     SVG_PATH.parent.mkdir(parents=True, exist_ok=True)
-    SVG_PATH.write_text(chart(report), encoding="utf-8")
+    SVG_PATH.write_text(svg, encoding="utf-8")
 
 
 def main() -> int:
@@ -408,6 +338,9 @@ def main() -> int:
         import cbor2
         import cborx
         import dcbor
+        import orjson
+        import msgspec
+        import cbrrr
     except ImportError as exc:
         reason = f"required benchmark package is unavailable: {exc.name}"
         report = {
@@ -428,6 +361,9 @@ def main() -> int:
                 "dcbor": "0.1.0",
                 "cbor2": PINNED_CBOR2,
                 "cborx": PINNED_CBORX,
+                "orjson": PINNED_ORJSON,
+                "msgspec": PINNED_MSGSPEC,
+                "cbrrr": PINNED_CBRRR,
             },
             "environment": {
                 "python_version": sys.version,
@@ -443,12 +379,15 @@ def main() -> int:
         print(f"Blocked: {reason}; install benchmarks/requirements.txt")
         return 2
 
-    env = environment(dcbor, cbor2, cborx)
+    env = environment(dcbor, cbor2, cborx, orjson, msgspec, cbrrr)
     blockers = []
     for package, expected, observed in (
         ("dcbor", "0.1.0", dcbor.__version__),
         ("cbor2", PINNED_CBOR2, env["cbor2_version"]),
         ("cborx", PINNED_CBORX, env["cborx_version"]),
+        ("orjson", PINNED_ORJSON, env["orjson_version"]),
+        ("msgspec", PINNED_MSGSPEC, env["msgspec_version"]),
+        ("cbrrr", PINNED_CBRRR, env["cbrrr_version"]),
     ):
         if observed != expected:
             blockers.append(f"expected {package}=={expected}, found {observed}")
@@ -478,7 +417,7 @@ def main() -> int:
         return 2
 
     try:
-        report = make_report(dcbor, cbor2, cborx)
+        report = make_report(dcbor, cbor2, cborx, orjson, msgspec, cbrrr)
     except Exception as exc:
         report = {
             "status": "failed",

@@ -1,61 +1,51 @@
-# Latency comparison
+# Codec latency comparison
 
-This harness compares encode, decode, and round-trip latency for the same eight
-JSON-compatible fixture values across the `dcbor` 0.1.0 Python source extension,
-Python's standard-library `json`, two `cbor2` 6.1.5 modes, and two `cborx` 0.2.5
-modes. `cbor2` and `cborx` are maintained generic CBOR libraries; this selected
-Python comparison does not represent all CBOR implementations or formats, and
-neither generic library is a dCBOR implementation. The CBOR APIs used are
-`dumps()` and `loads()`; pinned releases are listed at
-[cbor2 on PyPI](https://pypi.org/project/cbor2/6.1.5/) and
-[cborx on PyPI](https://pypi.org/project/cborx/). The cbor2 API reference is
-[here](https://cbor2.readthedocs.io/en/stable/api.html). The two
-`cbor2` modes and two `cborx` modes are measured separately; `canonical=True`
-is each library's canonical encoder option and is not asserted to implement
-dCBOR. In cbor2 6.1.5, `canonical=True` uses length-first map-key ordering
-(legacy RFC 8949 §4.2.3); dCBOR uses bytewise ordering. cborx documents
-bytewise encoded-key ordering for its canonical mode. Backend status is
-recorded because cborx can use a pure-Python fallback or native accelerator.
-These library-specific canonical modes are not interchangeable; the
-comparison measures each implementation as provided without treating them as
-equivalent implementations of the dCBOR profile.
+This harness times encode, decode, and one encode-plus-decode round trip for
+eight shared JSON-compatible fixtures. It measures Python's standard-library
+`json`, dCBOR, generic `cbor2` and `cborx`, `orjson`, `msgspec` MessagePack,
+and strict DAG-CBOR through `cbrrr`. These are selected implementations and
+formats, not a ranking of codecs in general.
 
-The fixtures are shared by name and value with
-[`fixtures.py`](../fixtures.py): records, nested values, Unicode strings,
-numeric arrays, scientific-notation floats, a large collection, a telemetry
-batch, and an ASCII article. All use ordinary JSON-compatible types. Before
-timing, each implementation's decode result is checked against the source
-value. JSON uses UTF-8, `ensure_ascii=False`, compact separators, and
-`allow_nan=False`.
-CBOR decoding uses bytes encoded by that same implementation. Round-trip timing
-includes exactly one encode followed by one decode. Strict validation is
-excluded because the libraries' validation operations and guarantees differ.
+![Three panels compare every measured codec mode with Python json for encode, decode, and round-trip latency; whiskers show the fixture-to-fixture range.](../../.github/assets/graphs/latency.svg)
 
-## Reading the graph
+Each operation's per-fixture median is divided by the Python `json` median for
+that same fixture and operation. The center mark is the median of the eight
+ratios; whiskers show the minimum and maximum across fixtures. The `1×`
+reference is parity with `json`. Those whiskers describe workload variation,
+not timing uncertainty. The [raw report](results.json) retains every
+fixture/mode median, MAD, and process sample.
 
-![Three panels compare dCBOR and the fastest generic CBOR mode with Python JSON for encode, decode, and round-trip latency across eight fixtures. Lower ratios are faster; 1× is parity.](../../.github/assets/graphs/latency.svg)
+## Calls and scope
 
-The graph groups results by encode, decode, and round trip. It shows dCBOR and
-the fastest generic-CBOR median for each fixture and operation, each divided by
-the Python `json` median for that same fixture and operation. The generic mode
-is selected independently for every row and operation. It uses a shared
-log-ratio axis; the `1×` reference
-means equal medians; values below it are faster than JSON and values above it
-are slower. The full report retains medians for every codec mode.
+| Series | Timed call |
+| --- | --- |
+| Python JSON | Compact UTF-8 `json.dumps()` and matching `json.loads()`. |
+| dCBOR | `dcbor.dumps(value)` and `dcbor.loads(prepared_wire)`. |
+| `cbor2` default/canonical | `dumps` and `loads`, with `canonical=True` only in the canonical mode. |
+| `cborx` default/canonical | `dumps` and `loads`, with `canonical=True` only in the canonical mode. |
+| `orjson` default/sorted | `orjson.dumps` and `orjson.loads`; sorted mode uses `OPT_SORT_KEYS`. |
+| `msgspec` MessagePack default/deterministic | Preconstructed `Encoder`/`Decoder` methods; deterministic mode sets `order="deterministic"`. |
+| `cbrrr` strict DAG-CBOR | `encode_dag_cbor` and `decode_dag_cbor`. |
 
-The graph summarizes one recorded host and run. It does not show dispersion:
-the raw report retains the exact medians, median absolute deviations (MAD),
-and all process samples. Results can vary with scheduling, thermal and
-frequency changes, background processes, Python version, and implementation
-changes. Close or inconsistent results are inconclusive. These data do not
-predict other hosts, workloads, or application-level performance, and imply
-no general speed, memory, or format-superiority ranking.
+The encoder and decoder wrappers for `msgspec` are constructed before timed
+calls. Decoding uses ordinary Python values; typed `msgspec.Struct` decoding
+is not included. The shared fixtures contain finite JSON-compatible values,
+so `orjson`'s handling of non-finite floats is outside this measurement.
+Round trip includes one encoding followed by one decoding. The harness checks
+type-sensitive round trips before timing. It times each implementation's
+normal decoder; there is no separate validation-only operation. DAG-CBOR
+decoding applies that codec's strict profile.
+
+Generic CBOR canonical modes, MessagePack deterministic ordering, and strict
+DAG-CBOR follow different data and byte rules from dCBOR. In particular,
+DAG-CBOR restricts map keys to strings, requires binary64 floats, and permits
+only CID tag 42. The shared fixtures fit the common comparison; results do not
+imply equivalent accepted domains or conformance to dCBOR.
 
 ## Reproduce
 
-Use the same CPython interpreter and host for all six measured codec modes. The
-runner refuses to time a `dcbor` extension unless its bytes match the Cargo
-release artifact at `target/release/lib_dcbor.so`.
+Use the same CPython interpreter and host for all modes. Install the pinned
+libraries, build the release extension, then run from the repository root:
 
 ```sh
 python -m pip install -r benchmarks/requirements.txt
@@ -63,30 +53,16 @@ CARGO_BUILD_JOBS=2 maturin develop --release --locked
 PYTHONPATH=python python benchmarks/latency.py
 ```
 
-The release-artifact verification path currently scopes this runner to Linux:
-it requires `target/release/lib_dcbor.so` and checks that the imported extension
-has the same SHA-256. Each repetition launches a fresh Python process with
-`PYTHONHASHSEED=0`. Every operation receives 500 warmup calls and 1,000 timed
-calls per process by default; the process batch mean is one raw sample. Nine
-independent process samples are summarized with their median and median absolute
-deviation (MAD), as well as minimum and maximum. Override these settings with `--warmup`,
-`--rounds`, and `--repetitions` when investigating the harness, and record the
-changed settings when comparing reports. The timer is
-`time.perf_counter_ns()`. Results include the exact interpreter and platform,
-CPU model, `rustc --version --verbose`, `cargo --version`, root `Cargo.lock`
-SHA-256, `dcbor` extension and release-artifact hashes, comparator version and
-native-extension status, source/generator identity, fixture hashes,
-encoded-output hashes for each CBOR mode, implementation order, and all process
-samples. Round-trip correctness uses recursive type-sensitive equality, so
-values such as `true`, `1`, and `1.0` cannot pass as interchangeable.
-The worktree flag excludes the three generated benchmark JSON reports and
-three stable SVG charts; other source or worktree changes still mark the report
-dirty. It is `null` if Git status cannot be read.
+The release-artifact check currently requires Linux's
+`target/release/lib_dcbor.so` and verifies the imported extension by SHA-256.
+Each repetition launches a fresh Python process with `PYTHONHASHSEED=0`. By
+default, each operation gets 500 warmup calls and 1,000 timed calls per
+process; each reported mode/fixture has nine process samples. The report
+summarizes per-process batch means with their median and MAD, plus minimum and
+maximum. Timer, versions, module paths, source fingerprints, extension hash,
+fixture/output hashes, and all process samples are recorded in JSON.
 
-The runner overwrites [`results.json`](results.json) and the stable graph at
-[`latency.svg`](../../.github/assets/graphs/latency.svg) on every run. The JSON
-contains the full raw process measurements, not just chart summaries. If a
-required package, pinned version, or matching release artifact is unavailable,
-the run writes a machine-readable `blocked` report and a graph that shows the
-blocker instead of timing only a subset. If an isolated worker fails, the runner
-preserves its error and any completed process samples in a `failed` report.
+The summary describes one host and interpreter. Scheduling, CPU frequency,
+thermal state, and background load can change timings; close results should
+not be generalized. See the [comparison overview](../../docs/benchmarks.md)
+for the complete report index.

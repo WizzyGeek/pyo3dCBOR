@@ -47,14 +47,14 @@ readable representation.
 
 ## Benchmark results
 
-![JSON and dCBOR payload sizes across eight fixtures; JSON is 100%, with exact bytes and percentage differences labeled.](.github/assets/graphs/encoded-size.svg)
+![Eight fixtures compare compact JSON at 100% with dCBOR bytes and signed size changes.](.github/assets/graphs/encoded-size.svg)
 
-![Encode, decode, and round-trip latency ratios for dCBOR and fastest generic CBOR versus JSON; 1× is parity.](.github/assets/graphs/latency.svg)
+![All measured codec modes compared with Python json; ratios summarize eight fixtures and whiskers show fixture variation.](.github/assets/graphs/latency.svg)
 
-Results vary by workload: JSON can be smaller and generic CBOR is often
-faster. Timings are from one host, and generic codecs follow different
-canonical rules. See [benchmark scope and raw reports](docs/benchmarks.md),
-[encoded-size method](benchmarks/encoded_size/README.md), and
+The byte chart includes a scientific-notation case where compact JSON is
+smaller than dCBOR. Timing results cover one host; codec ordering and numeric
+rules differ. See the [benchmark scope and reports](docs/benchmarks.md),
+[wire-size method](benchmarks/wire_size/README.md), and
 [latency method](benchmarks/latency/README.md).
 
 ## Guides
@@ -62,7 +62,7 @@ canonical rules. See [benchmark scope and raw reports](docs/benchmarks.md),
 | Guide | Covers |
 | --- | --- |
 | [Python API](docs/python-api.md) | Supported values, maps, dates, numeric compatibility, errors, and limits |
-| [Benchmark reports](docs/benchmarks.md) | Wire-size graph, scope, and comparison caveats |
+| [Benchmark reports](docs/benchmarks.md) | Size, latency, profile, and Rust-core graphs with methods |
 | [Development and CI](docs/development.md) | Build/test commands and CI matrix |
 | [Release guide](docs/releasing.md) | GitHub release process and assets |
 
