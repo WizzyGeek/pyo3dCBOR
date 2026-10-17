@@ -1,9 +1,9 @@
 # FEAT_001: CI environment and pipeline speedups
 
 **Status:** sdist/test parallelization implemented; Linux images published and
-public manifest access verified; opt-in consumption prepared, hosted wheel
-validation pending. Native caching and default adoption remain deferred pending
-baseline and cost evidence.
+opt-in consumption passed the full hosted 42-wheel matrix. A setup-speed win has
+not been demonstrated. Native caching and default adoption remain deferred
+pending comparable measurements and cost evidence.
 
 ## Problem
 
@@ -132,13 +132,16 @@ Its four JSON artifacts contain the actual registry digests, now recorded in
 [`containers/linux/images.json`](../../containers/linux/images.json). Artifact
 ZIP hashes printed by the download action are not image digests. Public GHCR
 manifest access, digest hashes, architectures and configuration were checked
-on 2026-10-18. Runtime and wheel consumption still require the hosted trial.
+on 2026-10-18. Runtime and all 42 wheel builds subsequently passed in
+[trial run 39060344953](https://github.com/WizzyGeek/pyo3dCBOR/actions/runs/39060344953).
 
 The consuming workflow now supports opt-in `linux_images=maintained` on a manual
 full-matrix run, retaining upstream defaults and an explicit rollback. See
 [`containers/linux/README.md`](../../containers/linux/README.md) for validation,
-publisher hardening, promotion criteria, and measurement limits. This is not yet
-evidence of a successful maintained-image wheel run or a measured speedup.
+publisher hardening, promotion criteria, and measurement limits. The
+[trial report](../ci-linux-image-trial.md) records exact job samples and the
+successful bundle gate. Default adoption remains deferred: this is one run with
+a changed matrix and has not demonstrated a setup-speed or cost benefit.
 
 ### Native runner baseline
 

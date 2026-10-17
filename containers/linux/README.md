@@ -13,7 +13,9 @@ The current four references were obtained from the JSON artifacts in
 All four were anonymously readable from GHCR on 2026-10-18. Their returned
 manifest bytes match the recorded SHA-256 values; their configs report the
 expected amd64/arm64 architecture, libc policy, and Rust 1.90.0 toolchain.
-This verifies metadata and access, not runtime or wheel-build success.
+The subsequent full trial passed all 42 wheels using these images. See the
+[trial report](../../docs/ci-linux-image-trial.md) for evidence and measurements.
+The trial establishes compatibility; it has not established a setup-speed win.
 
 ## Trial and rollback
 
@@ -54,8 +56,8 @@ run and anonymous access/runtime checks; never promote artifact ZIP hashes.
 
 ## Measurements still needed
 
-Collect the trial run's image pull/validation, cibuildwheel start-to-first-build,
-and end-to-end times. Compare like-for-like matrices and source revisions over
+The first trial's pull/validation, first-build, and whole-run times are recorded
+in the report. Compare like-for-like matrices and source revisions over
 at least five successful runs per affected architecture. Record billed minutes,
 registry/image refresh cost, and cache telemetry where available. An isolated
 successful run establishes compatibility, not the proposed 20% speedup or net
