@@ -64,16 +64,16 @@ correctness checks.
 
 ![dCBOR profile workloads show map encoding by size and insertion order, plus float and Unicode cases.](../.github/assets/graphs/profile.svg)
 
-## Rust core and Python binding
+## Historical Rust-core comparison
 
-The [Rust-core report](../benchmarks/rust_core/README.md) compares the patched
-Rust core with Python binding calls on the same eight prepared wires. Rust
-encoding starts from a tree constructed before timing, while `dcbor.dumps()`
-includes Python-value conversion. The resulting whole-operation comparison
-does not isolate FFI overhead. Decode uses prepared wire bytes for both sides;
-the raw report includes medians, MAD, samples, and parity checks.
+The [historical report](../benchmarks/rust_core/README.md) compared the
+vendored Rust core with Python binding calls before the project moved to its
+native decoder. It used prebuilt vendored `CBOR` trees for Rust encoding, while
+Python encoding included value conversion. The raw report and original figure
+remain available, but the runner and example were retired with that old
+architecture; the results do not describe current native decoder performance.
 
-![Rust core encode and decode compared with Python binding calls; Rust trees are prebuilt and Python conversion is included.](../.github/assets/graphs/rust-core.svg)
+![Historical vendored Rust-core and Python-binding comparison; it does not measure the current native decoder.](../.github/assets/graphs/rust-core.svg)
 
 ## Direct Python encoding (`0.1.1` development)
 
@@ -83,8 +83,19 @@ fixtures, the median encode ratio is 3.04× (range 1.16×–4.47×); round-trip 
 1.59× and common-fixture decode is 1.02×, near parity. These ratios summarize
 this fixture set, not a promised target. The existing `0.1.0` reports and
 graphs above remain historical; they are not the `0.1.1` paired baseline. The
-mixed-profile 10,000-entry map decode regression remains open as
-[BUG_005](requirements/BUG_005_mixed_profile_decode_slowdown.md).
+original mixed-profile observation is preserved in the
+[BUG_005 history](reviews/mixed_profile_decode_history.md).
+
+## Native decoder paired profile
+
+The [native decoder report](../benchmarks/native_decoder/README.md) compares
+the preserved pre-migration package with the native decoder across 24 dCBOR
+workloads. Input and wire fingerprints match, and decode medians improved for
+all cases; the 10,000-entry maps improved by 5.29–5.41×. This supersedes the
+older BUG_005 investigation for the current decoder without explaining the
+former slowdown. The profile also found a slower integer-width encode control,
+which is tracked separately as
+[BUG_007](requirements/BUG_007_integer_encode_regression.md).
 
 ## Reports and reproduction
 
@@ -92,6 +103,7 @@ mixed-profile 10,000-entry map decode regression remains open as
 - [Wire size](../benchmarks/wire_size/README.md)
 - [Latency](../benchmarks/latency/README.md)
 - [dCBOR profile](../benchmarks/profile/README.md)
-- [Rust core](../benchmarks/rust_core/README.md)
+- [Native decoder paired profile](../benchmarks/native_decoder/README.md)
+- [Historical Rust-core report](../benchmarks/rust_core/README.md)
 - [Benchmark index and commands](../benchmarks/README.md)
 - [Codec and format landscape](competitive-landscape.md)

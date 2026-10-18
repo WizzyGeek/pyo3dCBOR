@@ -1,32 +1,11 @@
-//! Checked Python scalar conversions; date handling deliberately bypasses
-//! `dcbor::Date`, whose constructor panics for unsupported timestamps.
-use dcbor::{CBORCase, Simple, Tag, CBOR};
+//! Checked Python scalar conversions for timezone-aware epoch datetimes.
 use pyo3::prelude::*;
-use pyo3::types::{PyDict, PyList, PyString, PyTuple};
-use pyo3::IntoPyObjectExt;
-use unicode_normalization::UnicodeNormalization;
+use pyo3::types::{PyDict, PyFloat, PyInt, PyList, PyTuple};
 
 use crate::CBORError;
 
 fn date_error(err: PyErr) -> PyErr {
     CBORError::new_err(format!("cannot convert CBOR epoch datetime: {err}"))
-}
-
-pub(crate) fn encode_text(text: &Bound<'_, PyString>) -> PyResult<CBOR> {
-    // to_str reads Python's actual Unicode storage, including on subclasses.
-    // CBOR text is UTF-8: surrogate code points have no valid representation.
-    let value = text.to_str().map_err(|_| {
-        CBORError::new_err("Python string contains surrogate code points that cannot be encoded as CBOR UTF-8 text")
-    })?;
-    // Upstream normalizes only when serializing. Store canonical text here
-    // so cache-budget lengths match the actual wire bytes, even when NFC
-    // expands or contracts the original UTF-8 representation.
-    let normalized = if value.is_ascii() {
-        value.to_owned()
-    } else {
-        value.nfc().collect()
-    };
-    Ok(CBORCase::Text(normalized).into())
 }
 
 pub(crate) fn datetime_timestamp(
@@ -63,40 +42,23 @@ pub(crate) fn datetime_timestamp(
     Ok(Some(seconds))
 }
 
-pub(crate) fn encode_datetime(
+/// Convert a native Python integer or float timestamp into a UTC datetime.
+///
+/// Keeping the timestamp as a Python scalar lets `datetime.timedelta` apply
+/// its normal range and microsecond-rounding behavior without first building
+/// a vendor CBOR value or coercing large integers through an `f64`.
+pub(crate) fn decode_datetime_timestamp(
     py: Python<'_>,
-    obj: &Bound<'_, PyAny>,
-) -> PyResult<Option<CBOR>> {
-    let Some(seconds) = datetime_timestamp(py, obj)? else {
-        return Ok(None);
-    };
-    // Direct numeric CBOR preserves negative fractions and applies dCBOR's
-    // canonical integer reduction without the upstream Date constructor.
-    Ok(Some(CBORCase::Tagged(Tag::with_value(1), CBOR::from(seconds)).into()))
-}
-
-pub(crate) fn decode_datetime(
-    py: Python<'_>,
-    cbor: &CBOR,
-) -> PyResult<Option<Py<PyAny>>> {
-    let CBORCase::Tagged(tag, value) = cbor.as_case() else {
-        return Ok(None);
-    };
-    if tag.value() != 1 {
-        return Ok(None);
-    }
-    let timestamp = match value.as_case() {
-        CBORCase::Unsigned(n) => n.into_py_any(py)?,
-        CBORCase::Negative(n) => (-1i128 - (*n as i128)).into_py_any(py)?,
-        CBORCase::Simple(Simple::Float(n)) => {
-            if !n.is_finite() {
-                return Err(CBORError::new_err("CBOR epoch timestamp must be finite"));
-            }
-            n.into_py_any(py)?
+    timestamp: &Bound<'_, PyAny>,
+) -> PyResult<Py<PyAny>> {
+    if let Ok(value) = timestamp.cast::<PyFloat>() {
+        if !value.value().is_finite() {
+            return Err(CBORError::new_err("CBOR epoch timestamp must be finite"));
         }
-        // Preserve arbitrary nonnumeric tag 1 values as CBORTag objects.
-        _ => return Ok(None),
-    };
+    } else if timestamp.cast::<PyInt>().is_err() {
+        return Err(CBORError::new_err("CBOR epoch timestamp must be numeric"));
+    }
+
     let datetime_mod = py.import("datetime")?;
     let utc = datetime_mod.getattr("timezone")?.getattr("utc")?;
     let datetime = datetime_mod.getattr("datetime")?;
@@ -106,11 +68,13 @@ pub(crate) fn decode_datetime(
         .call((1970, 1, 1), Some(&epoch_kwargs))
         .map_err(date_error)?;
     let delta_kwargs = PyDict::new(py);
-    delta_kwargs.set_item("seconds", timestamp.bind(py))?;
+    delta_kwargs.set_item("seconds", timestamp)?;
     let delta = datetime_mod
         .getattr("timedelta")?
         .call((), Some(&delta_kwargs))
         .map_err(date_error)?;
-    let result = epoch.call_method1("__add__", (delta,)).map_err(date_error)?;
-    Ok(Some(result.unbind()))
+    epoch
+        .call_method1("__add__", (delta,))
+        .map(|value| value.unbind())
+        .map_err(date_error)
 }

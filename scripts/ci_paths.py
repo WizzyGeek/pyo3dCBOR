@@ -12,7 +12,6 @@ BUILD_PATH = re.compile(
     r"pytest\.ini|py\.typed|rust-toolchain(?:\.toml)?)$"
     r"|(^|/)\.gitattributes$"
     r"|(^|/)\.cargo/config(?:\.toml)?$"
-    r"|^crates/dcbor/.*\.(?:patch|json|lock|sha256)$"
 )
 
 

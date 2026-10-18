@@ -20,15 +20,16 @@ There is structural evidence of repeated allocation/copying in that path:
   its dict branch at line 194 retains CBOR keys and values in a `BTreeMap`
   keyed by separately serialized key bytes. `dumps()` at line 274 then calls
   `py_to_cbor`, `to_cbor_data`, and wire preflight in sequence.
-- [`crates/dcbor/src/cbor.rs`](../../crates/dcbor/src/cbor.rs#L321) returns a
+- The former vendored source at `crates/dcbor/src/cbor.rs:321` returned a
   fresh `Vec<u8>` from every recursive `to_cbor_data()` call. Arrays and tags
-  extend their parent vector with child vectors. Text is normalized again at
-  serialization time; ASCII already has a direct append fast path.
-- [`crates/dcbor/src/map.rs`](../../crates/dcbor/src/map.rs#L123) stores each
-  key's encoded bytes in a `BTreeMap`. `Map::insert()` at line 141 serializes
-  each key to populate that cache. `Map::cbor_data()` at line 222 clones cached
-  key vectors, serializes every value to a new vector, collects all pairs, then
-  appends them to a final vector.
+  extended their parent vector with child vectors. Text was normalized again
+  at serialization time; ASCII already had a direct append fast path. This
+  source was removed with FEAT_006.
+- The former vendored `crates/dcbor/src/map.rs:123` stored each key's encoded
+  bytes in a `BTreeMap`. `Map::insert()` at line 141 serialized each key to
+  populate that cache. `Map::cbor_data()` at line 222 cloned cached key
+  vectors, serialized every value to a new vector, collected all pairs, then
+  appended them to a final vector. This source was removed with FEAT_006.
 - [`src/encode.rs`](../../src/encode.rs#L1) and [`src/wire.rs`](../../src/wire.rs#L5)
   enforce a 16 MiB encoded map-key-cache limit, including recursively expanded
   nested key representations. This limit describes retained key caches, not
@@ -148,8 +149,8 @@ raw bytearray slice across those boundaries.
 ## Historical suggested implementation phases and ownership
 
 This archived phase list records the original proposal, not current work. The
-feature is complete; see the [encoding record](../encoding.md) and open
-[BUG_005](../requirements/BUG_005_mixed_profile_decode_slowdown.md).
+feature is complete; see the [encoding record](../encoding.md) and the
+[BUG_005 historical record](mixed_profile_decode_history.md).
 
 1. **Requirements/spec owner:** freeze wire/rejection vectors for numeric
    boundaries, floats, NFC/surrogates, map order/collisions, depth and budgets.

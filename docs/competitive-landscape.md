@@ -75,14 +75,15 @@ In this grouping, MessagePack and Amazon Ion are schema-free binary alternatives
 This is a database feature comparison, not a wire-format or in-process codec comparison. PostgreSQL's internal `jsonb` representation is not a stable cross-system wire format; PostgreSQL notes that binary representations for complex types may change across server versions ([protocol formats](https://www.postgresql.org/docs/current/protocol-overview.html#PROTOCOL-FORMATS)). A useful measurement would need a separate design that states PostgreSQL version, schema, indexes, transaction and durability settings, client protocol, insert/query workload, and whether reported size includes indexes and table overhead. Do not compare database storage size with the Python benchmark's encoded payload bytes or combine SQL execution time with codec latency.
 
 The repository compares compact JSON and dCBOR bytes, generic CBOR modes,
-`orjson` JSON, `msgspec` MessagePack, and strict DAG-CBOR. Separate reports
-cover dCBOR profile workloads and Rust-core versus Python binding operations.
-These reports measure one recorded host and fixture set; they do not measure
-PostgreSQL storage or queries. See [benchmark status and scope](../benchmarks/README.md),
+`orjson` JSON, `msgspec` MessagePack, and strict DAG-CBOR. Active reports cover
+dCBOR profile workloads. An archived Rust-core versus Python binding report
+records the previous vendored-core architecture and does not describe the
+current native decoder. The reports measure one recorded host and fixture set;
+they do not measure PostgreSQL storage or queries. See [benchmark status and scope](../benchmarks/README.md),
 the [wire-size report](../benchmarks/wire_size/README.md), the
 [latency report](../benchmarks/latency/README.md), the
 [dCBOR profile](../benchmarks/profile/README.md), and
-[Rust core](../benchmarks/rust_core/README.md).
+[historical Rust-core comparison](../benchmarks/rust_core/README.md).
 
 ## Benchmark interpretation
 

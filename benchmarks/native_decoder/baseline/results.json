@@ -1,0 +1,3537 @@
+{
+  "status": "complete",
+  "measurement": "dCBOR encode/decode latency for profile-specific maps, explicit integer widths, NFC key collisions, nested values, floats, Unicode, and CBORMap snapshots",
+  "generated_at_utc": "2026-10-18T17:57:13.928548+00:00",
+  "source": {
+    "git_commit": "ecdb4cb36749a9832cfd6a269146bdbeb5657cd9",
+    "git_worktree_dirty": true,
+    "generator_path": "benchmarks/profile.py",
+    "generator_sha256": "ea85002ee08dcb1843ae2f4213b4e84c126ca8c5c9f4471b151b216bedbe5558",
+    "fixtures_path": "benchmarks/profile_fixtures.py",
+    "fixtures_sha256": "90502720f32e7d88821b14a13b645853c6c12ad8f2e82860fbde222316c19526",
+    "chart_path": "benchmarks/native_decoder/baseline/profile.svg",
+    "chart_sha256": "162f2a492d39e90b9952905f4377474ede85b11f258a132d5e5cb1e082131c3a",
+    "chart_generator_path": "benchmarks/comparison_charts.py",
+    "chart_generator_sha256": "3b8468102d2fdd044ab92ac6d152e97382dab40153b22ba652865b1b57407ccc",
+    "chart_style_path": "benchmarks/chart_style.py",
+    "chart_style_sha256": "ff592d67401fbb7c45f66b03d53fa60c62fe4f6b6da7fb990353b44f902bc68d"
+  },
+  "build": {
+    "profile": "release",
+    "verified_by": "SHA-256 equality with configured release artifact",
+    "release_artifact_path": "/tmp/native-decoder-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+    "release_artifact_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+    "extension_path": "/tmp/native-decoder-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+    "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581"
+  },
+  "environment": {
+    "python_version": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+    "python_implementation": "CPython",
+    "python_executable": "/usr/bin/python3.14",
+    "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+    "system": "Linux",
+    "release": "7.2.4-200.fc44.x86_64",
+    "machine": "x86_64",
+    "processor": "AMD Ryzen 7 7435HS",
+    "rustc_version_verbose": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+    "cargo_version": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+    "cargo_lock_sha256": "9a6cf1e35eb293efb9b5aa314f2af27652618b155b97e03dc1b6e6dd19df6441",
+    "dcbor_version": "0.1.1",
+    "dcbor_build": {
+      "profile": "release",
+      "verified_by": "SHA-256 equality with configured release artifact",
+      "release_artifact_path": "/tmp/native-decoder-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+      "release_artifact_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+      "extension_path": "/tmp/native-decoder-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+      "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581"
+    }
+  },
+  "methodology": {
+    "operations": [
+      "encode",
+      "decode"
+    ],
+    "clock": "time.perf_counter_ns",
+    "timing_unit": "nanoseconds per operation; each sample is a process-local batch mean",
+    "warmup_base_calls": 100,
+    "rounds_base_calls": 500,
+    "independent_process_repetitions": 9,
+    "iteration_policy": "per case and operation count = max(1, min(base_count, floor(base_count * 1000 / work_units))); warmup zero remains zero",
+    "work_units": "case-specific bounded estimate recorded with each input; map entry count, scalar element count, and Unicode code points are explicit",
+    "input_fingerprint": "recursive typed tags with insertion-order dicts, CBORMap item snapshots, UTF-8 string bytes, decimal integer bytes, and exact IEEE-754 binary64 bytes",
+    "map_key_order": "fixed-width ASCII string keys are ranked by their dCBOR encoded bytes; canonical output is checked byte-identical for sorted, reversed, and seeded-shuffled insertion orders. Equal-length keys isolate insertion-order sorting cost and do not distinguish bytewise ordering from length-first ordering",
+    "float_profile": "dCBOR float reduction and canonicalization are checked using type-sensitive values, exact finite float.hex() values, isnan() for NaNs, and independent known CBOR hex vectors at signed-zero and integer-reduction boundaries",
+    "unicode_profile": "decoded strings are checked against Python unicodedata.normalize('NFC', text)",
+    "excluded": "generic CBOR comparator modes and round-trip timing; encode and decode are measured separately"
+  },
+  "unsupported": [],
+  "cases": {
+    "map_10_sorted": {
+      "family": "map_order",
+      "category": "map_order",
+      "size": 10,
+      "order": "sorted",
+      "shuffle_seed": null,
+      "key_format": "field-{index:04d}",
+      "key_width_chars": 10,
+      "value_rule": "integer index in 0..size-1",
+      "key_order_basis": "dcbor.dumps(key) bytes",
+      "map_order_scope": "All keys have equal encoded length; this isolates insertion-order sorting cost and does not compare bytewise with length-first ordering.",
+      "work_units": 10,
+      "normalization": "Map entries are serialized by encoded-key-byte order, regardless of input insertion order.",
+      "expected_type_rule": "Decoded keys remain strings and values remain integers; decoded keys follow canonical byte order.",
+      "input_sha256": "4696fe71cfc70f3ce36fd70758e44acbac717d598877879eed72a2cd632e5138",
+      "wire_sha256": "a461b69f6ece1bf9da1b343f2cc76577b3245532d9e76245dabde597ad1b6c40",
+      "wire_bytes": 121,
+      "iterations_per_process": 500,
+      "warmup_per_process": 100,
+      "operations": {
+        "encode": {
+          "samples_ns_per_operation": [
+            2788.438,
+            2193.42,
+            2207.608,
+            2273.45,
+            2232.674,
+            2203.298,
+            2158.916,
+            2208.008,
+            2199.992
+          ],
+          "median_ns_per_operation": 2207.608,
+          "mad_ns_per_operation": 14.188000000000102,
+          "minimum_ns_per_operation": 2158.916,
+          "maximum_ns_per_operation": 2788.438
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            4110.422,
+            3246.178,
+            3123.028,
+            3301.062,
+            3359.53,
+            3196.404,
+            3122.366,
+            3191.376,
+            3200.05
+          ],
+          "median_ns_per_operation": 3200.05,
+          "mad_ns_per_operation": 77.02200000000039,
+          "minimum_ns_per_operation": 3122.366,
+          "maximum_ns_per_operation": 4110.422
+        }
+      }
+    },
+    "map_10_reverse": {
+      "family": "map_order",
+      "category": "map_order",
+      "size": 10,
+      "order": "reverse",
+      "shuffle_seed": null,
+      "key_format": "field-{index:04d}",
+      "key_width_chars": 10,
+      "value_rule": "integer index in 0..size-1",
+      "key_order_basis": "dcbor.dumps(key) bytes",
+      "map_order_scope": "All keys have equal encoded length; this isolates insertion-order sorting cost and does not compare bytewise with length-first ordering.",
+      "work_units": 10,
+      "normalization": "Map entries are serialized by encoded-key-byte order, regardless of input insertion order.",
+      "expected_type_rule": "Decoded keys remain strings and values remain integers; decoded keys follow canonical byte order.",
+      "input_sha256": "3310856aaac003b653ef9884162ae3f1204a57fd8686387042d75bcf7bf3fc92",
+      "wire_sha256": "a461b69f6ece1bf9da1b343f2cc76577b3245532d9e76245dabde597ad1b6c40",
+      "wire_bytes": 121,
+      "iterations_per_process": 500,
+      "warmup_per_process": 100,
+      "operations": {
+        "encode": {
+          "samples_ns_per_operation": [
+            2545.742,
+            2023.24,
+            1967.476,
+            2013.362,
+            1996.07,
+            2007.672,
+            1944.332,
+            2000.558,
+            1984.086
+          ],
+          "median_ns_per_operation": 2000.558,
+          "mad_ns_per_operation": 16.47199999999998,
+          "minimum_ns_per_operation": 1944.332,
+          "maximum_ns_per_operation": 2545.742
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            4113.768,
+            3290.3,
+            3135.51,
+            3145.068,
+            3319.996,
+            3206.142,
+            3153.806,
+            3153.384,
+            3193.258
+          ],
+          "median_ns_per_operation": 3193.258,
+          "mad_ns_per_operation": 48.1899999999996,
+          "minimum_ns_per_operation": 3135.51,
+          "maximum_ns_per_operation": 4113.768
+        }
+      }
+    },
+    "map_10_shuffled": {
+      "family": "map_order",
+      "category": "map_order",
+      "size": 10,
+      "order": "shuffled",
+      "shuffle_seed": 56506,
+      "key_format": "field-{index:04d}",
+      "key_width_chars": 10,
+      "value_rule": "integer index in 0..size-1",
+      "key_order_basis": "dcbor.dumps(key) bytes",
+      "map_order_scope": "All keys have equal encoded length; this isolates insertion-order sorting cost and does not compare bytewise with length-first ordering.",
+      "work_units": 10,
+      "normalization": "Map entries are serialized by encoded-key-byte order, regardless of input insertion order.",
+      "expected_type_rule": "Decoded keys remain strings and values remain integers; decoded keys follow canonical byte order.",
+      "input_sha256": "e890a92da1bd1a36ac77d3eeccc8d6b124fd2d9cd29de72cd60184dfc143feef",
+      "wire_sha256": "a461b69f6ece1bf9da1b343f2cc76577b3245532d9e76245dabde597ad1b6c40",
+      "wire_bytes": 121,
+      "iterations_per_process": 500,
+      "warmup_per_process": 100,
+      "operations": {
+        "encode": {
+          "samples_ns_per_operation": [
+            3142.562,
+            2209.392,
+            2175.566,
+            2140.8,
+            2185.246,
+            2200.114,
+            2120.304,
+            2236.902,
+            2175.606
+          ],
+          "median_ns_per_operation": 2185.246,
+          "mad_ns_per_operation": 24.14599999999973,
+          "minimum_ns_per_operation": 2120.304,
+          "maximum_ns_per_operation": 3142.562
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            4893.212,
+            3239.044,
+            3229.828,
+            3259.204,
+            3318.736,
+            3198.448,
+            3150.598,
+            3145.87,
+            3193.24
+          ],
+          "median_ns_per_operation": 3229.828,
+          "mad_ns_per_operation": 36.58800000000019,
+          "minimum_ns_per_operation": 3145.87,
+          "maximum_ns_per_operation": 4893.212
+        }
+      }
+    },
+    "map_100_sorted": {
+      "family": "map_order",
+      "category": "map_order",
+      "size": 100,
+      "order": "sorted",
+      "shuffle_seed": null,
+      "key_format": "field-{index:04d}",
+      "key_width_chars": 10,
+      "value_rule": "integer index in 0..size-1",
+      "key_order_basis": "dcbor.dumps(key) bytes",
+      "map_order_scope": "All keys have equal encoded length; this isolates insertion-order sorting cost and does not compare bytewise with length-first ordering.",
+      "work_units": 100,
+      "normalization": "Map entries are serialized by encoded-key-byte order, regardless of input insertion order.",
+      "expected_type_rule": "Decoded keys remain strings and values remain integers; decoded keys follow canonical byte order.",
+      "input_sha256": "181e7b7c9fbc2c6d8e308e727f1b277b41975042d96756d28c57219dc8e33c9a",
+      "wire_sha256": "c65de633682289887eb18c08aa4bf07718953e912216a6688c7ae22b2594fa50",
+      "wire_bytes": 1278,
+      "iterations_per_process": 500,
+      "warmup_per_process": 100,
+      "operations": {
+        "encode": {
+          "samples_ns_per_operation": [
+            41963.132,
+            28246.602,
+            28259.006,
+            27713.964,
+            29174.646,
+            28529.394,
+            27786.96,
+            28529.756,
+            29020.938
+          ],
+          "median_ns_per_operation": 28529.394,
+          "mad_ns_per_operation": 491.54399999999805,
+          "minimum_ns_per_operation": 27713.964,
+          "maximum_ns_per_operation": 41963.132
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            60976.548,
+            47101.242,
+            46806.77,
+            47033.796,
+            49394.992,
+            48829.19,
+            46864.018,
+            47305.768,
+            47901.666
+          ],
+          "median_ns_per_operation": 47305.768,
+          "mad_ns_per_operation": 498.9979999999996,
+          "minimum_ns_per_operation": 46806.77,
+          "maximum_ns_per_operation": 60976.548
+        }
+      }
+    },
+    "map_100_reverse": {
+      "family": "map_order",
+      "category": "map_order",
+      "size": 100,
+      "order": "reverse",
+      "shuffle_seed": null,
+      "key_format": "field-{index:04d}",
+      "key_width_chars": 10,
+      "value_rule": "integer index in 0..size-1",
+      "key_order_basis": "dcbor.dumps(key) bytes",
+      "map_order_scope": "All keys have equal encoded length; this isolates insertion-order sorting cost and does not compare bytewise with length-first ordering.",
+      "work_units": 100,
+      "normalization": "Map entries are serialized by encoded-key-byte order, regardless of input insertion order.",
+      "expected_type_rule": "Decoded keys remain strings and values remain integers; decoded keys follow canonical byte order.",
+      "input_sha256": "8c99cb87553170438070768e97391f0e495af7c2ac29639f2353898dc149dfa3",
+      "wire_sha256": "c65de633682289887eb18c08aa4bf07718953e912216a6688c7ae22b2594fa50",
+      "wire_bytes": 1278,
+      "iterations_per_process": 500,
+      "warmup_per_process": 100,
+      "operations": {
+        "encode": {
+          "samples_ns_per_operation": [
+            25963.714,
+            19969.314,
+            20105.03,
+            20071.888,
+            20349.508,
+            20574.852,
+            19905.274,
+            20241.824,
+            20216.918
+          ],
+          "median_ns_per_operation": 20216.918,
+          "mad_ns_per_operation": 145.03000000000247,
+          "minimum_ns_per_operation": 19905.274,
+          "maximum_ns_per_operation": 25963.714
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            60394.414,
+            47027.182,
+            46589.16,
+            45986.208,
+            46533.878,
+            48796.266,
+            46841.334,
+            47220.528,
+            47899.922
+          ],
+          "median_ns_per_operation": 47027.182,
+          "mad_ns_per_operation": 493.3040000000037,
+          "minimum_ns_per_operation": 45986.208,
+          "maximum_ns_per_operation": 60394.414
+        }
+      }
+    },
+    "map_100_shuffled": {
+      "family": "map_order",
+      "category": "map_order",
+      "size": 100,
+      "order": "shuffled",
+      "shuffle_seed": 56596,
+      "key_format": "field-{index:04d}",
+      "key_width_chars": 10,
+      "value_rule": "integer index in 0..size-1",
+      "key_order_basis": "dcbor.dumps(key) bytes",
+      "map_order_scope": "All keys have equal encoded length; this isolates insertion-order sorting cost and does not compare bytewise with length-first ordering.",
+      "work_units": 100,
+      "normalization": "Map entries are serialized by encoded-key-byte order, regardless of input insertion order.",
+      "expected_type_rule": "Decoded keys remain strings and values remain integers; decoded keys follow canonical byte order.",
+      "input_sha256": "68405bdd1a678b5f9bd6c2f4294d194a412d7b1f4ef67a2aaeadc5720431d0eb",
+      "wire_sha256": "c65de633682289887eb18c08aa4bf07718953e912216a6688c7ae22b2594fa50",
+      "wire_bytes": 1278,
+      "iterations_per_process": 500,
+      "warmup_per_process": 100,
+      "operations": {
+        "encode": {
+          "samples_ns_per_operation": [
+            38687.778,
+            30308.456,
+            29501.6,
+            29096.88,
+            30385.802,
+            30586.9,
+            29643.408,
+            30189.732,
+            30919.684
+          ],
+          "median_ns_per_operation": 30308.456,
+          "mad_ns_per_operation": 611.2280000000028,
+          "minimum_ns_per_operation": 29096.88,
+          "maximum_ns_per_operation": 38687.778
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            60346.044,
+            46923.948,
+            46124.288,
+            46069.604,
+            46759.982,
+            46465.87,
+            46615.47,
+            47446.492,
+            47704.376
+          ],
+          "median_ns_per_operation": 46759.982,
+          "mad_ns_per_operation": 635.6940000000031,
+          "minimum_ns_per_operation": 46069.604,
+          "maximum_ns_per_operation": 60346.044
+        }
+      }
+    },
+    "map_1000_sorted": {
+      "family": "map_order",
+      "category": "map_order",
+      "size": 1000,
+      "order": "sorted",
+      "shuffle_seed": null,
+      "key_format": "field-{index:04d}",
+      "key_width_chars": 10,
+      "value_rule": "integer index in 0..size-1",
+      "key_order_basis": "dcbor.dumps(key) bytes",
+      "map_order_scope": "All keys have equal encoded length; this isolates insertion-order sorting cost and does not compare bytewise with length-first ordering.",
+      "work_units": 1000,
+      "normalization": "Map entries are serialized by encoded-key-byte order, regardless of input insertion order.",
+      "expected_type_rule": "Decoded keys remain strings and values remain integers; decoded keys follow canonical byte order.",
+      "input_sha256": "b5db504fd22315d9e7fff2de77ae58a68f6794240d43d8ff9b192f156bf8d6d6",
+      "wire_sha256": "0c1eecc335fd44c29bba2009543743fc244467654b117469be3de77bb093bac4",
+      "wire_bytes": 13723,
+      "iterations_per_process": 500,
+      "warmup_per_process": 100,
+      "operations": {
+        "encode": {
+          "samples_ns_per_operation": [
+            606047.3,
+            391767.24,
+            399188.442,
+            396838.848,
+            391930.166,
+            417935.32,
+            400071.342,
+            391340.318,
+            388956.02
+          ],
+          "median_ns_per_operation": 396838.848,
+          "mad_ns_per_operation": 5071.608000000007,
+          "minimum_ns_per_operation": 388956.02,
+          "maximum_ns_per_operation": 606047.3
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            788177.124,
+            609640.73,
+            606660.172,
+            610083.582,
+            619402.75,
+            634507.484,
+            607460.394,
+            604545.058,
+            611635.658
+          ],
+          "median_ns_per_operation": 610083.582,
+          "mad_ns_per_operation": 3423.4100000000326,
+          "minimum_ns_per_operation": 604545.058,
+          "maximum_ns_per_operation": 788177.124
+        }
+      }
+    },
+    "map_1000_reverse": {
+      "family": "map_order",
+      "category": "map_order",
+      "size": 1000,
+      "order": "reverse",
+      "shuffle_seed": null,
+      "key_format": "field-{index:04d}",
+      "key_width_chars": 10,
+      "value_rule": "integer index in 0..size-1",
+      "key_order_basis": "dcbor.dumps(key) bytes",
+      "map_order_scope": "All keys have equal encoded length; this isolates insertion-order sorting cost and does not compare bytewise with length-first ordering.",
+      "work_units": 1000,
+      "normalization": "Map entries are serialized by encoded-key-byte order, regardless of input insertion order.",
+      "expected_type_rule": "Decoded keys remain strings and values remain integers; decoded keys follow canonical byte order.",
+      "input_sha256": "02c8521417cd78ee34ea3acb95e8c23f609293962b55f0f1147ee57b326ec443",
+      "wire_sha256": "0c1eecc335fd44c29bba2009543743fc244467654b117469be3de77bb093bac4",
+      "wire_bytes": 13723,
+      "iterations_per_process": 500,
+      "warmup_per_process": 100,
+      "operations": {
+        "encode": {
+          "samples_ns_per_operation": [
+            255895.316,
+            230282.802,
+            229920.622,
+            229506.584,
+            229181.714,
+            232181.928,
+            234260.092,
+            231430.678,
+            230489.33
+          ],
+          "median_ns_per_operation": 230489.33,
+          "mad_ns_per_operation": 982.7459999999846,
+          "minimum_ns_per_operation": 229181.714,
+          "maximum_ns_per_operation": 255895.316
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            618399.766,
+            604980.436,
+            616270.344,
+            618319.816,
+            627750.03,
+            612656.796,
+            627663.448,
+            608586.712,
+            621314.56
+          ],
+          "median_ns_per_operation": 618319.816,
+          "mad_ns_per_operation": 5663.020000000019,
+          "minimum_ns_per_operation": 604980.436,
+          "maximum_ns_per_operation": 627750.03
+        }
+      }
+    },
+    "map_1000_shuffled": {
+      "family": "map_order",
+      "category": "map_order",
+      "size": 1000,
+      "order": "shuffled",
+      "shuffle_seed": 57496,
+      "key_format": "field-{index:04d}",
+      "key_width_chars": 10,
+      "value_rule": "integer index in 0..size-1",
+      "key_order_basis": "dcbor.dumps(key) bytes",
+      "map_order_scope": "All keys have equal encoded length; this isolates insertion-order sorting cost and does not compare bytewise with length-first ordering.",
+      "work_units": 1000,
+      "normalization": "Map entries are serialized by encoded-key-byte order, regardless of input insertion order.",
+      "expected_type_rule": "Decoded keys remain strings and values remain integers; decoded keys follow canonical byte order.",
+      "input_sha256": "495986fc104fd7ee14a69baddab60c8d69f3368833e7f08d0bac1de80f408f18",
+      "wire_sha256": "0c1eecc335fd44c29bba2009543743fc244467654b117469be3de77bb093bac4",
+      "wire_bytes": 13723,
+      "iterations_per_process": 500,
+      "warmup_per_process": 100,
+      "operations": {
+        "encode": {
+          "samples_ns_per_operation": [
+            430956.202,
+            426884.732,
+            429384.808,
+            453620.456,
+            484808.826,
+            455104.044,
+            428589.434,
+            429804.758,
+            423155.646
+          ],
+          "median_ns_per_operation": 429804.758,
+          "mad_ns_per_operation": 2920.0259999999544,
+          "minimum_ns_per_operation": 423155.646,
+          "maximum_ns_per_operation": 484808.826
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            610849.1,
+            614398.728,
+            661913.368,
+            618318.874,
+            646221.692,
+            618142.002,
+            609420.958,
+            620022.894,
+            616858.29
+          ],
+          "median_ns_per_operation": 618142.002,
+          "mad_ns_per_operation": 3743.273999999976,
+          "minimum_ns_per_operation": 609420.958,
+          "maximum_ns_per_operation": 661913.368
+        }
+      }
+    },
+    "map_10000_sorted": {
+      "family": "map_order",
+      "category": "map_order",
+      "size": 10000,
+      "order": "sorted",
+      "shuffle_seed": null,
+      "key_format": "field-{index:04d}",
+      "key_width_chars": 10,
+      "value_rule": "integer index in 0..size-1",
+      "key_order_basis": "dcbor.dumps(key) bytes",
+      "map_order_scope": "All keys have equal encoded length; this isolates insertion-order sorting cost and does not compare bytewise with length-first ordering.",
+      "work_units": 10000,
+      "normalization": "Map entries are serialized by encoded-key-byte order, regardless of input insertion order.",
+      "expected_type_rule": "Decoded keys remain strings and values remain integers; decoded keys follow canonical byte order.",
+      "input_sha256": "7307425e468fb85af440e9c161b69e45bb18efa82eeca9e433c72cf47688ca99",
+      "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
+      "wire_bytes": 139723,
+      "iterations_per_process": 50,
+      "warmup_per_process": 10,
+      "operations": {
+        "encode": {
+          "samples_ns_per_operation": [
+            4666569.06,
+            4583490.8,
+            4659437.46,
+            4699400.94,
+            4773463.48,
+            4621447.5,
+            4977418.22,
+            4624995.16,
+            4690193.44
+          ],
+          "median_ns_per_operation": 4666569.06,
+          "mad_ns_per_operation": 41573.89999999944,
+          "minimum_ns_per_operation": 4583490.8,
+          "maximum_ns_per_operation": 4977418.22
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            9281054.68,
+            9105762.58,
+            10837626.0,
+            9320445.08,
+            9491291.62,
+            9193703.98,
+            10104039.3,
+            9331146.18,
+            8997078.02
+          ],
+          "median_ns_per_operation": 9320445.08,
+          "mad_ns_per_operation": 170846.5399999991,
+          "minimum_ns_per_operation": 8997078.02,
+          "maximum_ns_per_operation": 10837626.0
+        }
+      }
+    },
+    "map_10000_reverse": {
+      "family": "map_order",
+      "category": "map_order",
+      "size": 10000,
+      "order": "reverse",
+      "shuffle_seed": null,
+      "key_format": "field-{index:04d}",
+      "key_width_chars": 10,
+      "value_rule": "integer index in 0..size-1",
+      "key_order_basis": "dcbor.dumps(key) bytes",
+      "map_order_scope": "All keys have equal encoded length; this isolates insertion-order sorting cost and does not compare bytewise with length-first ordering.",
+      "work_units": 10000,
+      "normalization": "Map entries are serialized by encoded-key-byte order, regardless of input insertion order.",
+      "expected_type_rule": "Decoded keys remain strings and values remain integers; decoded keys follow canonical byte order.",
+      "input_sha256": "8e12cbdc8468dfe1c4657746f5a706bebd50f527bff50e9c0ceebf191c6193e4",
+      "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
+      "wire_bytes": 139723,
+      "iterations_per_process": 50,
+      "warmup_per_process": 10,
+      "operations": {
+        "encode": {
+          "samples_ns_per_operation": [
+            2841553.46,
+            2431644.0,
+            2430079.66,
+            2392688.02,
+            2395086.72,
+            2393405.38,
+            2651668.74,
+            2388913.32,
+            2400631.96
+          ],
+          "median_ns_per_operation": 2400631.96,
+          "mad_ns_per_operation": 11718.64000000013,
+          "minimum_ns_per_operation": 2388913.32,
+          "maximum_ns_per_operation": 2841553.46
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            11258030.56,
+            9092877.78,
+            9105665.0,
+            9323657.3,
+            9420374.0,
+            9131750.6,
+            8976005.04,
+            9631814.0,
+            9071499.82
+          ],
+          "median_ns_per_operation": 9131750.6,
+          "mad_ns_per_operation": 155745.56000000052,
+          "minimum_ns_per_operation": 8976005.04,
+          "maximum_ns_per_operation": 11258030.56
+        }
+      }
+    },
+    "map_10000_shuffled": {
+      "family": "map_order",
+      "category": "map_order",
+      "size": 10000,
+      "order": "shuffled",
+      "shuffle_seed": 66496,
+      "key_format": "field-{index:04d}",
+      "key_width_chars": 10,
+      "value_rule": "integer index in 0..size-1",
+      "key_order_basis": "dcbor.dumps(key) bytes",
+      "map_order_scope": "All keys have equal encoded length; this isolates insertion-order sorting cost and does not compare bytewise with length-first ordering.",
+      "work_units": 10000,
+      "normalization": "Map entries are serialized by encoded-key-byte order, regardless of input insertion order.",
+      "expected_type_rule": "Decoded keys remain strings and values remain integers; decoded keys follow canonical byte order.",
+      "input_sha256": "aa8ab9ed2dcfa583536c86b7786a24c41b965251419b2d9a7325a52132986be7",
+      "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
+      "wire_bytes": 139723,
+      "iterations_per_process": 50,
+      "warmup_per_process": 10,
+      "operations": {
+        "encode": {
+          "samples_ns_per_operation": [
+            5861466.76,
+            6370504.62,
+            5901180.56,
+            6118994.74,
+            6523905.0,
+            7209056.48,
+            5911850.82,
+            5913959.98,
+            5939540.62
+          ],
+          "median_ns_per_operation": 5939540.62,
+          "mad_ns_per_operation": 78073.86000000034,
+          "minimum_ns_per_operation": 5861466.76,
+          "maximum_ns_per_operation": 7209056.48
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            10182698.88,
+            9282645.86,
+            8928731.42,
+            9139727.78,
+            9692836.64,
+            9320224.86,
+            8891520.92,
+            8958181.94,
+            9068475.14
+          ],
+          "median_ns_per_operation": 9139727.78,
+          "mad_ns_per_operation": 181545.83999999985,
+          "minimum_ns_per_operation": 8891520.92,
+          "maximum_ns_per_operation": 10182698.88
+        }
+      }
+    },
+    "integer_width_boundaries": {
+      "family": "integer",
+      "category": "integer",
+      "case_type": "explicit_integer_width_boundaries",
+      "size": 480,
+      "work_units": 480,
+      "normalization": "Explicit integers span dCBOR negative and unsigned preferred-width boundaries through the supported [-2**64, 2**64-1] range.",
+      "expected_type_rule": "Every decoded element remains an int equal to the input; floats are not used in this workload.",
+      "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+      "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+      "wire_bytes": 2435,
+      "iterations_per_process": 500,
+      "warmup_per_process": 100,
+      "operations": {
+        "encode": {
+          "samples_ns_per_operation": [
+            23760.496,
+            23475.22,
+            23041.244,
+            23248.434,
+            23488.884,
+            23294.3,
+            23399.958,
+            24630.97,
+            23479.588
+          ],
+          "median_ns_per_operation": 23475.22,
+          "mad_ns_per_operation": 180.9200000000019,
+          "minimum_ns_per_operation": 23041.244,
+          "maximum_ns_per_operation": 24630.97
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            34448.954,
+            33377.06,
+            32616.052,
+            32635.388,
+            33723.692,
+            33498.388,
+            33760.822,
+            33974.864,
+            34419.138
+          ],
+          "median_ns_per_operation": 33723.692,
+          "mad_ns_per_operation": 346.63200000000506,
+          "minimum_ns_per_operation": 32616.052,
+          "maximum_ns_per_operation": 34448.954
+        }
+      }
+    },
+    "dict_nfc_key_collisions": {
+      "family": "map_collision",
+      "category": "map_collision",
+      "case_type": "dict_nfc_last_entry_wins",
+      "size": 128,
+      "work_units": 128,
+      "normalization": "Each NFD key is followed by its distinct NFC-equivalent Python key; canonical-key collisions retain the later value.",
+      "expected_type_rule": "The decoded dict has 64 NFC string keys, each mapped to the later value, in canonical encoded-key order.",
+      "input_sha256": "cf96def144fab6d0f0217d90f70c25218fcf764e838fd127e604b95740650ab5",
+      "wire_sha256": "039b285859b09898f6d8f407a5772d4a19b1b76c6408e0a1986567931c3e5f7d",
+      "wire_bytes": 886,
+      "iterations_per_process": 500,
+      "warmup_per_process": 100,
+      "operations": {
+        "encode": {
+          "samples_ns_per_operation": [
+            63882.026,
+            62914.068,
+            62141.618,
+            62933.524,
+            63477.526,
+            63176.6,
+            66452.536,
+            63767.01,
+            63642.216
+          ],
+          "median_ns_per_operation": 63477.526,
+          "mad_ns_per_operation": 404.5,
+          "minimum_ns_per_operation": 62141.618,
+          "maximum_ns_per_operation": 66452.536
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            49204.214,
+            46565.496,
+            45972.984,
+            45684.322,
+            47313.602,
+            45962.644,
+            48579.34,
+            46734.294,
+            46244.654
+          ],
+          "median_ns_per_operation": 46565.496,
+          "mad_ns_per_operation": 602.851999999999,
+          "minimum_ns_per_operation": 45684.322,
+          "maximum_ns_per_operation": 49204.214
+        }
+      }
+    },
+    "nested_scalar_tree": {
+      "family": "nested",
+      "category": "nested",
+      "case_type": "nested_dict_list_scalar_tree",
+      "size": 24,
+      "work_units": 192,
+      "normalization": "A bounded 24-level dict/list/scalar tree exercises recursive traversal without approaching the depth limit.",
+      "expected_type_rule": "The nested decoded value has the same container and scalar types and values as the input.",
+      "input_sha256": "e4d93c245e1df38d974ad1047f0487febbcef5d0152d1ca60305a7561a6a73ad",
+      "wire_sha256": "5a2813b4d77fb89af2c26859436ae100dc0ee7f42f83bcf0c078e5462e6e5e5a",
+      "wire_bytes": 556,
+      "iterations_per_process": 500,
+      "warmup_per_process": 100,
+      "operations": {
+        "encode": {
+          "samples_ns_per_operation": [
+            19769.098,
+            18822.92,
+            18536.262,
+            18808.234,
+            18580.486,
+            18798.334,
+            25225.068,
+            18634.786,
+            18975.286
+          ],
+          "median_ns_per_operation": 18808.234,
+          "mad_ns_per_operation": 173.44800000000032,
+          "minimum_ns_per_operation": 18536.262,
+          "maximum_ns_per_operation": 25225.068
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            34807.488,
+            34680.71,
+            34299.294,
+            34715.296,
+            38342.048,
+            34853.876,
+            35124.162,
+            35544.874,
+            34647.066
+          ],
+          "median_ns_per_operation": 34807.488,
+          "mad_ns_per_operation": 160.42199999999866,
+          "minimum_ns_per_operation": 34299.294,
+          "maximum_ns_per_operation": 38342.048
+        }
+      }
+    },
+    "cbor_map_snapshot": {
+      "family": "cbor_map",
+      "category": "cbor_map",
+      "case_type": "immutable_snapshot_64_entries",
+      "size": 64,
+      "work_units": 64,
+      "normalization": "A CBORMap snapshot with reversed string-key insertion order serializes from its frozen Rust snapshot.",
+      "expected_type_rule": "Decoded entries preserve values and appear in canonical encoded-key order.",
+      "input_sha256": "bf625aacd0d948f984bd2c7747e733a6eefdce05ecdcf5b6193a8b323bea865d",
+      "wire_sha256": "1d220c77f516b4789f26dc69c136f6e90c3659f8a4f2bbeeee62a07051790c6c",
+      "wire_bytes": 1962,
+      "iterations_per_process": 500,
+      "warmup_per_process": 100,
+      "operations": {
+        "encode": {
+          "samples_ns_per_operation": [
+            13128.944,
+            13214.064,
+            13121.09,
+            12968.362,
+            15872.738,
+            13572.998,
+            13246.324,
+            13580.412,
+            13188.334
+          ],
+          "median_ns_per_operation": 13214.064,
+          "mad_ns_per_operation": 92.97400000000016,
+          "minimum_ns_per_operation": 12968.362,
+          "maximum_ns_per_operation": 15872.738
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            79829.564,
+            79240.96,
+            78750.078,
+            78975.74,
+            80328.082,
+            79484.676,
+            79563.466,
+            79648.244,
+            78523.132
+          ],
+          "median_ns_per_operation": 79484.676,
+          "mad_ns_per_operation": 344.88799999999173,
+          "minimum_ns_per_operation": 78523.132,
+          "maximum_ns_per_operation": 80328.082
+        }
+      }
+    },
+    "float_fractional": {
+      "family": "float",
+      "category": "float",
+      "case_type": "fractional",
+      "size": 384,
+      "work_units": 384,
+      "normalization": "Finite non-integral binary64 values retain their exact value and decode as floats; the wire uses the shortest exact float width.",
+      "expected_type_rule": "Each decoded element remains a float with the same float.hex() value.",
+      "input_sha256": "f617b1afa9e7d3ff990752b38d5c6620c94efe5ba9bc319312af93d8ea54bc97",
+      "wire_sha256": "4aa650eb364032e045635504083a3a25166209dc458c53a8395b77bdd08ba172",
+      "wire_bytes": 2307,
+      "iterations_per_process": 500,
+      "warmup_per_process": 100,
+      "profile_vectors": [
+        {
+          "name": "positive_zero_point_five",
+          "input_bits": "3fe0000000000000",
+          "wire_hex": "f93800",
+          "decoded_type": "float",
+          "expected": "0x1.0000000000000p-1"
+        },
+        {
+          "name": "negative_zero_point_five",
+          "input_bits": "bfe0000000000000",
+          "wire_hex": "f9b800",
+          "decoded_type": "float",
+          "expected": "-0x1.0000000000000p-1"
+        }
+      ],
+      "operations": {
+        "encode": {
+          "samples_ns_per_operation": [
+            9878.738,
+            9540.702,
+            9865.854,
+            9808.304,
+            9723.646,
+            9559.298,
+            9537.818,
+            9806.682,
+            9821.57
+          ],
+          "median_ns_per_operation": 9806.682,
+          "mad_ns_per_operation": 72.05599999999868,
+          "minimum_ns_per_operation": 9537.818,
+          "maximum_ns_per_operation": 9878.738
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            33919.44,
+            33749.962,
+            33457.612,
+            33717.12,
+            33919.54,
+            33422.206,
+            37097.31,
+            34404.912,
+            33858.686
+          ],
+          "median_ns_per_operation": 33858.686,
+          "mad_ns_per_operation": 141.5659999999989,
+          "minimum_ns_per_operation": 33422.206,
+          "maximum_ns_per_operation": 37097.31
+        }
+      }
+    },
+    "float_integral": {
+      "family": "float",
+      "category": "float",
+      "case_type": "integral",
+      "size": 512,
+      "work_units": 512,
+      "normalization": "Integral floats in the dCBOR float-reduction interval decode as integers.",
+      "expected_type_rule": "Every decoded element is an integer equal to int(input).",
+      "input_sha256": "a16460bd4440f208878a0c56b8cb2941d662d62794c0f2a20852f71f445ed912",
+      "wire_sha256": "1aee458ac3ff1d1dd7079061b995edf78c3edcebbdbd0baeed4d1ecf7079d5ee",
+      "wire_bytes": 931,
+      "iterations_per_process": 500,
+      "warmup_per_process": 100,
+      "operations": {
+        "encode": {
+          "samples_ns_per_operation": [
+            17392.474,
+            14889.83,
+            14421.392,
+            14727.848,
+            14952.67,
+            14983.868,
+            15469.9,
+            14741.512,
+            15013.524
+          ],
+          "median_ns_per_operation": 14952.67,
+          "mad_ns_per_operation": 211.15799999999945,
+          "minimum_ns_per_operation": 14421.392,
+          "maximum_ns_per_operation": 17392.474
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            34254.128,
+            34458.312,
+            33946.672,
+            34079.722,
+            34162.116,
+            34190.068,
+            36797.106,
+            34258.096,
+            34053.512
+          ],
+          "median_ns_per_operation": 34190.068,
+          "mad_ns_per_operation": 110.34599999999773,
+          "minimum_ns_per_operation": 33946.672,
+          "maximum_ns_per_operation": 36797.106
+        }
+      }
+    },
+    "float_mixed_special": {
+      "family": "float",
+      "category": "float",
+      "case_type": "mixed_special",
+      "size": 288,
+      "work_units": 288,
+      "normalization": "Integral finite floats, including signed zero, reduce to integers; infinities remain floats; every NaN uses the canonical half-width NaN and decodes as NaN.",
+      "expected_type_rule": "Integers for reduced values (both signed zeros decode as integer 0); floats for infinities and NaNs; exact float.hex() for infinities and math.isnan() for NaNs.",
+      "input_sha256": "95d6a42c369123780378b63625c704bea4df19d194182061f7e96ad35e867384",
+      "wire_sha256": "dfd372882091e0e9f472ddeabe7fff9e5625ab13cca8e2cf11eb16ad39d75984",
+      "wire_bytes": 643,
+      "iterations_per_process": 500,
+      "warmup_per_process": 100,
+      "profile_vectors": [
+        {
+          "name": "negative_zero",
+          "input_bits": "8000000000000000",
+          "wire_hex": "00",
+          "decoded_type": "int",
+          "expected": "0"
+        },
+        {
+          "name": "positive_zero",
+          "input_bits": "0000000000000000",
+          "wire_hex": "00",
+          "decoded_type": "int",
+          "expected": "0"
+        },
+        {
+          "name": "integral_float",
+          "input_bits": "3ff0000000000000",
+          "wire_hex": "01",
+          "decoded_type": "int",
+          "expected": "1"
+        },
+        {
+          "name": "positive_infinity",
+          "input_bits": "7ff0000000000000",
+          "wire_hex": "f97c00",
+          "decoded_type": "float",
+          "expected": "inf"
+        },
+        {
+          "name": "negative_infinity",
+          "input_bits": "fff0000000000000",
+          "wire_hex": "f9fc00",
+          "decoded_type": "float",
+          "expected": "-inf"
+        },
+        {
+          "name": "positive_nan_payload",
+          "input_bits": "7ff8000000000001",
+          "wire_hex": "f97e00",
+          "decoded_type": "float",
+          "expected": "isnan"
+        },
+        {
+          "name": "negative_nan_payload",
+          "input_bits": "fff8000000000042",
+          "wire_hex": "f97e00",
+          "decoded_type": "float",
+          "expected": "isnan"
+        }
+      ],
+      "operations": {
+        "encode": {
+          "samples_ns_per_operation": [
+            7370.346,
+            7506.702,
+            7598.314,
+            7659.108,
+            7631.576,
+            7483.698,
+            7637.608,
+            7344.756,
+            7760.92
+          ],
+          "median_ns_per_operation": 7598.314,
+          "mad_ns_per_operation": 91.61200000000008,
+          "minimum_ns_per_operation": 7344.756,
+          "maximum_ns_per_operation": 7760.92
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            21507.364,
+            22579.136,
+            22331.932,
+            22262.902,
+            22603.182,
+            21628.952,
+            23401.12,
+            21154.0,
+            22548.278
+          ],
+          "median_ns_per_operation": 22331.932,
+          "mad_ns_per_operation": 271.25,
+          "minimum_ns_per_operation": 21154.0,
+          "maximum_ns_per_operation": 23401.12
+        }
+      }
+    },
+    "float_boundaries": {
+      "family": "float",
+      "category": "float",
+      "case_type": "boundaries",
+      "size": 288,
+      "work_units": 288,
+      "normalization": "Finite integral floats in [-2**63, 2**64) reduce to integers; floats immediately outside those endpoints remain floats; infinities remain floats.",
+      "expected_type_rule": "Types and values follow the independent scalar CBOR hex vectors in profile_vectors.",
+      "input_sha256": "220b80092c3ef7c52f12611c42ed03d647d035b48585b989307bcf3358e57d3a",
+      "wire_sha256": "35826074132ae1a3386f08d503f53d14971b6a408ad973012443080d9cfeebc2",
+      "wire_bytes": 1955,
+      "iterations_per_process": 500,
+      "warmup_per_process": 100,
+      "profile_vectors": [
+        {
+          "name": "negative_i64_boundary",
+          "input_bits": "c3e0000000000000",
+          "wire_hex": "3b7fffffffffffffff",
+          "decoded_type": "int",
+          "expected": "-9223372036854775808"
+        },
+        {
+          "name": "just_inside_negative_i64",
+          "input_bits": "c3dfffffffffffff",
+          "wire_hex": "3b7ffffffffffffbff",
+          "decoded_type": "int",
+          "expected": "-9223372036854774784"
+        },
+        {
+          "name": "just_below_negative_i64",
+          "input_bits": "c3e0000000000001",
+          "wire_hex": "fbc3e0000000000001",
+          "decoded_type": "float",
+          "expected": "-0x1.0000000000001p+63"
+        },
+        {
+          "name": "just_below_unsigned_u64_boundary",
+          "input_bits": "43efffffffffffff",
+          "wire_hex": "1bfffffffffffff800",
+          "decoded_type": "int",
+          "expected": "18446744073709549568"
+        },
+        {
+          "name": "unsigned_u64_boundary",
+          "input_bits": "43f0000000000000",
+          "wire_hex": "fa5f800000",
+          "decoded_type": "float",
+          "expected": "0x1.0000000000000p+64"
+        },
+        {
+          "name": "just_above_unsigned_u64_boundary",
+          "input_bits": "43f0000000000001",
+          "wire_hex": "fb43f0000000000001",
+          "decoded_type": "float",
+          "expected": "0x1.0000000000001p+64"
+        },
+        {
+          "name": "negative_u64_magnitude_float",
+          "input_bits": "c3f0000000000000",
+          "wire_hex": "fadf800000",
+          "decoded_type": "float",
+          "expected": "-0x1.0000000000000p+64"
+        },
+        {
+          "name": "positive_infinity",
+          "input_bits": "7ff0000000000000",
+          "wire_hex": "f97c00",
+          "decoded_type": "float",
+          "expected": "inf"
+        },
+        {
+          "name": "negative_infinity",
+          "input_bits": "fff0000000000000",
+          "wire_hex": "f9fc00",
+          "decoded_type": "float",
+          "expected": "-inf"
+        }
+      ],
+      "operations": {
+        "encode": {
+          "samples_ns_per_operation": [
+            8216.114,
+            9053.546,
+            8139.832,
+            8268.792,
+            8334.116,
+            8292.178,
+            8221.566,
+            8149.89,
+            8345.016
+          ],
+          "median_ns_per_operation": 8268.792,
+          "mad_ns_per_operation": 65.32400000000052,
+          "minimum_ns_per_operation": 8139.832,
+          "maximum_ns_per_operation": 9053.546
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            23444.082,
+            23636.262,
+            23537.998,
+            23604.282,
+            23431.578,
+            23234.368,
+            23332.892,
+            22997.462,
+            23536.616
+          ],
+          "median_ns_per_operation": 23444.082,
+          "mad_ns_per_operation": 111.18999999999869,
+          "minimum_ns_per_operation": 22997.462,
+          "maximum_ns_per_operation": 23636.262
+        }
+      }
+    },
+    "unicode_ascii": {
+      "family": "unicode",
+      "category": "unicode",
+      "case_type": "ascii",
+      "size": 256,
+      "work_units": 11008,
+      "normalization": "ASCII text is already NFC and is serialized unchanged.",
+      "expected_type_rule": "The decoded list has 256 strings, each equal to unicodedata.normalize('NFC', input_string).",
+      "input_sha256": "98643419f1b507cdeeb7eef41b2a48b16fb736e63cf60cb582a0c62ca5e4a963",
+      "wire_sha256": "6de6e564e2f18ab6f5e22341092bbe8b038ec98e338a4467c4e9260ba2ba80aa",
+      "wire_bytes": 11523,
+      "iterations_per_process": 45,
+      "warmup_per_process": 9,
+      "operations": {
+        "encode": {
+          "samples_ns_per_operation": [
+            9503.844444444445,
+            13343.733333333334,
+            9575.555555555555,
+            13894.555555555555,
+            9772.133333333333,
+            10217.422222222222,
+            9437.511111111111,
+            9244.933333333332,
+            9762.111111111111
+          ],
+          "median_ns_per_operation": 9762.111111111111,
+          "mad_ns_per_operation": 324.60000000000036,
+          "minimum_ns_per_operation": 9244.933333333332,
+          "maximum_ns_per_operation": 13894.555555555555
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            40818.91111111111,
+            43502.177777777775,
+            40905.066666666666,
+            41460.11111111111,
+            41779.15555555555,
+            41202.73333333333,
+            40859.42222222222,
+            41378.62222222222,
+            41253.044444444444
+          ],
+          "median_ns_per_operation": 41253.044444444444,
+          "mad_ns_per_operation": 347.9777777777781,
+          "minimum_ns_per_operation": 40818.91111111111,
+          "maximum_ns_per_operation": 43502.177777777775
+        }
+      }
+    },
+    "unicode_nfc": {
+      "family": "unicode",
+      "category": "unicode",
+      "case_type": "nfc",
+      "size": 256,
+      "work_units": 7168,
+      "normalization": "Precomposed text is already NFC and is serialized unchanged.",
+      "expected_type_rule": "The decoded list has 256 strings, each equal to unicodedata.normalize('NFC', input_string).",
+      "input_sha256": "fdc121af9f532089fe852a5c202f3bc92a138fcfad9fe76dc7ab8b5f1f432b0d",
+      "wire_sha256": "ca8d9ac84516b620e7065b1d2da602b11c50175e345de8fa7a2c936648c07718",
+      "wire_bytes": 9219,
+      "iterations_per_process": 69,
+      "warmup_per_process": 13,
+      "operations": {
+        "encode": {
+          "samples_ns_per_operation": [
+            26223.608695652172,
+            27267.028985507248,
+            26229.855072463768,
+            26416.304347826088,
+            26725.27536231884,
+            26357.057971014492,
+            29922.159420289856,
+            25990.130434782608,
+            26300.130434782608
+          ],
+          "median_ns_per_operation": 26357.057971014492,
+          "mad_ns_per_operation": 133.4492753623199,
+          "minimum_ns_per_operation": 25990.130434782608,
+          "maximum_ns_per_operation": 29922.159420289856
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            71793.11594202899,
+            73105.01449275362,
+            72677.10144927536,
+            71395.42028985507,
+            72250.37681159421,
+            71283.46376811594,
+            71565.7536231884,
+            72057.53623188406,
+            70383.8115942029
+          ],
+          "median_ns_per_operation": 71793.11594202899,
+          "mad_ns_per_operation": 457.2608695652161,
+          "minimum_ns_per_operation": 70383.8115942029,
+          "maximum_ns_per_operation": 73105.01449275362
+        }
+      }
+    },
+    "unicode_decomposed": {
+      "family": "unicode",
+      "category": "unicode",
+      "case_type": "decomposed",
+      "size": 256,
+      "work_units": 8704,
+      "normalization": "NFD input strings normalize to NFC before serialization and decode as NFC.",
+      "expected_type_rule": "The decoded list has 256 strings, each equal to unicodedata.normalize('NFC', input_string).",
+      "input_sha256": "36b9d2a223443c4062e370cdd903abf7b3f4852531887cf4ad6e75f897c2a858",
+      "wire_sha256": "ca8d9ac84516b620e7065b1d2da602b11c50175e345de8fa7a2c936648c07718",
+      "wire_bytes": 9219,
+      "iterations_per_process": 57,
+      "warmup_per_process": 11,
+      "operations": {
+        "encode": {
+          "samples_ns_per_operation": [
+            224063.0350877193,
+            220497.73684210525,
+            230872.1403508772,
+            220777.91228070174,
+            222977.12280701756,
+            226954.05263157896,
+            250319.01754385966,
+            219182.63157894736,
+            226155.8947368421
+          ],
+          "median_ns_per_operation": 224063.0350877193,
+          "mad_ns_per_operation": 3285.1228070175566,
+          "minimum_ns_per_operation": 219182.63157894736,
+          "maximum_ns_per_operation": 250319.01754385966
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            71952.0,
+            71274.59649122808,
+            73713.38596491228,
+            71685.8947368421,
+            71794.17543859649,
+            70985.45614035087,
+            76575.26315789473,
+            71907.19298245614,
+            71293.9298245614
+          ],
+          "median_ns_per_operation": 71794.17543859649,
+          "mad_ns_per_operation": 500.24561403508415,
+          "minimum_ns_per_operation": 70985.45614035087,
+          "maximum_ns_per_operation": 76575.26315789473
+        }
+      }
+    },
+    "unicode_expanding_nfc": {
+      "family": "unicode",
+      "category": "unicode",
+      "case_type": "expanding_nfc",
+      "size": 256,
+      "work_units": 2048,
+      "normalization": "U+0344 expands to U+0308 U+0301 under NFC before serialization.",
+      "expected_type_rule": "The decoded list has 256 strings, each equal to unicodedata.normalize('NFC', input_string).",
+      "input_sha256": "94eb89710802732b7bec17b47c0069b8097b04d3a367b3bbc66b7843cda8142e",
+      "wire_sha256": "d6dd5920f3771126c64f92571d2e70ee13e8ab57c53355fc8b9c23dfa81977d0",
+      "wire_bytes": 3075,
+      "iterations_per_process": 244,
+      "warmup_per_process": 48,
+      "operations": {
+        "encode": {
+          "samples_ns_per_operation": [
+            62222.37704918033,
+            59403.311475409835,
+            61963.81967213115,
+            61678.36885245902,
+            62217.0,
+            61832.87704918033,
+            61648.96721311475,
+            61069.80327868852,
+            61638.54098360656
+          ],
+          "median_ns_per_operation": 61678.36885245902,
+          "mad_ns_per_operation": 285.450819672129,
+          "minimum_ns_per_operation": 59403.311475409835,
+          "maximum_ns_per_operation": 62222.37704918033
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            91843.55737704918,
+            91586.84836065574,
+            93344.90573770492,
+            93522.4918032787,
+            93109.70491803279,
+            91572.10655737705,
+            92259.38114754099,
+            92682.88114754099,
+            92191.38524590163
+          ],
+          "median_ns_per_operation": 92259.38114754099,
+          "mad_ns_per_operation": 672.5327868852473,
+          "minimum_ns_per_operation": 91572.10655737705,
+          "maximum_ns_per_operation": 93522.4918032787
+        }
+      }
+    }
+  },
+  "raw_process_runs": [
+    {
+      "pid": 24,
+      "started_at_utc": "2026-10-18T17:56:34.185860+00:00",
+      "order_offset": 0,
+      "operation_order": [
+        "encode",
+        "decode"
+      ],
+      "measurements_ns_per_operation": {
+        "map_10_sorted": {
+          "encode": 2788.438,
+          "decode": 4110.422
+        },
+        "map_10_reverse": {
+          "encode": 2545.742,
+          "decode": 4113.768
+        },
+        "map_10_shuffled": {
+          "encode": 3142.562,
+          "decode": 4893.212
+        },
+        "map_100_sorted": {
+          "encode": 41963.132,
+          "decode": 60976.548
+        },
+        "map_100_reverse": {
+          "encode": 25963.714,
+          "decode": 60394.414
+        },
+        "map_100_shuffled": {
+          "encode": 38687.778,
+          "decode": 60346.044
+        },
+        "map_1000_sorted": {
+          "encode": 606047.3,
+          "decode": 788177.124
+        },
+        "map_1000_reverse": {
+          "encode": 255895.316,
+          "decode": 618399.766
+        },
+        "map_1000_shuffled": {
+          "encode": 430956.202,
+          "decode": 610849.1
+        },
+        "map_10000_sorted": {
+          "encode": 4666569.06,
+          "decode": 9281054.68
+        },
+        "map_10000_reverse": {
+          "encode": 2841553.46,
+          "decode": 11258030.56
+        },
+        "map_10000_shuffled": {
+          "encode": 5861466.76,
+          "decode": 10182698.88
+        },
+        "integer_width_boundaries": {
+          "encode": 23760.496,
+          "decode": 34448.954
+        },
+        "dict_nfc_key_collisions": {
+          "encode": 63882.026,
+          "decode": 49204.214
+        },
+        "nested_scalar_tree": {
+          "encode": 19769.098,
+          "decode": 34807.488
+        },
+        "cbor_map_snapshot": {
+          "encode": 13128.944,
+          "decode": 79829.564
+        },
+        "float_fractional": {
+          "encode": 9878.738,
+          "decode": 33919.44
+        },
+        "float_integral": {
+          "encode": 17392.474,
+          "decode": 34254.128
+        },
+        "float_mixed_special": {
+          "encode": 7370.346,
+          "decode": 21507.364
+        },
+        "float_boundaries": {
+          "encode": 8216.114,
+          "decode": 23444.082
+        },
+        "unicode_ascii": {
+          "encode": 9503.844444444445,
+          "decode": 40818.91111111111
+        },
+        "unicode_nfc": {
+          "encode": 26223.608695652172,
+          "decode": 71793.11594202899
+        },
+        "unicode_decomposed": {
+          "encode": 224063.0350877193,
+          "decode": 71952.0
+        },
+        "unicode_expanding_nfc": {
+          "encode": 62222.37704918033,
+          "decode": 91843.55737704918
+        }
+      },
+      "case_fingerprints": {
+        "map_10_sorted": {
+          "input_sha256": "4696fe71cfc70f3ce36fd70758e44acbac717d598877879eed72a2cd632e5138",
+          "wire_sha256": "a461b69f6ece1bf9da1b343f2cc76577b3245532d9e76245dabde597ad1b6c40",
+          "wire_bytes": 121
+        },
+        "map_10_reverse": {
+          "input_sha256": "3310856aaac003b653ef9884162ae3f1204a57fd8686387042d75bcf7bf3fc92",
+          "wire_sha256": "a461b69f6ece1bf9da1b343f2cc76577b3245532d9e76245dabde597ad1b6c40",
+          "wire_bytes": 121
+        },
+        "map_10_shuffled": {
+          "input_sha256": "e890a92da1bd1a36ac77d3eeccc8d6b124fd2d9cd29de72cd60184dfc143feef",
+          "wire_sha256": "a461b69f6ece1bf9da1b343f2cc76577b3245532d9e76245dabde597ad1b6c40",
+          "wire_bytes": 121
+        },
+        "map_100_sorted": {
+          "input_sha256": "181e7b7c9fbc2c6d8e308e727f1b277b41975042d96756d28c57219dc8e33c9a",
+          "wire_sha256": "c65de633682289887eb18c08aa4bf07718953e912216a6688c7ae22b2594fa50",
+          "wire_bytes": 1278
+        },
+        "map_100_reverse": {
+          "input_sha256": "8c99cb87553170438070768e97391f0e495af7c2ac29639f2353898dc149dfa3",
+          "wire_sha256": "c65de633682289887eb18c08aa4bf07718953e912216a6688c7ae22b2594fa50",
+          "wire_bytes": 1278
+        },
+        "map_100_shuffled": {
+          "input_sha256": "68405bdd1a678b5f9bd6c2f4294d194a412d7b1f4ef67a2aaeadc5720431d0eb",
+          "wire_sha256": "c65de633682289887eb18c08aa4bf07718953e912216a6688c7ae22b2594fa50",
+          "wire_bytes": 1278
+        },
+        "map_1000_sorted": {
+          "input_sha256": "b5db504fd22315d9e7fff2de77ae58a68f6794240d43d8ff9b192f156bf8d6d6",
+          "wire_sha256": "0c1eecc335fd44c29bba2009543743fc244467654b117469be3de77bb093bac4",
+          "wire_bytes": 13723
+        },
+        "map_1000_reverse": {
+          "input_sha256": "02c8521417cd78ee34ea3acb95e8c23f609293962b55f0f1147ee57b326ec443",
+          "wire_sha256": "0c1eecc335fd44c29bba2009543743fc244467654b117469be3de77bb093bac4",
+          "wire_bytes": 13723
+        },
+        "map_1000_shuffled": {
+          "input_sha256": "495986fc104fd7ee14a69baddab60c8d69f3368833e7f08d0bac1de80f408f18",
+          "wire_sha256": "0c1eecc335fd44c29bba2009543743fc244467654b117469be3de77bb093bac4",
+          "wire_bytes": 13723
+        },
+        "map_10000_sorted": {
+          "input_sha256": "7307425e468fb85af440e9c161b69e45bb18efa82eeca9e433c72cf47688ca99",
+          "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
+          "wire_bytes": 139723
+        },
+        "map_10000_reverse": {
+          "input_sha256": "8e12cbdc8468dfe1c4657746f5a706bebd50f527bff50e9c0ceebf191c6193e4",
+          "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
+          "wire_bytes": 139723
+        },
+        "map_10000_shuffled": {
+          "input_sha256": "aa8ab9ed2dcfa583536c86b7786a24c41b965251419b2d9a7325a52132986be7",
+          "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
+          "wire_bytes": 139723
+        },
+        "integer_width_boundaries": {
+          "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+          "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+          "wire_bytes": 2435
+        },
+        "dict_nfc_key_collisions": {
+          "input_sha256": "cf96def144fab6d0f0217d90f70c25218fcf764e838fd127e604b95740650ab5",
+          "wire_sha256": "039b285859b09898f6d8f407a5772d4a19b1b76c6408e0a1986567931c3e5f7d",
+          "wire_bytes": 886
+        },
+        "nested_scalar_tree": {
+          "input_sha256": "e4d93c245e1df38d974ad1047f0487febbcef5d0152d1ca60305a7561a6a73ad",
+          "wire_sha256": "5a2813b4d77fb89af2c26859436ae100dc0ee7f42f83bcf0c078e5462e6e5e5a",
+          "wire_bytes": 556
+        },
+        "cbor_map_snapshot": {
+          "input_sha256": "bf625aacd0d948f984bd2c7747e733a6eefdce05ecdcf5b6193a8b323bea865d",
+          "wire_sha256": "1d220c77f516b4789f26dc69c136f6e90c3659f8a4f2bbeeee62a07051790c6c",
+          "wire_bytes": 1962
+        },
+        "float_fractional": {
+          "input_sha256": "f617b1afa9e7d3ff990752b38d5c6620c94efe5ba9bc319312af93d8ea54bc97",
+          "wire_sha256": "4aa650eb364032e045635504083a3a25166209dc458c53a8395b77bdd08ba172",
+          "wire_bytes": 2307
+        },
+        "float_integral": {
+          "input_sha256": "a16460bd4440f208878a0c56b8cb2941d662d62794c0f2a20852f71f445ed912",
+          "wire_sha256": "1aee458ac3ff1d1dd7079061b995edf78c3edcebbdbd0baeed4d1ecf7079d5ee",
+          "wire_bytes": 931
+        },
+        "float_mixed_special": {
+          "input_sha256": "95d6a42c369123780378b63625c704bea4df19d194182061f7e96ad35e867384",
+          "wire_sha256": "dfd372882091e0e9f472ddeabe7fff9e5625ab13cca8e2cf11eb16ad39d75984",
+          "wire_bytes": 643
+        },
+        "float_boundaries": {
+          "input_sha256": "220b80092c3ef7c52f12611c42ed03d647d035b48585b989307bcf3358e57d3a",
+          "wire_sha256": "35826074132ae1a3386f08d503f53d14971b6a408ad973012443080d9cfeebc2",
+          "wire_bytes": 1955
+        },
+        "unicode_ascii": {
+          "input_sha256": "98643419f1b507cdeeb7eef41b2a48b16fb736e63cf60cb582a0c62ca5e4a963",
+          "wire_sha256": "6de6e564e2f18ab6f5e22341092bbe8b038ec98e338a4467c4e9260ba2ba80aa",
+          "wire_bytes": 11523
+        },
+        "unicode_nfc": {
+          "input_sha256": "fdc121af9f532089fe852a5c202f3bc92a138fcfad9fe76dc7ab8b5f1f432b0d",
+          "wire_sha256": "ca8d9ac84516b620e7065b1d2da602b11c50175e345de8fa7a2c936648c07718",
+          "wire_bytes": 9219
+        },
+        "unicode_decomposed": {
+          "input_sha256": "36b9d2a223443c4062e370cdd903abf7b3f4852531887cf4ad6e75f897c2a858",
+          "wire_sha256": "ca8d9ac84516b620e7065b1d2da602b11c50175e345de8fa7a2c936648c07718",
+          "wire_bytes": 9219
+        },
+        "unicode_expanding_nfc": {
+          "input_sha256": "94eb89710802732b7bec17b47c0069b8097b04d3a367b3bbc66b7843cda8142e",
+          "wire_sha256": "d6dd5920f3771126c64f92571d2e70ee13e8ab57c53355fc8b9c23dfa81977d0",
+          "wire_bytes": 3075
+        }
+      }
+    },
+    {
+      "pid": 45,
+      "started_at_utc": "2026-10-18T17:56:39.095442+00:00",
+      "order_offset": 1,
+      "operation_order": [
+        "decode",
+        "encode"
+      ],
+      "measurements_ns_per_operation": {
+        "map_10_reverse": {
+          "decode": 3290.3,
+          "encode": 2023.24
+        },
+        "map_10_shuffled": {
+          "decode": 3239.044,
+          "encode": 2209.392
+        },
+        "map_100_sorted": {
+          "decode": 47101.242,
+          "encode": 28246.602
+        },
+        "map_100_reverse": {
+          "decode": 47027.182,
+          "encode": 19969.314
+        },
+        "map_100_shuffled": {
+          "decode": 46923.948,
+          "encode": 30308.456
+        },
+        "map_1000_sorted": {
+          "decode": 609640.73,
+          "encode": 391767.24
+        },
+        "map_1000_reverse": {
+          "decode": 604980.436,
+          "encode": 230282.802
+        },
+        "map_1000_shuffled": {
+          "decode": 614398.728,
+          "encode": 426884.732
+        },
+        "map_10000_sorted": {
+          "decode": 9105762.58,
+          "encode": 4583490.8
+        },
+        "map_10000_reverse": {
+          "decode": 9092877.78,
+          "encode": 2431644.0
+        },
+        "map_10000_shuffled": {
+          "decode": 9282645.86,
+          "encode": 6370504.62
+        },
+        "integer_width_boundaries": {
+          "decode": 33377.06,
+          "encode": 23475.22
+        },
+        "dict_nfc_key_collisions": {
+          "decode": 46565.496,
+          "encode": 62914.068
+        },
+        "nested_scalar_tree": {
+          "decode": 34680.71,
+          "encode": 18822.92
+        },
+        "cbor_map_snapshot": {
+          "decode": 79240.96,
+          "encode": 13214.064
+        },
+        "float_fractional": {
+          "decode": 33749.962,
+          "encode": 9540.702
+        },
+        "float_integral": {
+          "decode": 34458.312,
+          "encode": 14889.83
+        },
+        "float_mixed_special": {
+          "decode": 22579.136,
+          "encode": 7506.702
+        },
+        "float_boundaries": {
+          "decode": 23636.262,
+          "encode": 9053.546
+        },
+        "unicode_ascii": {
+          "decode": 43502.177777777775,
+          "encode": 13343.733333333334
+        },
+        "unicode_nfc": {
+          "decode": 73105.01449275362,
+          "encode": 27267.028985507248
+        },
+        "unicode_decomposed": {
+          "decode": 71274.59649122808,
+          "encode": 220497.73684210525
+        },
+        "unicode_expanding_nfc": {
+          "decode": 91586.84836065574,
+          "encode": 59403.311475409835
+        },
+        "map_10_sorted": {
+          "decode": 3246.178,
+          "encode": 2193.42
+        }
+      },
+      "case_fingerprints": {
+        "map_10_sorted": {
+          "input_sha256": "4696fe71cfc70f3ce36fd70758e44acbac717d598877879eed72a2cd632e5138",
+          "wire_sha256": "a461b69f6ece1bf9da1b343f2cc76577b3245532d9e76245dabde597ad1b6c40",
+          "wire_bytes": 121
+        },
+        "map_10_reverse": {
+          "input_sha256": "3310856aaac003b653ef9884162ae3f1204a57fd8686387042d75bcf7bf3fc92",
+          "wire_sha256": "a461b69f6ece1bf9da1b343f2cc76577b3245532d9e76245dabde597ad1b6c40",
+          "wire_bytes": 121
+        },
+        "map_10_shuffled": {
+          "input_sha256": "e890a92da1bd1a36ac77d3eeccc8d6b124fd2d9cd29de72cd60184dfc143feef",
+          "wire_sha256": "a461b69f6ece1bf9da1b343f2cc76577b3245532d9e76245dabde597ad1b6c40",
+          "wire_bytes": 121
+        },
+        "map_100_sorted": {
+          "input_sha256": "181e7b7c9fbc2c6d8e308e727f1b277b41975042d96756d28c57219dc8e33c9a",
+          "wire_sha256": "c65de633682289887eb18c08aa4bf07718953e912216a6688c7ae22b2594fa50",
+          "wire_bytes": 1278
+        },
+        "map_100_reverse": {
+          "input_sha256": "8c99cb87553170438070768e97391f0e495af7c2ac29639f2353898dc149dfa3",
+          "wire_sha256": "c65de633682289887eb18c08aa4bf07718953e912216a6688c7ae22b2594fa50",
+          "wire_bytes": 1278
+        },
+        "map_100_shuffled": {
+          "input_sha256": "68405bdd1a678b5f9bd6c2f4294d194a412d7b1f4ef67a2aaeadc5720431d0eb",
+          "wire_sha256": "c65de633682289887eb18c08aa4bf07718953e912216a6688c7ae22b2594fa50",
+          "wire_bytes": 1278
+        },
+        "map_1000_sorted": {
+          "input_sha256": "b5db504fd22315d9e7fff2de77ae58a68f6794240d43d8ff9b192f156bf8d6d6",
+          "wire_sha256": "0c1eecc335fd44c29bba2009543743fc244467654b117469be3de77bb093bac4",
+          "wire_bytes": 13723
+        },
+        "map_1000_reverse": {
+          "input_sha256": "02c8521417cd78ee34ea3acb95e8c23f609293962b55f0f1147ee57b326ec443",
+          "wire_sha256": "0c1eecc335fd44c29bba2009543743fc244467654b117469be3de77bb093bac4",
+          "wire_bytes": 13723
+        },
+        "map_1000_shuffled": {
+          "input_sha256": "495986fc104fd7ee14a69baddab60c8d69f3368833e7f08d0bac1de80f408f18",
+          "wire_sha256": "0c1eecc335fd44c29bba2009543743fc244467654b117469be3de77bb093bac4",
+          "wire_bytes": 13723
+        },
+        "map_10000_sorted": {
+          "input_sha256": "7307425e468fb85af440e9c161b69e45bb18efa82eeca9e433c72cf47688ca99",
+          "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
+          "wire_bytes": 139723
+        },
+        "map_10000_reverse": {
+          "input_sha256": "8e12cbdc8468dfe1c4657746f5a706bebd50f527bff50e9c0ceebf191c6193e4",
+          "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
+          "wire_bytes": 139723
+        },
+        "map_10000_shuffled": {
+          "input_sha256": "aa8ab9ed2dcfa583536c86b7786a24c41b965251419b2d9a7325a52132986be7",
+          "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
+          "wire_bytes": 139723
+        },
+        "integer_width_boundaries": {
+          "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+          "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+          "wire_bytes": 2435
+        },
+        "dict_nfc_key_collisions": {
+          "input_sha256": "cf96def144fab6d0f0217d90f70c25218fcf764e838fd127e604b95740650ab5",
+          "wire_sha256": "039b285859b09898f6d8f407a5772d4a19b1b76c6408e0a1986567931c3e5f7d",
+          "wire_bytes": 886
+        },
+        "nested_scalar_tree": {
+          "input_sha256": "e4d93c245e1df38d974ad1047f0487febbcef5d0152d1ca60305a7561a6a73ad",
+          "wire_sha256": "5a2813b4d77fb89af2c26859436ae100dc0ee7f42f83bcf0c078e5462e6e5e5a",
+          "wire_bytes": 556
+        },
+        "cbor_map_snapshot": {
+          "input_sha256": "bf625aacd0d948f984bd2c7747e733a6eefdce05ecdcf5b6193a8b323bea865d",
+          "wire_sha256": "1d220c77f516b4789f26dc69c136f6e90c3659f8a4f2bbeeee62a07051790c6c",
+          "wire_bytes": 1962
+        },
+        "float_fractional": {
+          "input_sha256": "f617b1afa9e7d3ff990752b38d5c6620c94efe5ba9bc319312af93d8ea54bc97",
+          "wire_sha256": "4aa650eb364032e045635504083a3a25166209dc458c53a8395b77bdd08ba172",
+          "wire_bytes": 2307
+        },
+        "float_integral": {
+          "input_sha256": "a16460bd4440f208878a0c56b8cb2941d662d62794c0f2a20852f71f445ed912",
+          "wire_sha256": "1aee458ac3ff1d1dd7079061b995edf78c3edcebbdbd0baeed4d1ecf7079d5ee",
+          "wire_bytes": 931
+        },
+        "float_mixed_special": {
+          "input_sha256": "95d6a42c369123780378b63625c704bea4df19d194182061f7e96ad35e867384",
+          "wire_sha256": "dfd372882091e0e9f472ddeabe7fff9e5625ab13cca8e2cf11eb16ad39d75984",
+          "wire_bytes": 643
+        },
+        "float_boundaries": {
+          "input_sha256": "220b80092c3ef7c52f12611c42ed03d647d035b48585b989307bcf3358e57d3a",
+          "wire_sha256": "35826074132ae1a3386f08d503f53d14971b6a408ad973012443080d9cfeebc2",
+          "wire_bytes": 1955
+        },
+        "unicode_ascii": {
+          "input_sha256": "98643419f1b507cdeeb7eef41b2a48b16fb736e63cf60cb582a0c62ca5e4a963",
+          "wire_sha256": "6de6e564e2f18ab6f5e22341092bbe8b038ec98e338a4467c4e9260ba2ba80aa",
+          "wire_bytes": 11523
+        },
+        "unicode_nfc": {
+          "input_sha256": "fdc121af9f532089fe852a5c202f3bc92a138fcfad9fe76dc7ab8b5f1f432b0d",
+          "wire_sha256": "ca8d9ac84516b620e7065b1d2da602b11c50175e345de8fa7a2c936648c07718",
+          "wire_bytes": 9219
+        },
+        "unicode_decomposed": {
+          "input_sha256": "36b9d2a223443c4062e370cdd903abf7b3f4852531887cf4ad6e75f897c2a858",
+          "wire_sha256": "ca8d9ac84516b620e7065b1d2da602b11c50175e345de8fa7a2c936648c07718",
+          "wire_bytes": 9219
+        },
+        "unicode_expanding_nfc": {
+          "input_sha256": "94eb89710802732b7bec17b47c0069b8097b04d3a367b3bbc66b7843cda8142e",
+          "wire_sha256": "d6dd5920f3771126c64f92571d2e70ee13e8ab57c53355fc8b9c23dfa81977d0",
+          "wire_bytes": 3075
+        }
+      }
+    },
+    {
+      "pid": 66,
+      "started_at_utc": "2026-10-18T17:56:44.094271+00:00",
+      "order_offset": 2,
+      "operation_order": [
+        "encode",
+        "decode"
+      ],
+      "measurements_ns_per_operation": {
+        "map_10_shuffled": {
+          "encode": 2175.566,
+          "decode": 3229.828
+        },
+        "map_100_sorted": {
+          "encode": 28259.006,
+          "decode": 46806.77
+        },
+        "map_100_reverse": {
+          "encode": 20105.03,
+          "decode": 46589.16
+        },
+        "map_100_shuffled": {
+          "encode": 29501.6,
+          "decode": 46124.288
+        },
+        "map_1000_sorted": {
+          "encode": 399188.442,
+          "decode": 606660.172
+        },
+        "map_1000_reverse": {
+          "encode": 229920.622,
+          "decode": 616270.344
+        },
+        "map_1000_shuffled": {
+          "encode": 429384.808,
+          "decode": 661913.368
+        },
+        "map_10000_sorted": {
+          "encode": 4659437.46,
+          "decode": 10837626.0
+        },
+        "map_10000_reverse": {
+          "encode": 2430079.66,
+          "decode": 9105665.0
+        },
+        "map_10000_shuffled": {
+          "encode": 5901180.56,
+          "decode": 8928731.42
+        },
+        "integer_width_boundaries": {
+          "encode": 23041.244,
+          "decode": 32616.052
+        },
+        "dict_nfc_key_collisions": {
+          "encode": 62141.618,
+          "decode": 45972.984
+        },
+        "nested_scalar_tree": {
+          "encode": 18536.262,
+          "decode": 34299.294
+        },
+        "cbor_map_snapshot": {
+          "encode": 13121.09,
+          "decode": 78750.078
+        },
+        "float_fractional": {
+          "encode": 9865.854,
+          "decode": 33457.612
+        },
+        "float_integral": {
+          "encode": 14421.392,
+          "decode": 33946.672
+        },
+        "float_mixed_special": {
+          "encode": 7598.314,
+          "decode": 22331.932
+        },
+        "float_boundaries": {
+          "encode": 8139.832,
+          "decode": 23537.998
+        },
+        "unicode_ascii": {
+          "encode": 9575.555555555555,
+          "decode": 40905.066666666666
+        },
+        "unicode_nfc": {
+          "encode": 26229.855072463768,
+          "decode": 72677.10144927536
+        },
+        "unicode_decomposed": {
+          "encode": 230872.1403508772,
+          "decode": 73713.38596491228
+        },
+        "unicode_expanding_nfc": {
+          "encode": 61963.81967213115,
+          "decode": 93344.90573770492
+        },
+        "map_10_sorted": {
+          "encode": 2207.608,
+          "decode": 3123.028
+        },
+        "map_10_reverse": {
+          "encode": 1967.476,
+          "decode": 3135.51
+        }
+      },
+      "case_fingerprints": {
+        "map_10_sorted": {
+          "input_sha256": "4696fe71cfc70f3ce36fd70758e44acbac717d598877879eed72a2cd632e5138",
+          "wire_sha256": "a461b69f6ece1bf9da1b343f2cc76577b3245532d9e76245dabde597ad1b6c40",
+          "wire_bytes": 121
+        },
+        "map_10_reverse": {
+          "input_sha256": "3310856aaac003b653ef9884162ae3f1204a57fd8686387042d75bcf7bf3fc92",
+          "wire_sha256": "a461b69f6ece1bf9da1b343f2cc76577b3245532d9e76245dabde597ad1b6c40",
+          "wire_bytes": 121
+        },
+        "map_10_shuffled": {
+          "input_sha256": "e890a92da1bd1a36ac77d3eeccc8d6b124fd2d9cd29de72cd60184dfc143feef",
+          "wire_sha256": "a461b69f6ece1bf9da1b343f2cc76577b3245532d9e76245dabde597ad1b6c40",
+          "wire_bytes": 121
+        },
+        "map_100_sorted": {
+          "input_sha256": "181e7b7c9fbc2c6d8e308e727f1b277b41975042d96756d28c57219dc8e33c9a",
+          "wire_sha256": "c65de633682289887eb18c08aa4bf07718953e912216a6688c7ae22b2594fa50",
+          "wire_bytes": 1278
+        },
+        "map_100_reverse": {
+          "input_sha256": "8c99cb87553170438070768e97391f0e495af7c2ac29639f2353898dc149dfa3",
+          "wire_sha256": "c65de633682289887eb18c08aa4bf07718953e912216a6688c7ae22b2594fa50",
+          "wire_bytes": 1278
+        },
+        "map_100_shuffled": {
+          "input_sha256": "68405bdd1a678b5f9bd6c2f4294d194a412d7b1f4ef67a2aaeadc5720431d0eb",
+          "wire_sha256": "c65de633682289887eb18c08aa4bf07718953e912216a6688c7ae22b2594fa50",
+          "wire_bytes": 1278
+        },
+        "map_1000_sorted": {
+          "input_sha256": "b5db504fd22315d9e7fff2de77ae58a68f6794240d43d8ff9b192f156bf8d6d6",
+          "wire_sha256": "0c1eecc335fd44c29bba2009543743fc244467654b117469be3de77bb093bac4",
+          "wire_bytes": 13723
+        },
+        "map_1000_reverse": {
+          "input_sha256": "02c8521417cd78ee34ea3acb95e8c23f609293962b55f0f1147ee57b326ec443",
+          "wire_sha256": "0c1eecc335fd44c29bba2009543743fc244467654b117469be3de77bb093bac4",
+          "wire_bytes": 13723
+        },
+        "map_1000_shuffled": {
+          "input_sha256": "495986fc104fd7ee14a69baddab60c8d69f3368833e7f08d0bac1de80f408f18",
+          "wire_sha256": "0c1eecc335fd44c29bba2009543743fc244467654b117469be3de77bb093bac4",
+          "wire_bytes": 13723
+        },
+        "map_10000_sorted": {
+          "input_sha256": "7307425e468fb85af440e9c161b69e45bb18efa82eeca9e433c72cf47688ca99",
+          "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
+          "wire_bytes": 139723
+        },
+        "map_10000_reverse": {
+          "input_sha256": "8e12cbdc8468dfe1c4657746f5a706bebd50f527bff50e9c0ceebf191c6193e4",
+          "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
+          "wire_bytes": 139723
+        },
+        "map_10000_shuffled": {
+          "input_sha256": "aa8ab9ed2dcfa583536c86b7786a24c41b965251419b2d9a7325a52132986be7",
+          "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
+          "wire_bytes": 139723
+        },
+        "integer_width_boundaries": {
+          "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+          "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+          "wire_bytes": 2435
+        },
+        "dict_nfc_key_collisions": {
+          "input_sha256": "cf96def144fab6d0f0217d90f70c25218fcf764e838fd127e604b95740650ab5",
+          "wire_sha256": "039b285859b09898f6d8f407a5772d4a19b1b76c6408e0a1986567931c3e5f7d",
+          "wire_bytes": 886
+        },
+        "nested_scalar_tree": {
+          "input_sha256": "e4d93c245e1df38d974ad1047f0487febbcef5d0152d1ca60305a7561a6a73ad",
+          "wire_sha256": "5a2813b4d77fb89af2c26859436ae100dc0ee7f42f83bcf0c078e5462e6e5e5a",
+          "wire_bytes": 556
+        },
+        "cbor_map_snapshot": {
+          "input_sha256": "bf625aacd0d948f984bd2c7747e733a6eefdce05ecdcf5b6193a8b323bea865d",
+          "wire_sha256": "1d220c77f516b4789f26dc69c136f6e90c3659f8a4f2bbeeee62a07051790c6c",
+          "wire_bytes": 1962
+        },
+        "float_fractional": {
+          "input_sha256": "f617b1afa9e7d3ff990752b38d5c6620c94efe5ba9bc319312af93d8ea54bc97",
+          "wire_sha256": "4aa650eb364032e045635504083a3a25166209dc458c53a8395b77bdd08ba172",
+          "wire_bytes": 2307
+        },
+        "float_integral": {
+          "input_sha256": "a16460bd4440f208878a0c56b8cb2941d662d62794c0f2a20852f71f445ed912",
+          "wire_sha256": "1aee458ac3ff1d1dd7079061b995edf78c3edcebbdbd0baeed4d1ecf7079d5ee",
+          "wire_bytes": 931
+        },
+        "float_mixed_special": {
+          "input_sha256": "95d6a42c369123780378b63625c704bea4df19d194182061f7e96ad35e867384",
+          "wire_sha256": "dfd372882091e0e9f472ddeabe7fff9e5625ab13cca8e2cf11eb16ad39d75984",
+          "wire_bytes": 643
+        },
+        "float_boundaries": {
+          "input_sha256": "220b80092c3ef7c52f12611c42ed03d647d035b48585b989307bcf3358e57d3a",
+          "wire_sha256": "35826074132ae1a3386f08d503f53d14971b6a408ad973012443080d9cfeebc2",
+          "wire_bytes": 1955
+        },
+        "unicode_ascii": {
+          "input_sha256": "98643419f1b507cdeeb7eef41b2a48b16fb736e63cf60cb582a0c62ca5e4a963",
+          "wire_sha256": "6de6e564e2f18ab6f5e22341092bbe8b038ec98e338a4467c4e9260ba2ba80aa",
+          "wire_bytes": 11523
+        },
+        "unicode_nfc": {
+          "input_sha256": "fdc121af9f532089fe852a5c202f3bc92a138fcfad9fe76dc7ab8b5f1f432b0d",
+          "wire_sha256": "ca8d9ac84516b620e7065b1d2da602b11c50175e345de8fa7a2c936648c07718",
+          "wire_bytes": 9219
+        },
+        "unicode_decomposed": {
+          "input_sha256": "36b9d2a223443c4062e370cdd903abf7b3f4852531887cf4ad6e75f897c2a858",
+          "wire_sha256": "ca8d9ac84516b620e7065b1d2da602b11c50175e345de8fa7a2c936648c07718",
+          "wire_bytes": 9219
+        },
+        "unicode_expanding_nfc": {
+          "input_sha256": "94eb89710802732b7bec17b47c0069b8097b04d3a367b3bbc66b7843cda8142e",
+          "wire_sha256": "d6dd5920f3771126c64f92571d2e70ee13e8ab57c53355fc8b9c23dfa81977d0",
+          "wire_bytes": 3075
+        }
+      }
+    },
+    {
+      "pid": 87,
+      "started_at_utc": "2026-10-18T17:56:49.055264+00:00",
+      "order_offset": 3,
+      "operation_order": [
+        "decode",
+        "encode"
+      ],
+      "measurements_ns_per_operation": {
+        "map_100_sorted": {
+          "decode": 47033.796,
+          "encode": 27713.964
+        },
+        "map_100_reverse": {
+          "decode": 45986.208,
+          "encode": 20071.888
+        },
+        "map_100_shuffled": {
+          "decode": 46069.604,
+          "encode": 29096.88
+        },
+        "map_1000_sorted": {
+          "decode": 610083.582,
+          "encode": 396838.848
+        },
+        "map_1000_reverse": {
+          "decode": 618319.816,
+          "encode": 229506.584
+        },
+        "map_1000_shuffled": {
+          "decode": 618318.874,
+          "encode": 453620.456
+        },
+        "map_10000_sorted": {
+          "decode": 9320445.08,
+          "encode": 4699400.94
+        },
+        "map_10000_reverse": {
+          "decode": 9323657.3,
+          "encode": 2392688.02
+        },
+        "map_10000_shuffled": {
+          "decode": 9139727.78,
+          "encode": 6118994.74
+        },
+        "integer_width_boundaries": {
+          "decode": 32635.388,
+          "encode": 23248.434
+        },
+        "dict_nfc_key_collisions": {
+          "decode": 45684.322,
+          "encode": 62933.524
+        },
+        "nested_scalar_tree": {
+          "decode": 34715.296,
+          "encode": 18808.234
+        },
+        "cbor_map_snapshot": {
+          "decode": 78975.74,
+          "encode": 12968.362
+        },
+        "float_fractional": {
+          "decode": 33717.12,
+          "encode": 9808.304
+        },
+        "float_integral": {
+          "decode": 34079.722,
+          "encode": 14727.848
+        },
+        "float_mixed_special": {
+          "decode": 22262.902,
+          "encode": 7659.108
+        },
+        "float_boundaries": {
+          "decode": 23604.282,
+          "encode": 8268.792
+        },
+        "unicode_ascii": {
+          "decode": 41460.11111111111,
+          "encode": 13894.555555555555
+        },
+        "unicode_nfc": {
+          "decode": 71395.42028985507,
+          "encode": 26416.304347826088
+        },
+        "unicode_decomposed": {
+          "decode": 71685.8947368421,
+          "encode": 220777.91228070174
+        },
+        "unicode_expanding_nfc": {
+          "decode": 93522.4918032787,
+          "encode": 61678.36885245902
+        },
+        "map_10_sorted": {
+          "decode": 3301.062,
+          "encode": 2273.45
+        },
+        "map_10_reverse": {
+          "decode": 3145.068,
+          "encode": 2013.362
+        },
+        "map_10_shuffled": {
+          "decode": 3259.204,
+          "encode": 2140.8
+        }
+      },
+      "case_fingerprints": {
+        "map_10_sorted": {
+          "input_sha256": "4696fe71cfc70f3ce36fd70758e44acbac717d598877879eed72a2cd632e5138",
+          "wire_sha256": "a461b69f6ece1bf9da1b343f2cc76577b3245532d9e76245dabde597ad1b6c40",
+          "wire_bytes": 121
+        },
+        "map_10_reverse": {
+          "input_sha256": "3310856aaac003b653ef9884162ae3f1204a57fd8686387042d75bcf7bf3fc92",
+          "wire_sha256": "a461b69f6ece1bf9da1b343f2cc76577b3245532d9e76245dabde597ad1b6c40",
+          "wire_bytes": 121
+        },
+        "map_10_shuffled": {
+          "input_sha256": "e890a92da1bd1a36ac77d3eeccc8d6b124fd2d9cd29de72cd60184dfc143feef",
+          "wire_sha256": "a461b69f6ece1bf9da1b343f2cc76577b3245532d9e76245dabde597ad1b6c40",
+          "wire_bytes": 121
+        },
+        "map_100_sorted": {
+          "input_sha256": "181e7b7c9fbc2c6d8e308e727f1b277b41975042d96756d28c57219dc8e33c9a",
+          "wire_sha256": "c65de633682289887eb18c08aa4bf07718953e912216a6688c7ae22b2594fa50",
+          "wire_bytes": 1278
+        },
+        "map_100_reverse": {
+          "input_sha256": "8c99cb87553170438070768e97391f0e495af7c2ac29639f2353898dc149dfa3",
+          "wire_sha256": "c65de633682289887eb18c08aa4bf07718953e912216a6688c7ae22b2594fa50",
+          "wire_bytes": 1278
+        },
+        "map_100_shuffled": {
+          "input_sha256": "68405bdd1a678b5f9bd6c2f4294d194a412d7b1f4ef67a2aaeadc5720431d0eb",
+          "wire_sha256": "c65de633682289887eb18c08aa4bf07718953e912216a6688c7ae22b2594fa50",
+          "wire_bytes": 1278
+        },
+        "map_1000_sorted": {
+          "input_sha256": "b5db504fd22315d9e7fff2de77ae58a68f6794240d43d8ff9b192f156bf8d6d6",
+          "wire_sha256": "0c1eecc335fd44c29bba2009543743fc244467654b117469be3de77bb093bac4",
+          "wire_bytes": 13723
+        },
+        "map_1000_reverse": {
+          "input_sha256": "02c8521417cd78ee34ea3acb95e8c23f609293962b55f0f1147ee57b326ec443",
+          "wire_sha256": "0c1eecc335fd44c29bba2009543743fc244467654b117469be3de77bb093bac4",
+          "wire_bytes": 13723
+        },
+        "map_1000_shuffled": {
+          "input_sha256": "495986fc104fd7ee14a69baddab60c8d69f3368833e7f08d0bac1de80f408f18",
+          "wire_sha256": "0c1eecc335fd44c29bba2009543743fc244467654b117469be3de77bb093bac4",
+          "wire_bytes": 13723
+        },
+        "map_10000_sorted": {
+          "input_sha256": "7307425e468fb85af440e9c161b69e45bb18efa82eeca9e433c72cf47688ca99",
+          "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
+          "wire_bytes": 139723
+        },
+        "map_10000_reverse": {
+          "input_sha256": "8e12cbdc8468dfe1c4657746f5a706bebd50f527bff50e9c0ceebf191c6193e4",
+          "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
+          "wire_bytes": 139723
+        },
+        "map_10000_shuffled": {
+          "input_sha256": "aa8ab9ed2dcfa583536c86b7786a24c41b965251419b2d9a7325a52132986be7",
+          "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
+          "wire_bytes": 139723
+        },
+        "integer_width_boundaries": {
+          "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+          "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+          "wire_bytes": 2435
+        },
+        "dict_nfc_key_collisions": {
+          "input_sha256": "cf96def144fab6d0f0217d90f70c25218fcf764e838fd127e604b95740650ab5",
+          "wire_sha256": "039b285859b09898f6d8f407a5772d4a19b1b76c6408e0a1986567931c3e5f7d",
+          "wire_bytes": 886
+        },
+        "nested_scalar_tree": {
+          "input_sha256": "e4d93c245e1df38d974ad1047f0487febbcef5d0152d1ca60305a7561a6a73ad",
+          "wire_sha256": "5a2813b4d77fb89af2c26859436ae100dc0ee7f42f83bcf0c078e5462e6e5e5a",
+          "wire_bytes": 556
+        },
+        "cbor_map_snapshot": {
+          "input_sha256": "bf625aacd0d948f984bd2c7747e733a6eefdce05ecdcf5b6193a8b323bea865d",
+          "wire_sha256": "1d220c77f516b4789f26dc69c136f6e90c3659f8a4f2bbeeee62a07051790c6c",
+          "wire_bytes": 1962
+        },
+        "float_fractional": {
+          "input_sha256": "f617b1afa9e7d3ff990752b38d5c6620c94efe5ba9bc319312af93d8ea54bc97",
+          "wire_sha256": "4aa650eb364032e045635504083a3a25166209dc458c53a8395b77bdd08ba172",
+          "wire_bytes": 2307
+        },
+        "float_integral": {
+          "input_sha256": "a16460bd4440f208878a0c56b8cb2941d662d62794c0f2a20852f71f445ed912",
+          "wire_sha256": "1aee458ac3ff1d1dd7079061b995edf78c3edcebbdbd0baeed4d1ecf7079d5ee",
+          "wire_bytes": 931
+        },
+        "float_mixed_special": {
+          "input_sha256": "95d6a42c369123780378b63625c704bea4df19d194182061f7e96ad35e867384",
+          "wire_sha256": "dfd372882091e0e9f472ddeabe7fff9e5625ab13cca8e2cf11eb16ad39d75984",
+          "wire_bytes": 643
+        },
+        "float_boundaries": {
+          "input_sha256": "220b80092c3ef7c52f12611c42ed03d647d035b48585b989307bcf3358e57d3a",
+          "wire_sha256": "35826074132ae1a3386f08d503f53d14971b6a408ad973012443080d9cfeebc2",
+          "wire_bytes": 1955
+        },
+        "unicode_ascii": {
+          "input_sha256": "98643419f1b507cdeeb7eef41b2a48b16fb736e63cf60cb582a0c62ca5e4a963",
+          "wire_sha256": "6de6e564e2f18ab6f5e22341092bbe8b038ec98e338a4467c4e9260ba2ba80aa",
+          "wire_bytes": 11523
+        },
+        "unicode_nfc": {
+          "input_sha256": "fdc121af9f532089fe852a5c202f3bc92a138fcfad9fe76dc7ab8b5f1f432b0d",
+          "wire_sha256": "ca8d9ac84516b620e7065b1d2da602b11c50175e345de8fa7a2c936648c07718",
+          "wire_bytes": 9219
+        },
+        "unicode_decomposed": {
+          "input_sha256": "36b9d2a223443c4062e370cdd903abf7b3f4852531887cf4ad6e75f897c2a858",
+          "wire_sha256": "ca8d9ac84516b620e7065b1d2da602b11c50175e345de8fa7a2c936648c07718",
+          "wire_bytes": 9219
+        },
+        "unicode_expanding_nfc": {
+          "input_sha256": "94eb89710802732b7bec17b47c0069b8097b04d3a367b3bbc66b7843cda8142e",
+          "wire_sha256": "d6dd5920f3771126c64f92571d2e70ee13e8ab57c53355fc8b9c23dfa81977d0",
+          "wire_bytes": 3075
+        }
+      }
+    },
+    {
+      "pid": 108,
+      "started_at_utc": "2026-10-18T17:56:54.126903+00:00",
+      "order_offset": 4,
+      "operation_order": [
+        "encode",
+        "decode"
+      ],
+      "measurements_ns_per_operation": {
+        "map_100_reverse": {
+          "encode": 20349.508,
+          "decode": 46533.878
+        },
+        "map_100_shuffled": {
+          "encode": 30385.802,
+          "decode": 46759.982
+        },
+        "map_1000_sorted": {
+          "encode": 391930.166,
+          "decode": 619402.75
+        },
+        "map_1000_reverse": {
+          "encode": 229181.714,
+          "decode": 627750.03
+        },
+        "map_1000_shuffled": {
+          "encode": 484808.826,
+          "decode": 646221.692
+        },
+        "map_10000_sorted": {
+          "encode": 4773463.48,
+          "decode": 9491291.62
+        },
+        "map_10000_reverse": {
+          "encode": 2395086.72,
+          "decode": 9420374.0
+        },
+        "map_10000_shuffled": {
+          "encode": 6523905.0,
+          "decode": 9692836.64
+        },
+        "integer_width_boundaries": {
+          "encode": 23488.884,
+          "decode": 33723.692
+        },
+        "dict_nfc_key_collisions": {
+          "encode": 63477.526,
+          "decode": 47313.602
+        },
+        "nested_scalar_tree": {
+          "encode": 18580.486,
+          "decode": 38342.048
+        },
+        "cbor_map_snapshot": {
+          "encode": 15872.738,
+          "decode": 80328.082
+        },
+        "float_fractional": {
+          "encode": 9723.646,
+          "decode": 33919.54
+        },
+        "float_integral": {
+          "encode": 14952.67,
+          "decode": 34162.116
+        },
+        "float_mixed_special": {
+          "encode": 7631.576,
+          "decode": 22603.182
+        },
+        "float_boundaries": {
+          "encode": 8334.116,
+          "decode": 23431.578
+        },
+        "unicode_ascii": {
+          "encode": 9772.133333333333,
+          "decode": 41779.15555555555
+        },
+        "unicode_nfc": {
+          "encode": 26725.27536231884,
+          "decode": 72250.37681159421
+        },
+        "unicode_decomposed": {
+          "encode": 222977.12280701756,
+          "decode": 71794.17543859649
+        },
+        "unicode_expanding_nfc": {
+          "encode": 62217.0,
+          "decode": 93109.70491803279
+        },
+        "map_10_sorted": {
+          "encode": 2232.674,
+          "decode": 3359.53
+        },
+        "map_10_reverse": {
+          "encode": 1996.07,
+          "decode": 3319.996
+        },
+        "map_10_shuffled": {
+          "encode": 2185.246,
+          "decode": 3318.736
+        },
+        "map_100_sorted": {
+          "encode": 29174.646,
+          "decode": 49394.992
+        }
+      },
+      "case_fingerprints": {
+        "map_10_sorted": {
+          "input_sha256": "4696fe71cfc70f3ce36fd70758e44acbac717d598877879eed72a2cd632e5138",
+          "wire_sha256": "a461b69f6ece1bf9da1b343f2cc76577b3245532d9e76245dabde597ad1b6c40",
+          "wire_bytes": 121
+        },
+        "map_10_reverse": {
+          "input_sha256": "3310856aaac003b653ef9884162ae3f1204a57fd8686387042d75bcf7bf3fc92",
+          "wire_sha256": "a461b69f6ece1bf9da1b343f2cc76577b3245532d9e76245dabde597ad1b6c40",
+          "wire_bytes": 121
+        },
+        "map_10_shuffled": {
+          "input_sha256": "e890a92da1bd1a36ac77d3eeccc8d6b124fd2d9cd29de72cd60184dfc143feef",
+          "wire_sha256": "a461b69f6ece1bf9da1b343f2cc76577b3245532d9e76245dabde597ad1b6c40",
+          "wire_bytes": 121
+        },
+        "map_100_sorted": {
+          "input_sha256": "181e7b7c9fbc2c6d8e308e727f1b277b41975042d96756d28c57219dc8e33c9a",
+          "wire_sha256": "c65de633682289887eb18c08aa4bf07718953e912216a6688c7ae22b2594fa50",
+          "wire_bytes": 1278
+        },
+        "map_100_reverse": {
+          "input_sha256": "8c99cb87553170438070768e97391f0e495af7c2ac29639f2353898dc149dfa3",
+          "wire_sha256": "c65de633682289887eb18c08aa4bf07718953e912216a6688c7ae22b2594fa50",
+          "wire_bytes": 1278
+        },
+        "map_100_shuffled": {
+          "input_sha256": "68405bdd1a678b5f9bd6c2f4294d194a412d7b1f4ef67a2aaeadc5720431d0eb",
+          "wire_sha256": "c65de633682289887eb18c08aa4bf07718953e912216a6688c7ae22b2594fa50",
+          "wire_bytes": 1278
+        },
+        "map_1000_sorted": {
+          "input_sha256": "b5db504fd22315d9e7fff2de77ae58a68f6794240d43d8ff9b192f156bf8d6d6",
+          "wire_sha256": "0c1eecc335fd44c29bba2009543743fc244467654b117469be3de77bb093bac4",
+          "wire_bytes": 13723
+        },
+        "map_1000_reverse": {
+          "input_sha256": "02c8521417cd78ee34ea3acb95e8c23f609293962b55f0f1147ee57b326ec443",
+          "wire_sha256": "0c1eecc335fd44c29bba2009543743fc244467654b117469be3de77bb093bac4",
+          "wire_bytes": 13723
+        },
+        "map_1000_shuffled": {
+          "input_sha256": "495986fc104fd7ee14a69baddab60c8d69f3368833e7f08d0bac1de80f408f18",
+          "wire_sha256": "0c1eecc335fd44c29bba2009543743fc244467654b117469be3de77bb093bac4",
+          "wire_bytes": 13723
+        },
+        "map_10000_sorted": {
+          "input_sha256": "7307425e468fb85af440e9c161b69e45bb18efa82eeca9e433c72cf47688ca99",
+          "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
+          "wire_bytes": 139723
+        },
+        "map_10000_reverse": {
+          "input_sha256": "8e12cbdc8468dfe1c4657746f5a706bebd50f527bff50e9c0ceebf191c6193e4",
+          "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
+          "wire_bytes": 139723
+        },
+        "map_10000_shuffled": {
+          "input_sha256": "aa8ab9ed2dcfa583536c86b7786a24c41b965251419b2d9a7325a52132986be7",
+          "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
+          "wire_bytes": 139723
+        },
+        "integer_width_boundaries": {
+          "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+          "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+          "wire_bytes": 2435
+        },
+        "dict_nfc_key_collisions": {
+          "input_sha256": "cf96def144fab6d0f0217d90f70c25218fcf764e838fd127e604b95740650ab5",
+          "wire_sha256": "039b285859b09898f6d8f407a5772d4a19b1b76c6408e0a1986567931c3e5f7d",
+          "wire_bytes": 886
+        },
+        "nested_scalar_tree": {
+          "input_sha256": "e4d93c245e1df38d974ad1047f0487febbcef5d0152d1ca60305a7561a6a73ad",
+          "wire_sha256": "5a2813b4d77fb89af2c26859436ae100dc0ee7f42f83bcf0c078e5462e6e5e5a",
+          "wire_bytes": 556
+        },
+        "cbor_map_snapshot": {
+          "input_sha256": "bf625aacd0d948f984bd2c7747e733a6eefdce05ecdcf5b6193a8b323bea865d",
+          "wire_sha256": "1d220c77f516b4789f26dc69c136f6e90c3659f8a4f2bbeeee62a07051790c6c",
+          "wire_bytes": 1962
+        },
+        "float_fractional": {
+          "input_sha256": "f617b1afa9e7d3ff990752b38d5c6620c94efe5ba9bc319312af93d8ea54bc97",
+          "wire_sha256": "4aa650eb364032e045635504083a3a25166209dc458c53a8395b77bdd08ba172",
+          "wire_bytes": 2307
+        },
+        "float_integral": {
+          "input_sha256": "a16460bd4440f208878a0c56b8cb2941d662d62794c0f2a20852f71f445ed912",
+          "wire_sha256": "1aee458ac3ff1d1dd7079061b995edf78c3edcebbdbd0baeed4d1ecf7079d5ee",
+          "wire_bytes": 931
+        },
+        "float_mixed_special": {
+          "input_sha256": "95d6a42c369123780378b63625c704bea4df19d194182061f7e96ad35e867384",
+          "wire_sha256": "dfd372882091e0e9f472ddeabe7fff9e5625ab13cca8e2cf11eb16ad39d75984",
+          "wire_bytes": 643
+        },
+        "float_boundaries": {
+          "input_sha256": "220b80092c3ef7c52f12611c42ed03d647d035b48585b989307bcf3358e57d3a",
+          "wire_sha256": "35826074132ae1a3386f08d503f53d14971b6a408ad973012443080d9cfeebc2",
+          "wire_bytes": 1955
+        },
+        "unicode_ascii": {
+          "input_sha256": "98643419f1b507cdeeb7eef41b2a48b16fb736e63cf60cb582a0c62ca5e4a963",
+          "wire_sha256": "6de6e564e2f18ab6f5e22341092bbe8b038ec98e338a4467c4e9260ba2ba80aa",
+          "wire_bytes": 11523
+        },
+        "unicode_nfc": {
+          "input_sha256": "fdc121af9f532089fe852a5c202f3bc92a138fcfad9fe76dc7ab8b5f1f432b0d",
+          "wire_sha256": "ca8d9ac84516b620e7065b1d2da602b11c50175e345de8fa7a2c936648c07718",
+          "wire_bytes": 9219
+        },
+        "unicode_decomposed": {
+          "input_sha256": "36b9d2a223443c4062e370cdd903abf7b3f4852531887cf4ad6e75f897c2a858",
+          "wire_sha256": "ca8d9ac84516b620e7065b1d2da602b11c50175e345de8fa7a2c936648c07718",
+          "wire_bytes": 9219
+        },
+        "unicode_expanding_nfc": {
+          "input_sha256": "94eb89710802732b7bec17b47c0069b8097b04d3a367b3bbc66b7843cda8142e",
+          "wire_sha256": "d6dd5920f3771126c64f92571d2e70ee13e8ab57c53355fc8b9c23dfa81977d0",
+          "wire_bytes": 3075
+        }
+      }
+    },
+    {
+      "pid": 129,
+      "started_at_utc": "2026-10-18T17:56:59.157885+00:00",
+      "order_offset": 5,
+      "operation_order": [
+        "decode",
+        "encode"
+      ],
+      "measurements_ns_per_operation": {
+        "map_100_shuffled": {
+          "decode": 46465.87,
+          "encode": 30586.9
+        },
+        "map_1000_sorted": {
+          "decode": 634507.484,
+          "encode": 417935.32
+        },
+        "map_1000_reverse": {
+          "decode": 612656.796,
+          "encode": 232181.928
+        },
+        "map_1000_shuffled": {
+          "decode": 618142.002,
+          "encode": 455104.044
+        },
+        "map_10000_sorted": {
+          "decode": 9193703.98,
+          "encode": 4621447.5
+        },
+        "map_10000_reverse": {
+          "decode": 9131750.6,
+          "encode": 2393405.38
+        },
+        "map_10000_shuffled": {
+          "decode": 9320224.86,
+          "encode": 7209056.48
+        },
+        "integer_width_boundaries": {
+          "decode": 33498.388,
+          "encode": 23294.3
+        },
+        "dict_nfc_key_collisions": {
+          "decode": 45962.644,
+          "encode": 63176.6
+        },
+        "nested_scalar_tree": {
+          "decode": 34853.876,
+          "encode": 18798.334
+        },
+        "cbor_map_snapshot": {
+          "decode": 79484.676,
+          "encode": 13572.998
+        },
+        "float_fractional": {
+          "decode": 33422.206,
+          "encode": 9559.298
+        },
+        "float_integral": {
+          "decode": 34190.068,
+          "encode": 14983.868
+        },
+        "float_mixed_special": {
+          "decode": 21628.952,
+          "encode": 7483.698
+        },
+        "float_boundaries": {
+          "decode": 23234.368,
+          "encode": 8292.178
+        },
+        "unicode_ascii": {
+          "decode": 41202.73333333333,
+          "encode": 10217.422222222222
+        },
+        "unicode_nfc": {
+          "decode": 71283.46376811594,
+          "encode": 26357.057971014492
+        },
+        "unicode_decomposed": {
+          "decode": 70985.45614035087,
+          "encode": 226954.05263157896
+        },
+        "unicode_expanding_nfc": {
+          "decode": 91572.10655737705,
+          "encode": 61832.87704918033
+        },
+        "map_10_sorted": {
+          "decode": 3196.404,
+          "encode": 2203.298
+        },
+        "map_10_reverse": {
+          "decode": 3206.142,
+          "encode": 2007.672
+        },
+        "map_10_shuffled": {
+          "decode": 3198.448,
+          "encode": 2200.114
+        },
+        "map_100_sorted": {
+          "decode": 48829.19,
+          "encode": 28529.394
+        },
+        "map_100_reverse": {
+          "decode": 48796.266,
+          "encode": 20574.852
+        }
+      },
+      "case_fingerprints": {
+        "map_10_sorted": {
+          "input_sha256": "4696fe71cfc70f3ce36fd70758e44acbac717d598877879eed72a2cd632e5138",
+          "wire_sha256": "a461b69f6ece1bf9da1b343f2cc76577b3245532d9e76245dabde597ad1b6c40",
+          "wire_bytes": 121
+        },
+        "map_10_reverse": {
+          "input_sha256": "3310856aaac003b653ef9884162ae3f1204a57fd8686387042d75bcf7bf3fc92",
+          "wire_sha256": "a461b69f6ece1bf9da1b343f2cc76577b3245532d9e76245dabde597ad1b6c40",
+          "wire_bytes": 121
+        },
+        "map_10_shuffled": {
+          "input_sha256": "e890a92da1bd1a36ac77d3eeccc8d6b124fd2d9cd29de72cd60184dfc143feef",
+          "wire_sha256": "a461b69f6ece1bf9da1b343f2cc76577b3245532d9e76245dabde597ad1b6c40",
+          "wire_bytes": 121
+        },
+        "map_100_sorted": {
+          "input_sha256": "181e7b7c9fbc2c6d8e308e727f1b277b41975042d96756d28c57219dc8e33c9a",
+          "wire_sha256": "c65de633682289887eb18c08aa4bf07718953e912216a6688c7ae22b2594fa50",
+          "wire_bytes": 1278
+        },
+        "map_100_reverse": {
+          "input_sha256": "8c99cb87553170438070768e97391f0e495af7c2ac29639f2353898dc149dfa3",
+          "wire_sha256": "c65de633682289887eb18c08aa4bf07718953e912216a6688c7ae22b2594fa50",
+          "wire_bytes": 1278
+        },
+        "map_100_shuffled": {
+          "input_sha256": "68405bdd1a678b5f9bd6c2f4294d194a412d7b1f4ef67a2aaeadc5720431d0eb",
+          "wire_sha256": "c65de633682289887eb18c08aa4bf07718953e912216a6688c7ae22b2594fa50",
+          "wire_bytes": 1278
+        },
+        "map_1000_sorted": {
+          "input_sha256": "b5db504fd22315d9e7fff2de77ae58a68f6794240d43d8ff9b192f156bf8d6d6",
+          "wire_sha256": "0c1eecc335fd44c29bba2009543743fc244467654b117469be3de77bb093bac4",
+          "wire_bytes": 13723
+        },
+        "map_1000_reverse": {
+          "input_sha256": "02c8521417cd78ee34ea3acb95e8c23f609293962b55f0f1147ee57b326ec443",
+          "wire_sha256": "0c1eecc335fd44c29bba2009543743fc244467654b117469be3de77bb093bac4",
+          "wire_bytes": 13723
+        },
+        "map_1000_shuffled": {
+          "input_sha256": "495986fc104fd7ee14a69baddab60c8d69f3368833e7f08d0bac1de80f408f18",
+          "wire_sha256": "0c1eecc335fd44c29bba2009543743fc244467654b117469be3de77bb093bac4",
+          "wire_bytes": 13723
+        },
+        "map_10000_sorted": {
+          "input_sha256": "7307425e468fb85af440e9c161b69e45bb18efa82eeca9e433c72cf47688ca99",
+          "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
+          "wire_bytes": 139723
+        },
+        "map_10000_reverse": {
+          "input_sha256": "8e12cbdc8468dfe1c4657746f5a706bebd50f527bff50e9c0ceebf191c6193e4",
+          "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
+          "wire_bytes": 139723
+        },
+        "map_10000_shuffled": {
+          "input_sha256": "aa8ab9ed2dcfa583536c86b7786a24c41b965251419b2d9a7325a52132986be7",
+          "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
+          "wire_bytes": 139723
+        },
+        "integer_width_boundaries": {
+          "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+          "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+          "wire_bytes": 2435
+        },
+        "dict_nfc_key_collisions": {
+          "input_sha256": "cf96def144fab6d0f0217d90f70c25218fcf764e838fd127e604b95740650ab5",
+          "wire_sha256": "039b285859b09898f6d8f407a5772d4a19b1b76c6408e0a1986567931c3e5f7d",
+          "wire_bytes": 886
+        },
+        "nested_scalar_tree": {
+          "input_sha256": "e4d93c245e1df38d974ad1047f0487febbcef5d0152d1ca60305a7561a6a73ad",
+          "wire_sha256": "5a2813b4d77fb89af2c26859436ae100dc0ee7f42f83bcf0c078e5462e6e5e5a",
+          "wire_bytes": 556
+        },
+        "cbor_map_snapshot": {
+          "input_sha256": "bf625aacd0d948f984bd2c7747e733a6eefdce05ecdcf5b6193a8b323bea865d",
+          "wire_sha256": "1d220c77f516b4789f26dc69c136f6e90c3659f8a4f2bbeeee62a07051790c6c",
+          "wire_bytes": 1962
+        },
+        "float_fractional": {
+          "input_sha256": "f617b1afa9e7d3ff990752b38d5c6620c94efe5ba9bc319312af93d8ea54bc97",
+          "wire_sha256": "4aa650eb364032e045635504083a3a25166209dc458c53a8395b77bdd08ba172",
+          "wire_bytes": 2307
+        },
+        "float_integral": {
+          "input_sha256": "a16460bd4440f208878a0c56b8cb2941d662d62794c0f2a20852f71f445ed912",
+          "wire_sha256": "1aee458ac3ff1d1dd7079061b995edf78c3edcebbdbd0baeed4d1ecf7079d5ee",
+          "wire_bytes": 931
+        },
+        "float_mixed_special": {
+          "input_sha256": "95d6a42c369123780378b63625c704bea4df19d194182061f7e96ad35e867384",
+          "wire_sha256": "dfd372882091e0e9f472ddeabe7fff9e5625ab13cca8e2cf11eb16ad39d75984",
+          "wire_bytes": 643
+        },
+        "float_boundaries": {
+          "input_sha256": "220b80092c3ef7c52f12611c42ed03d647d035b48585b989307bcf3358e57d3a",
+          "wire_sha256": "35826074132ae1a3386f08d503f53d14971b6a408ad973012443080d9cfeebc2",
+          "wire_bytes": 1955
+        },
+        "unicode_ascii": {
+          "input_sha256": "98643419f1b507cdeeb7eef41b2a48b16fb736e63cf60cb582a0c62ca5e4a963",
+          "wire_sha256": "6de6e564e2f18ab6f5e22341092bbe8b038ec98e338a4467c4e9260ba2ba80aa",
+          "wire_bytes": 11523
+        },
+        "unicode_nfc": {
+          "input_sha256": "fdc121af9f532089fe852a5c202f3bc92a138fcfad9fe76dc7ab8b5f1f432b0d",
+          "wire_sha256": "ca8d9ac84516b620e7065b1d2da602b11c50175e345de8fa7a2c936648c07718",
+          "wire_bytes": 9219
+        },
+        "unicode_decomposed": {
+          "input_sha256": "36b9d2a223443c4062e370cdd903abf7b3f4852531887cf4ad6e75f897c2a858",
+          "wire_sha256": "ca8d9ac84516b620e7065b1d2da602b11c50175e345de8fa7a2c936648c07718",
+          "wire_bytes": 9219
+        },
+        "unicode_expanding_nfc": {
+          "input_sha256": "94eb89710802732b7bec17b47c0069b8097b04d3a367b3bbc66b7843cda8142e",
+          "wire_sha256": "d6dd5920f3771126c64f92571d2e70ee13e8ab57c53355fc8b9c23dfa81977d0",
+          "wire_bytes": 3075
+        }
+      }
+    },
+    {
+      "pid": 150,
+      "started_at_utc": "2026-10-18T17:57:04.128719+00:00",
+      "order_offset": 6,
+      "operation_order": [
+        "encode",
+        "decode"
+      ],
+      "measurements_ns_per_operation": {
+        "map_1000_sorted": {
+          "encode": 400071.342,
+          "decode": 607460.394
+        },
+        "map_1000_reverse": {
+          "encode": 234260.092,
+          "decode": 627663.448
+        },
+        "map_1000_shuffled": {
+          "encode": 428589.434,
+          "decode": 609420.958
+        },
+        "map_10000_sorted": {
+          "encode": 4977418.22,
+          "decode": 10104039.3
+        },
+        "map_10000_reverse": {
+          "encode": 2651668.74,
+          "decode": 8976005.04
+        },
+        "map_10000_shuffled": {
+          "encode": 5911850.82,
+          "decode": 8891520.92
+        },
+        "integer_width_boundaries": {
+          "encode": 23399.958,
+          "decode": 33760.822
+        },
+        "dict_nfc_key_collisions": {
+          "encode": 66452.536,
+          "decode": 48579.34
+        },
+        "nested_scalar_tree": {
+          "encode": 25225.068,
+          "decode": 35124.162
+        },
+        "cbor_map_snapshot": {
+          "encode": 13246.324,
+          "decode": 79563.466
+        },
+        "float_fractional": {
+          "encode": 9537.818,
+          "decode": 37097.31
+        },
+        "float_integral": {
+          "encode": 15469.9,
+          "decode": 36797.106
+        },
+        "float_mixed_special": {
+          "encode": 7637.608,
+          "decode": 23401.12
+        },
+        "float_boundaries": {
+          "encode": 8221.566,
+          "decode": 23332.892
+        },
+        "unicode_ascii": {
+          "encode": 9437.511111111111,
+          "decode": 40859.42222222222
+        },
+        "unicode_nfc": {
+          "encode": 29922.159420289856,
+          "decode": 71565.7536231884
+        },
+        "unicode_decomposed": {
+          "encode": 250319.01754385966,
+          "decode": 76575.26315789473
+        },
+        "unicode_expanding_nfc": {
+          "encode": 61648.96721311475,
+          "decode": 92259.38114754099
+        },
+        "map_10_sorted": {
+          "encode": 2158.916,
+          "decode": 3122.366
+        },
+        "map_10_reverse": {
+          "encode": 1944.332,
+          "decode": 3153.806
+        },
+        "map_10_shuffled": {
+          "encode": 2120.304,
+          "decode": 3150.598
+        },
+        "map_100_sorted": {
+          "encode": 27786.96,
+          "decode": 46864.018
+        },
+        "map_100_reverse": {
+          "encode": 19905.274,
+          "decode": 46841.334
+        },
+        "map_100_shuffled": {
+          "encode": 29643.408,
+          "decode": 46615.47
+        }
+      },
+      "case_fingerprints": {
+        "map_10_sorted": {
+          "input_sha256": "4696fe71cfc70f3ce36fd70758e44acbac717d598877879eed72a2cd632e5138",
+          "wire_sha256": "a461b69f6ece1bf9da1b343f2cc76577b3245532d9e76245dabde597ad1b6c40",
+          "wire_bytes": 121
+        },
+        "map_10_reverse": {
+          "input_sha256": "3310856aaac003b653ef9884162ae3f1204a57fd8686387042d75bcf7bf3fc92",
+          "wire_sha256": "a461b69f6ece1bf9da1b343f2cc76577b3245532d9e76245dabde597ad1b6c40",
+          "wire_bytes": 121
+        },
+        "map_10_shuffled": {
+          "input_sha256": "e890a92da1bd1a36ac77d3eeccc8d6b124fd2d9cd29de72cd60184dfc143feef",
+          "wire_sha256": "a461b69f6ece1bf9da1b343f2cc76577b3245532d9e76245dabde597ad1b6c40",
+          "wire_bytes": 121
+        },
+        "map_100_sorted": {
+          "input_sha256": "181e7b7c9fbc2c6d8e308e727f1b277b41975042d96756d28c57219dc8e33c9a",
+          "wire_sha256": "c65de633682289887eb18c08aa4bf07718953e912216a6688c7ae22b2594fa50",
+          "wire_bytes": 1278
+        },
+        "map_100_reverse": {
+          "input_sha256": "8c99cb87553170438070768e97391f0e495af7c2ac29639f2353898dc149dfa3",
+          "wire_sha256": "c65de633682289887eb18c08aa4bf07718953e912216a6688c7ae22b2594fa50",
+          "wire_bytes": 1278
+        },
+        "map_100_shuffled": {
+          "input_sha256": "68405bdd1a678b5f9bd6c2f4294d194a412d7b1f4ef67a2aaeadc5720431d0eb",
+          "wire_sha256": "c65de633682289887eb18c08aa4bf07718953e912216a6688c7ae22b2594fa50",
+          "wire_bytes": 1278
+        },
+        "map_1000_sorted": {
+          "input_sha256": "b5db504fd22315d9e7fff2de77ae58a68f6794240d43d8ff9b192f156bf8d6d6",
+          "wire_sha256": "0c1eecc335fd44c29bba2009543743fc244467654b117469be3de77bb093bac4",
+          "wire_bytes": 13723
+        },
+        "map_1000_reverse": {
+          "input_sha256": "02c8521417cd78ee34ea3acb95e8c23f609293962b55f0f1147ee57b326ec443",
+          "wire_sha256": "0c1eecc335fd44c29bba2009543743fc244467654b117469be3de77bb093bac4",
+          "wire_bytes": 13723
+        },
+        "map_1000_shuffled": {
+          "input_sha256": "495986fc104fd7ee14a69baddab60c8d69f3368833e7f08d0bac1de80f408f18",
+          "wire_sha256": "0c1eecc335fd44c29bba2009543743fc244467654b117469be3de77bb093bac4",
+          "wire_bytes": 13723
+        },
+        "map_10000_sorted": {
+          "input_sha256": "7307425e468fb85af440e9c161b69e45bb18efa82eeca9e433c72cf47688ca99",
+          "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
+          "wire_bytes": 139723
+        },
+        "map_10000_reverse": {
+          "input_sha256": "8e12cbdc8468dfe1c4657746f5a706bebd50f527bff50e9c0ceebf191c6193e4",
+          "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
+          "wire_bytes": 139723
+        },
+        "map_10000_shuffled": {
+          "input_sha256": "aa8ab9ed2dcfa583536c86b7786a24c41b965251419b2d9a7325a52132986be7",
+          "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
+          "wire_bytes": 139723
+        },
+        "integer_width_boundaries": {
+          "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+          "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+          "wire_bytes": 2435
+        },
+        "dict_nfc_key_collisions": {
+          "input_sha256": "cf96def144fab6d0f0217d90f70c25218fcf764e838fd127e604b95740650ab5",
+          "wire_sha256": "039b285859b09898f6d8f407a5772d4a19b1b76c6408e0a1986567931c3e5f7d",
+          "wire_bytes": 886
+        },
+        "nested_scalar_tree": {
+          "input_sha256": "e4d93c245e1df38d974ad1047f0487febbcef5d0152d1ca60305a7561a6a73ad",
+          "wire_sha256": "5a2813b4d77fb89af2c26859436ae100dc0ee7f42f83bcf0c078e5462e6e5e5a",
+          "wire_bytes": 556
+        },
+        "cbor_map_snapshot": {
+          "input_sha256": "bf625aacd0d948f984bd2c7747e733a6eefdce05ecdcf5b6193a8b323bea865d",
+          "wire_sha256": "1d220c77f516b4789f26dc69c136f6e90c3659f8a4f2bbeeee62a07051790c6c",
+          "wire_bytes": 1962
+        },
+        "float_fractional": {
+          "input_sha256": "f617b1afa9e7d3ff990752b38d5c6620c94efe5ba9bc319312af93d8ea54bc97",
+          "wire_sha256": "4aa650eb364032e045635504083a3a25166209dc458c53a8395b77bdd08ba172",
+          "wire_bytes": 2307
+        },
+        "float_integral": {
+          "input_sha256": "a16460bd4440f208878a0c56b8cb2941d662d62794c0f2a20852f71f445ed912",
+          "wire_sha256": "1aee458ac3ff1d1dd7079061b995edf78c3edcebbdbd0baeed4d1ecf7079d5ee",
+          "wire_bytes": 931
+        },
+        "float_mixed_special": {
+          "input_sha256": "95d6a42c369123780378b63625c704bea4df19d194182061f7e96ad35e867384",
+          "wire_sha256": "dfd372882091e0e9f472ddeabe7fff9e5625ab13cca8e2cf11eb16ad39d75984",
+          "wire_bytes": 643
+        },
+        "float_boundaries": {
+          "input_sha256": "220b80092c3ef7c52f12611c42ed03d647d035b48585b989307bcf3358e57d3a",
+          "wire_sha256": "35826074132ae1a3386f08d503f53d14971b6a408ad973012443080d9cfeebc2",
+          "wire_bytes": 1955
+        },
+        "unicode_ascii": {
+          "input_sha256": "98643419f1b507cdeeb7eef41b2a48b16fb736e63cf60cb582a0c62ca5e4a963",
+          "wire_sha256": "6de6e564e2f18ab6f5e22341092bbe8b038ec98e338a4467c4e9260ba2ba80aa",
+          "wire_bytes": 11523
+        },
+        "unicode_nfc": {
+          "input_sha256": "fdc121af9f532089fe852a5c202f3bc92a138fcfad9fe76dc7ab8b5f1f432b0d",
+          "wire_sha256": "ca8d9ac84516b620e7065b1d2da602b11c50175e345de8fa7a2c936648c07718",
+          "wire_bytes": 9219
+        },
+        "unicode_decomposed": {
+          "input_sha256": "36b9d2a223443c4062e370cdd903abf7b3f4852531887cf4ad6e75f897c2a858",
+          "wire_sha256": "ca8d9ac84516b620e7065b1d2da602b11c50175e345de8fa7a2c936648c07718",
+          "wire_bytes": 9219
+        },
+        "unicode_expanding_nfc": {
+          "input_sha256": "94eb89710802732b7bec17b47c0069b8097b04d3a367b3bbc66b7843cda8142e",
+          "wire_sha256": "d6dd5920f3771126c64f92571d2e70ee13e8ab57c53355fc8b9c23dfa81977d0",
+          "wire_bytes": 3075
+        }
+      }
+    },
+    {
+      "pid": 171,
+      "started_at_utc": "2026-10-18T17:57:09.037910+00:00",
+      "order_offset": 7,
+      "operation_order": [
+        "decode",
+        "encode"
+      ],
+      "measurements_ns_per_operation": {
+        "map_1000_reverse": {
+          "decode": 608586.712,
+          "encode": 231430.678
+        },
+        "map_1000_shuffled": {
+          "decode": 620022.894,
+          "encode": 429804.758
+        },
+        "map_10000_sorted": {
+          "decode": 9331146.18,
+          "encode": 4624995.16
+        },
+        "map_10000_reverse": {
+          "decode": 9631814.0,
+          "encode": 2388913.32
+        },
+        "map_10000_shuffled": {
+          "decode": 8958181.94,
+          "encode": 5913959.98
+        },
+        "integer_width_boundaries": {
+          "decode": 33974.864,
+          "encode": 24630.97
+        },
+        "dict_nfc_key_collisions": {
+          "decode": 46734.294,
+          "encode": 63767.01
+        },
+        "nested_scalar_tree": {
+          "decode": 35544.874,
+          "encode": 18634.786
+        },
+        "cbor_map_snapshot": {
+          "decode": 79648.244,
+          "encode": 13580.412
+        },
+        "float_fractional": {
+          "decode": 34404.912,
+          "encode": 9806.682
+        },
+        "float_integral": {
+          "decode": 34258.096,
+          "encode": 14741.512
+        },
+        "float_mixed_special": {
+          "decode": 21154.0,
+          "encode": 7344.756
+        },
+        "float_boundaries": {
+          "decode": 22997.462,
+          "encode": 8149.89
+        },
+        "unicode_ascii": {
+          "decode": 41378.62222222222,
+          "encode": 9244.933333333332
+        },
+        "unicode_nfc": {
+          "decode": 72057.53623188406,
+          "encode": 25990.130434782608
+        },
+        "unicode_decomposed": {
+          "decode": 71907.19298245614,
+          "encode": 219182.63157894736
+        },
+        "unicode_expanding_nfc": {
+          "decode": 92682.88114754099,
+          "encode": 61069.80327868852
+        },
+        "map_10_sorted": {
+          "decode": 3191.376,
+          "encode": 2208.008
+        },
+        "map_10_reverse": {
+          "decode": 3153.384,
+          "encode": 2000.558
+        },
+        "map_10_shuffled": {
+          "decode": 3145.87,
+          "encode": 2236.902
+        },
+        "map_100_sorted": {
+          "decode": 47305.768,
+          "encode": 28529.756
+        },
+        "map_100_reverse": {
+          "decode": 47220.528,
+          "encode": 20241.824
+        },
+        "map_100_shuffled": {
+          "decode": 47446.492,
+          "encode": 30189.732
+        },
+        "map_1000_sorted": {
+          "decode": 604545.058,
+          "encode": 391340.318
+        }
+      },
+      "case_fingerprints": {
+        "map_10_sorted": {
+          "input_sha256": "4696fe71cfc70f3ce36fd70758e44acbac717d598877879eed72a2cd632e5138",
+          "wire_sha256": "a461b69f6ece1bf9da1b343f2cc76577b3245532d9e76245dabde597ad1b6c40",
+          "wire_bytes": 121
+        },
+        "map_10_reverse": {
+          "input_sha256": "3310856aaac003b653ef9884162ae3f1204a57fd8686387042d75bcf7bf3fc92",
+          "wire_sha256": "a461b69f6ece1bf9da1b343f2cc76577b3245532d9e76245dabde597ad1b6c40",
+          "wire_bytes": 121
+        },
+        "map_10_shuffled": {
+          "input_sha256": "e890a92da1bd1a36ac77d3eeccc8d6b124fd2d9cd29de72cd60184dfc143feef",
+          "wire_sha256": "a461b69f6ece1bf9da1b343f2cc76577b3245532d9e76245dabde597ad1b6c40",
+          "wire_bytes": 121
+        },
+        "map_100_sorted": {
+          "input_sha256": "181e7b7c9fbc2c6d8e308e727f1b277b41975042d96756d28c57219dc8e33c9a",
+          "wire_sha256": "c65de633682289887eb18c08aa4bf07718953e912216a6688c7ae22b2594fa50",
+          "wire_bytes": 1278
+        },
+        "map_100_reverse": {
+          "input_sha256": "8c99cb87553170438070768e97391f0e495af7c2ac29639f2353898dc149dfa3",
+          "wire_sha256": "c65de633682289887eb18c08aa4bf07718953e912216a6688c7ae22b2594fa50",
+          "wire_bytes": 1278
+        },
+        "map_100_shuffled": {
+          "input_sha256": "68405bdd1a678b5f9bd6c2f4294d194a412d7b1f4ef67a2aaeadc5720431d0eb",
+          "wire_sha256": "c65de633682289887eb18c08aa4bf07718953e912216a6688c7ae22b2594fa50",
+          "wire_bytes": 1278
+        },
+        "map_1000_sorted": {
+          "input_sha256": "b5db504fd22315d9e7fff2de77ae58a68f6794240d43d8ff9b192f156bf8d6d6",
+          "wire_sha256": "0c1eecc335fd44c29bba2009543743fc244467654b117469be3de77bb093bac4",
+          "wire_bytes": 13723
+        },
+        "map_1000_reverse": {
+          "input_sha256": "02c8521417cd78ee34ea3acb95e8c23f609293962b55f0f1147ee57b326ec443",
+          "wire_sha256": "0c1eecc335fd44c29bba2009543743fc244467654b117469be3de77bb093bac4",
+          "wire_bytes": 13723
+        },
+        "map_1000_shuffled": {
+          "input_sha256": "495986fc104fd7ee14a69baddab60c8d69f3368833e7f08d0bac1de80f408f18",
+          "wire_sha256": "0c1eecc335fd44c29bba2009543743fc244467654b117469be3de77bb093bac4",
+          "wire_bytes": 13723
+        },
+        "map_10000_sorted": {
+          "input_sha256": "7307425e468fb85af440e9c161b69e45bb18efa82eeca9e433c72cf47688ca99",
+          "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
+          "wire_bytes": 139723
+        },
+        "map_10000_reverse": {
+          "input_sha256": "8e12cbdc8468dfe1c4657746f5a706bebd50f527bff50e9c0ceebf191c6193e4",
+          "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
+          "wire_bytes": 139723
+        },
+        "map_10000_shuffled": {
+          "input_sha256": "aa8ab9ed2dcfa583536c86b7786a24c41b965251419b2d9a7325a52132986be7",
+          "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
+          "wire_bytes": 139723
+        },
+        "integer_width_boundaries": {
+          "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+          "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+          "wire_bytes": 2435
+        },
+        "dict_nfc_key_collisions": {
+          "input_sha256": "cf96def144fab6d0f0217d90f70c25218fcf764e838fd127e604b95740650ab5",
+          "wire_sha256": "039b285859b09898f6d8f407a5772d4a19b1b76c6408e0a1986567931c3e5f7d",
+          "wire_bytes": 886
+        },
+        "nested_scalar_tree": {
+          "input_sha256": "e4d93c245e1df38d974ad1047f0487febbcef5d0152d1ca60305a7561a6a73ad",
+          "wire_sha256": "5a2813b4d77fb89af2c26859436ae100dc0ee7f42f83bcf0c078e5462e6e5e5a",
+          "wire_bytes": 556
+        },
+        "cbor_map_snapshot": {
+          "input_sha256": "bf625aacd0d948f984bd2c7747e733a6eefdce05ecdcf5b6193a8b323bea865d",
+          "wire_sha256": "1d220c77f516b4789f26dc69c136f6e90c3659f8a4f2bbeeee62a07051790c6c",
+          "wire_bytes": 1962
+        },
+        "float_fractional": {
+          "input_sha256": "f617b1afa9e7d3ff990752b38d5c6620c94efe5ba9bc319312af93d8ea54bc97",
+          "wire_sha256": "4aa650eb364032e045635504083a3a25166209dc458c53a8395b77bdd08ba172",
+          "wire_bytes": 2307
+        },
+        "float_integral": {
+          "input_sha256": "a16460bd4440f208878a0c56b8cb2941d662d62794c0f2a20852f71f445ed912",
+          "wire_sha256": "1aee458ac3ff1d1dd7079061b995edf78c3edcebbdbd0baeed4d1ecf7079d5ee",
+          "wire_bytes": 931
+        },
+        "float_mixed_special": {
+          "input_sha256": "95d6a42c369123780378b63625c704bea4df19d194182061f7e96ad35e867384",
+          "wire_sha256": "dfd372882091e0e9f472ddeabe7fff9e5625ab13cca8e2cf11eb16ad39d75984",
+          "wire_bytes": 643
+        },
+        "float_boundaries": {
+          "input_sha256": "220b80092c3ef7c52f12611c42ed03d647d035b48585b989307bcf3358e57d3a",
+          "wire_sha256": "35826074132ae1a3386f08d503f53d14971b6a408ad973012443080d9cfeebc2",
+          "wire_bytes": 1955
+        },
+        "unicode_ascii": {
+          "input_sha256": "98643419f1b507cdeeb7eef41b2a48b16fb736e63cf60cb582a0c62ca5e4a963",
+          "wire_sha256": "6de6e564e2f18ab6f5e22341092bbe8b038ec98e338a4467c4e9260ba2ba80aa",
+          "wire_bytes": 11523
+        },
+        "unicode_nfc": {
+          "input_sha256": "fdc121af9f532089fe852a5c202f3bc92a138fcfad9fe76dc7ab8b5f1f432b0d",
+          "wire_sha256": "ca8d9ac84516b620e7065b1d2da602b11c50175e345de8fa7a2c936648c07718",
+          "wire_bytes": 9219
+        },
+        "unicode_decomposed": {
+          "input_sha256": "36b9d2a223443c4062e370cdd903abf7b3f4852531887cf4ad6e75f897c2a858",
+          "wire_sha256": "ca8d9ac84516b620e7065b1d2da602b11c50175e345de8fa7a2c936648c07718",
+          "wire_bytes": 9219
+        },
+        "unicode_expanding_nfc": {
+          "input_sha256": "94eb89710802732b7bec17b47c0069b8097b04d3a367b3bbc66b7843cda8142e",
+          "wire_sha256": "d6dd5920f3771126c64f92571d2e70ee13e8ab57c53355fc8b9c23dfa81977d0",
+          "wire_bytes": 3075
+        }
+      }
+    },
+    {
+      "pid": 192,
+      "started_at_utc": "2026-10-18T17:57:13.913477+00:00",
+      "order_offset": 8,
+      "operation_order": [
+        "encode",
+        "decode"
+      ],
+      "measurements_ns_per_operation": {
+        "map_1000_shuffled": {
+          "encode": 423155.646,
+          "decode": 616858.29
+        },
+        "map_10000_sorted": {
+          "encode": 4690193.44,
+          "decode": 8997078.02
+        },
+        "map_10000_reverse": {
+          "encode": 2400631.96,
+          "decode": 9071499.82
+        },
+        "map_10000_shuffled": {
+          "encode": 5939540.62,
+          "decode": 9068475.14
+        },
+        "integer_width_boundaries": {
+          "encode": 23479.588,
+          "decode": 34419.138
+        },
+        "dict_nfc_key_collisions": {
+          "encode": 63642.216,
+          "decode": 46244.654
+        },
+        "nested_scalar_tree": {
+          "encode": 18975.286,
+          "decode": 34647.066
+        },
+        "cbor_map_snapshot": {
+          "encode": 13188.334,
+          "decode": 78523.132
+        },
+        "float_fractional": {
+          "encode": 9821.57,
+          "decode": 33858.686
+        },
+        "float_integral": {
+          "encode": 15013.524,
+          "decode": 34053.512
+        },
+        "float_mixed_special": {
+          "encode": 7760.92,
+          "decode": 22548.278
+        },
+        "float_boundaries": {
+          "encode": 8345.016,
+          "decode": 23536.616
+        },
+        "unicode_ascii": {
+          "encode": 9762.111111111111,
+          "decode": 41253.044444444444
+        },
+        "unicode_nfc": {
+          "encode": 26300.130434782608,
+          "decode": 70383.8115942029
+        },
+        "unicode_decomposed": {
+          "encode": 226155.8947368421,
+          "decode": 71293.9298245614
+        },
+        "unicode_expanding_nfc": {
+          "encode": 61638.54098360656,
+          "decode": 92191.38524590163
+        },
+        "map_10_sorted": {
+          "encode": 2199.992,
+          "decode": 3200.05
+        },
+        "map_10_reverse": {
+          "encode": 1984.086,
+          "decode": 3193.258
+        },
+        "map_10_shuffled": {
+          "encode": 2175.606,
+          "decode": 3193.24
+        },
+        "map_100_sorted": {
+          "encode": 29020.938,
+          "decode": 47901.666
+        },
+        "map_100_reverse": {
+          "encode": 20216.918,
+          "decode": 47899.922
+        },
+        "map_100_shuffled": {
+          "encode": 30919.684,
+          "decode": 47704.376
+        },
+        "map_1000_sorted": {
+          "encode": 388956.02,
+          "decode": 611635.658
+        },
+        "map_1000_reverse": {
+          "encode": 230489.33,
+          "decode": 621314.56
+        }
+      },
+      "case_fingerprints": {
+        "map_10_sorted": {
+          "input_sha256": "4696fe71cfc70f3ce36fd70758e44acbac717d598877879eed72a2cd632e5138",
+          "wire_sha256": "a461b69f6ece1bf9da1b343f2cc76577b3245532d9e76245dabde597ad1b6c40",
+          "wire_bytes": 121
+        },
+        "map_10_reverse": {
+          "input_sha256": "3310856aaac003b653ef9884162ae3f1204a57fd8686387042d75bcf7bf3fc92",
+          "wire_sha256": "a461b69f6ece1bf9da1b343f2cc76577b3245532d9e76245dabde597ad1b6c40",
+          "wire_bytes": 121
+        },
+        "map_10_shuffled": {
+          "input_sha256": "e890a92da1bd1a36ac77d3eeccc8d6b124fd2d9cd29de72cd60184dfc143feef",
+          "wire_sha256": "a461b69f6ece1bf9da1b343f2cc76577b3245532d9e76245dabde597ad1b6c40",
+          "wire_bytes": 121
+        },
+        "map_100_sorted": {
+          "input_sha256": "181e7b7c9fbc2c6d8e308e727f1b277b41975042d96756d28c57219dc8e33c9a",
+          "wire_sha256": "c65de633682289887eb18c08aa4bf07718953e912216a6688c7ae22b2594fa50",
+          "wire_bytes": 1278
+        },
+        "map_100_reverse": {
+          "input_sha256": "8c99cb87553170438070768e97391f0e495af7c2ac29639f2353898dc149dfa3",
+          "wire_sha256": "c65de633682289887eb18c08aa4bf07718953e912216a6688c7ae22b2594fa50",
+          "wire_bytes": 1278
+        },
+        "map_100_shuffled": {
+          "input_sha256": "68405bdd1a678b5f9bd6c2f4294d194a412d7b1f4ef67a2aaeadc5720431d0eb",
+          "wire_sha256": "c65de633682289887eb18c08aa4bf07718953e912216a6688c7ae22b2594fa50",
+          "wire_bytes": 1278
+        },
+        "map_1000_sorted": {
+          "input_sha256": "b5db504fd22315d9e7fff2de77ae58a68f6794240d43d8ff9b192f156bf8d6d6",
+          "wire_sha256": "0c1eecc335fd44c29bba2009543743fc244467654b117469be3de77bb093bac4",
+          "wire_bytes": 13723
+        },
+        "map_1000_reverse": {
+          "input_sha256": "02c8521417cd78ee34ea3acb95e8c23f609293962b55f0f1147ee57b326ec443",
+          "wire_sha256": "0c1eecc335fd44c29bba2009543743fc244467654b117469be3de77bb093bac4",
+          "wire_bytes": 13723
+        },
+        "map_1000_shuffled": {
+          "input_sha256": "495986fc104fd7ee14a69baddab60c8d69f3368833e7f08d0bac1de80f408f18",
+          "wire_sha256": "0c1eecc335fd44c29bba2009543743fc244467654b117469be3de77bb093bac4",
+          "wire_bytes": 13723
+        },
+        "map_10000_sorted": {
+          "input_sha256": "7307425e468fb85af440e9c161b69e45bb18efa82eeca9e433c72cf47688ca99",
+          "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
+          "wire_bytes": 139723
+        },
+        "map_10000_reverse": {
+          "input_sha256": "8e12cbdc8468dfe1c4657746f5a706bebd50f527bff50e9c0ceebf191c6193e4",
+          "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
+          "wire_bytes": 139723
+        },
+        "map_10000_shuffled": {
+          "input_sha256": "aa8ab9ed2dcfa583536c86b7786a24c41b965251419b2d9a7325a52132986be7",
+          "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
+          "wire_bytes": 139723
+        },
+        "integer_width_boundaries": {
+          "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+          "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+          "wire_bytes": 2435
+        },
+        "dict_nfc_key_collisions": {
+          "input_sha256": "cf96def144fab6d0f0217d90f70c25218fcf764e838fd127e604b95740650ab5",
+          "wire_sha256": "039b285859b09898f6d8f407a5772d4a19b1b76c6408e0a1986567931c3e5f7d",
+          "wire_bytes": 886
+        },
+        "nested_scalar_tree": {
+          "input_sha256": "e4d93c245e1df38d974ad1047f0487febbcef5d0152d1ca60305a7561a6a73ad",
+          "wire_sha256": "5a2813b4d77fb89af2c26859436ae100dc0ee7f42f83bcf0c078e5462e6e5e5a",
+          "wire_bytes": 556
+        },
+        "cbor_map_snapshot": {
+          "input_sha256": "bf625aacd0d948f984bd2c7747e733a6eefdce05ecdcf5b6193a8b323bea865d",
+          "wire_sha256": "1d220c77f516b4789f26dc69c136f6e90c3659f8a4f2bbeeee62a07051790c6c",
+          "wire_bytes": 1962
+        },
+        "float_fractional": {
+          "input_sha256": "f617b1afa9e7d3ff990752b38d5c6620c94efe5ba9bc319312af93d8ea54bc97",
+          "wire_sha256": "4aa650eb364032e045635504083a3a25166209dc458c53a8395b77bdd08ba172",
+          "wire_bytes": 2307
+        },
+        "float_integral": {
+          "input_sha256": "a16460bd4440f208878a0c56b8cb2941d662d62794c0f2a20852f71f445ed912",
+          "wire_sha256": "1aee458ac3ff1d1dd7079061b995edf78c3edcebbdbd0baeed4d1ecf7079d5ee",
+          "wire_bytes": 931
+        },
+        "float_mixed_special": {
+          "input_sha256": "95d6a42c369123780378b63625c704bea4df19d194182061f7e96ad35e867384",
+          "wire_sha256": "dfd372882091e0e9f472ddeabe7fff9e5625ab13cca8e2cf11eb16ad39d75984",
+          "wire_bytes": 643
+        },
+        "float_boundaries": {
+          "input_sha256": "220b80092c3ef7c52f12611c42ed03d647d035b48585b989307bcf3358e57d3a",
+          "wire_sha256": "35826074132ae1a3386f08d503f53d14971b6a408ad973012443080d9cfeebc2",
+          "wire_bytes": 1955
+        },
+        "unicode_ascii": {
+          "input_sha256": "98643419f1b507cdeeb7eef41b2a48b16fb736e63cf60cb582a0c62ca5e4a963",
+          "wire_sha256": "6de6e564e2f18ab6f5e22341092bbe8b038ec98e338a4467c4e9260ba2ba80aa",
+          "wire_bytes": 11523
+        },
+        "unicode_nfc": {
+          "input_sha256": "fdc121af9f532089fe852a5c202f3bc92a138fcfad9fe76dc7ab8b5f1f432b0d",
+          "wire_sha256": "ca8d9ac84516b620e7065b1d2da602b11c50175e345de8fa7a2c936648c07718",
+          "wire_bytes": 9219
+        },
+        "unicode_decomposed": {
+          "input_sha256": "36b9d2a223443c4062e370cdd903abf7b3f4852531887cf4ad6e75f897c2a858",
+          "wire_sha256": "ca8d9ac84516b620e7065b1d2da602b11c50175e345de8fa7a2c936648c07718",
+          "wire_bytes": 9219
+        },
+        "unicode_expanding_nfc": {
+          "input_sha256": "94eb89710802732b7bec17b47c0069b8097b04d3a367b3bbc66b7843cda8142e",
+          "wire_sha256": "d6dd5920f3771126c64f92571d2e70ee13e8ab57c53355fc8b9c23dfa81977d0",
+          "wire_bytes": 3075
+        }
+      }
+    }
+  ]
+}

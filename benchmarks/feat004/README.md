@@ -2,8 +2,12 @@
 
 **PM sign-off (2026-10-18):** the direct Python-to-bytes encoder is accepted
 and complete for development `0.1.1`; see the [encoding architecture and
-acceptance record](../../docs/encoding.md). The mixed-profile decode slowdown
-remains open as [BUG_005](../../docs/requirements/BUG_005_mixed_profile_decode_slowdown.md).
+acceptance record](../../docs/encoding.md). The original mixed-profile decode
+observation is preserved in
+[BUG_005 history](../../docs/reviews/mixed_profile_decode_history.md) and was
+later superseded for the current implementation by the
+[paired native-decoder profile](../native_decoder/README.md), without
+establishing its cause.
 
 The raw baseline and candidate JSON, per-process samples, SVGs, and build
 provenance are in [baseline](baseline/README.md) and `candidate/`. Both reports
@@ -32,13 +36,14 @@ For the 24 targeted profile workloads, the median of the encode ratios is
 snapshot cases all retain identical input/output hashes; their encode ratios
 are 2.00×, 2.47×, 2.65×, and 2.24× respectively.
 
-The profile's 10,000-entry map decode case is slower in the mixed encode/decode
-profile. With the default 500 timed/100 warmup base counts, candidate decode
-medians were 8%–10% higher across sorted, reversed, and shuffled inputs. A
+The profile's 10,000-entry map decode case was slower in the mixed
+encode/decode profile. With the default 500 timed/100 warmup base counts,
+candidate decode medians were 8%–10% higher across sorted, reversed, and
+shuffled inputs. A
 matched reduced-round recheck (250 timed/50 warmup base counts) measured
-candidate medians 25%–29% higher. This result is material and remains an open
-performance issue. In a separate fresh-process decode-only control using the
-same prepared wire bytes, the 10,000-entry median was 6.483 ms baseline versus
+candidate medians 25%–29% higher. These are material historical observations.
+In a separate fresh-process decode-only control using the same prepared wire
+bytes, the 10,000-entry median was 6.483 ms baseline versus
 6.434 ms candidate (MAD 0.113 ms versus 0.044 ms); 1,000-entry map and nested
 document controls were also within 1% of baseline. The decoder implementation
 was not changed. The evidence points to a mixed-profile context effect as a

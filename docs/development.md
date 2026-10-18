@@ -16,8 +16,8 @@ resource-limit, date, and key-identity behavior.
 
 The source-based survey of dCBOR implementations, generic CBOR libraries, and
 related formats is in the [competitive landscape](competitive-landscape.md).
-The patched upstream Rust codec, its license, provenance, and verification
-process are documented in [PATCHES.md](../crates/dcbor/PATCHES.md).
+The binding's native wire reader and writer are maintained in the root Rust
+crate and covered by the repository's Rust and Python checks.
 
 ## Local development
 
@@ -36,9 +36,8 @@ Other interpreter and wheel jobs run the rest of the suite, including the
 independent conformance and safety tests. The source distribution runs the full
 suite before wheel builds.
 
-The upstream codec has a named maintainer and a repeatable checksum, patch, and
-test verification process in [PATCHES.md](../crates/dcbor/PATCHES.md). Current
-performance follow-ups are recorded in the [allocation plan](allocation-plan.md).
+Current performance follow-ups are recorded in the
+[allocation plan](allocation-plan.md).
 
 ## CI and releases
 
@@ -50,8 +49,8 @@ is unavailable. The build workflow:
 
 1. Check that Python and Cargo package versions agree with the public
    `dcbor.__version__`.
-2. Run the vendored Rust codec tests once with `--locked`, using the committed
-   `crates/dcbor/Cargo.lock` (separate from the binding's root lockfile).
+2. Run the native Rust binding unit tests with the root lockfile using
+   `cargo test --lib --locked`.
 3. Build the extension on CPython 3.9–3.14. Run the full suite on CPython
    3.14/Linux; other Python versions exclude only tests marked `exhaustive`.
 4. Create an sdist and verify it installs and passes the full test suite.
@@ -93,9 +92,8 @@ source distributions. Branch push runs stay independent so a docs-only push
 cannot cancel earlier code validation; superseded PR runs may cancel because
 their diffs are cumulative.
 
-The patched `crates/dcbor` sources and license must be committed with the project.
-Do not replace them with the unpatched registry crate. The sdist includes this
-dependency and the Python tests so packaging failures are caught before release.
+The sdist includes the native binding sources and Python tests, so packaging
+failures are caught before release.
 
 For the initial `v0.1.0` release and later patch releases, see the
 [release guide](releasing.md). It covers version updates, tag creation,

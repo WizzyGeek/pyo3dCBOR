@@ -169,6 +169,24 @@ def test_release_bundle_is_gated_by_all_required_checks_and_builds():
     assert "release" not in jobs
 
 
+def test_native_rust_job_sets_up_python_before_pyo3_tests():
+    _, jobs = workflow_jobs()
+    steps = jobs["rust"]["steps"]
+    python_setup = next(
+        index for index, step in enumerate(steps)
+        if step.get("uses") == "actions/setup-python@v7"
+    )
+    python_test = next(
+        index for index, step in enumerate(steps)
+        if step.get("name") == "Run native binding unit tests with the committed lockfile"
+    )
+
+    assert steps[python_setup]["with"]["python-version"] == "3.14"
+    assert python_setup < python_test
+    assert steps[python_test]["run"] == "cargo test --lib --locked"
+    assert steps[python_test]["env"]["PYO3_PYTHON"] == "python"
+
+
 def test_tag_release_reuses_or_builds_and_then_publishes_bundle():
     workflow, jobs = release_jobs()
     triggers = workflow["on"]

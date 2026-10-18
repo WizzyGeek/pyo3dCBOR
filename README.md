@@ -5,7 +5,8 @@ dCBOR application profile.
 
 - **Canonical output:** preferred numeric encodings, bytewise map-key order,
   and NFC text normalization.
-- **Checked input:** `loads()` rejects malformed and noncanonical encodings.
+- **Checked input:** `loads()` rejects malformed and noncanonical encodings;
+  `load(file)` reads a binary file object once and uses the same decoder.
 - **Python types:** bytes, tags, aware datetimes, and `CBORMap` for distinct
   keys that Python `dict` cannot preserve.
 
@@ -42,8 +43,9 @@ print(dcbor.diagnostic(wire))
 # {"a": [1, 2, 3], "b": 2}
 ```
 
-Reordering map entries produces the same wire bytes. `diagnostic()` prints a
-readable representation.
+`load(file)` accepts a binary file object and reads it once. Reordering map
+entries produces the same wire bytes. `diagnostic()` prints a readable
+representation.
 
 ## Benchmark results
 
@@ -61,8 +63,8 @@ rules differ. See the [benchmark scope and reports](docs/benchmarks.md),
 
 | Guide | Covers |
 | --- | --- |
-| [Python API](docs/python-api.md) | Supported values, maps, dates, numeric compatibility, errors, and limits |
-| [Benchmark reports](docs/benchmarks.md) | Size, latency, profile, and Rust-core graphs with methods |
+| [Python API](docs/python-api.md) | `dumps()`, `loads()`, `load()`, supported values, maps, dates, errors, and limits |
+| [Benchmark reports](docs/benchmarks.md) | Size, latency, profile, and a historical Rust-core graph |
 | [Development and CI](docs/development.md) | Build/test commands and CI matrix |
 | [Release guide](docs/releasing.md) | GitHub release process and assets |
 

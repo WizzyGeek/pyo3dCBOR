@@ -8,7 +8,6 @@
 use crate::encode::EncodeBudget;
 use crate::python_types::{PyCborMap, PyCborTag};
 use crate::{depth_err, python_integer_parts, scalars, CBORError, MAX_DEPTH};
-use dcbor::{CBOR, CBORCase, Map, Simple};
 use pyo3::prelude::*;
 use pyo3::sync::critical_section::with_critical_section;
 use pyo3::types::{PyBool, PyByteArray, PyBytes, PyDict, PyFloat, PyInt, PyList, PyString, PyTuple};
@@ -170,8 +169,7 @@ pub(crate) fn encode_into(
     }
 
     if let Ok(snapshot) = obj.extract::<PyRef<'_, PyCborMap>>() {
-        budget.reserve_snapshot(&snapshot.map, depth)?;
-        write_snapshot_map(&snapshot.map, depth, out)?;
+        snapshot.append_encoded(py, depth, out, budget)?;
         return Ok(());
     }
 
@@ -341,62 +339,4 @@ fn write_dict(
         out.extend_from_slice(&value.value);
     }
     Ok(())
-}
-
-fn write_snapshot_map(map: &Map, depth: u32, out: &mut Vec<u8>) -> PyResult<()> {
-    if depth >= MAX_DEPTH {
-        return Err(depth_err());
-    }
-    direct_wire::write_header(5, map.len() as u64, out);
-    for (key, value) in map.iter() {
-        write_snapshot_cbor(key, depth + 1, out)?;
-        write_snapshot_cbor(value, depth + 1, out)?;
-    }
-    Ok(())
-}
-
-fn write_snapshot_cbor(cbor: &CBOR, depth: u32, out: &mut Vec<u8>) -> PyResult<()> {
-    if depth > MAX_DEPTH {
-        return Err(depth_err());
-    }
-    match cbor.as_case() {
-        CBORCase::Unsigned(value) => direct_wire::write_header(0, *value, out),
-        CBORCase::Negative(value) => direct_wire::write_header(1, *value, out),
-        CBORCase::ByteString(value) => {
-            direct_wire::write_header(2, value.len() as u64, out);
-            out.extend_from_slice(value);
-        }
-        CBORCase::Text(value) => write_snapshot_text(value, out),
-        CBORCase::Array(values) => {
-            if depth == MAX_DEPTH {
-                return Err(depth_err());
-            }
-            direct_wire::write_header(4, values.len() as u64, out);
-            for value in values {
-                write_snapshot_cbor(value, depth + 1, out)?;
-            }
-        }
-        CBORCase::Map(map) => write_snapshot_map(map, depth, out)?,
-        CBORCase::Tagged(tag, value) => {
-            if depth == MAX_DEPTH {
-                return Err(depth_err());
-            }
-            direct_wire::write_header(6, tag.value(), out);
-            write_snapshot_cbor(value, depth + 1, out)?;
-        }
-        CBORCase::Simple(Simple::False) => out.push(0xf4),
-        CBORCase::Simple(Simple::True) => out.push(0xf5),
-        CBORCase::Simple(Simple::Null) => out.push(0xf6),
-        CBORCase::Simple(Simple::Float(value)) => {
-            FloatEncoding::from_f64(*value).write_to(out);
-        }
-    }
-    Ok(())
-}
-
-fn write_snapshot_text(value: &str, out: &mut Vec<u8>) {
-    // `CBORMap` snapshots can only be created from NFC-normalized Python
-    // values or canonical validated decoder output. Preserve their stored
-    // UTF-8 bytes directly instead of normalizing into another String.
-    write_text(value, out);
 }

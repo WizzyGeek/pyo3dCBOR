@@ -36,4 +36,5 @@ work.
 
 - Features: none
 - Bugs:
-  - [BUG_005: Investigate mixed-profile decode slowdown](BUG_005_mixed_profile_decode_slowdown.md) — open performance investigation.
+  - [BUG_007: Investigate integer-width encode regression](BUG_007_integer_encode_regression.md) —
+    open performance investigation.

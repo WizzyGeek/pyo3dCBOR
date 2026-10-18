@@ -82,7 +82,7 @@ def distributions(directory):
         raise ValueError("Expected exactly one version-matched source distribution")
     with tarfile.open(archives[0]) as archive:
         names = archive.getnames()
-        for suffix in ["/Cargo.lock", "/crates/dcbor/src/float.rs", "/crates/dcbor/PATCHES.md", "/crates/dcbor/LICENSE.md", "/tests/test_dcbor.py"]:
+        for suffix in ["/Cargo.lock", "/src/direct_decode.rs", "/src/wire.rs", "/tests/test_dcbor.py"]:
             if not any(name.endswith(suffix) for name in names):
                 raise ValueError(f"Missing required source file: {suffix}")
     files = sorted([*paths, *archives])

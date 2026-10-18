@@ -3,6 +3,19 @@
 This page records the Python value mappings, validation behavior, compatibility
 choices, and resource limits of `dcbor`.
 
+## Codec functions
+
+`dumps(value)` returns canonical dCBOR bytes. `loads(data)` validates and
+decodes one complete byte string. `load(binary_file)` calls the file object's
+`read()` method once to obtain the complete bytes, then uses the same decoder
+as `loads()`. Pass a binary file object; a text stream is rejected. The caller
+owns the file object and controls when it is closed.
+
+Both byte and file readers reject malformed or noncanonical input with the
+same `CBORError` behavior. Decoding creates fresh Python containers and owned
+byte strings for each call. It does not build an intermediate CBOR value tree
+or require application-level locks around decoding.
+
 ## Supported values
 
 | Python value | dCBOR representation |

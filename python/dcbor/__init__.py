@@ -1,11 +1,10 @@
 """Deterministic CBOR (dCBOR) encoding and decoding.
 
-Thin, Pythonic wrapper around the native `_dcbor` extension module, which
-binds to Blockchain Commons' `dcbor` Rust crate via PyO3. See the project
-README for the Python <-> dCBOR type mapping.
+Python API for the native `_dcbor` extension module. See the project README
+for the Python <-> dCBOR type mapping.
 """
 
-from ._dcbor import CBORError, CBORMap, CBORTag, diagnostic, diagnostic_flat, dumps, loads, validate
+from ._dcbor import CBORError, CBORMap, CBORTag, diagnostic, diagnostic_flat, dumps, load, loads, validate
 
 __all__ = [
     "CBORError",
@@ -15,6 +14,7 @@ __all__ = [
     "diagnostic_flat",
     "dumps",
     "loads",
+    "load",
     "validate",
 ]
 

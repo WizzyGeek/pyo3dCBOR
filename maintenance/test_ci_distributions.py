@@ -34,9 +34,8 @@ PLATFORM_TAGS = {
 }
 SOURCE_FILES = (
     "Cargo.lock",
-    "crates/dcbor/src/float.rs",
-    "crates/dcbor/PATCHES.md",
-    "crates/dcbor/LICENSE.md",
+    "src/direct_decode.rs",
+    "src/wire.rs",
     "tests/test_dcbor.py",
 )
 
@@ -152,12 +151,12 @@ def test_distributions_requires_license_in_each_wheel(tmp_path):
         CI.distributions(directory)
 
 
-def test_distributions_requires_vendored_sources_and_matching_sdist_name(tmp_path):
+def test_distributions_requires_native_sources_and_matching_sdist_name(tmp_path):
     source_dir = tmp_path / "missing-source"
-    _write_complete_distribution(source_dir, missing_source="crates/dcbor/src/float.rs")
+    _write_complete_distribution(source_dir, missing_source="src/direct_decode.rs")
     with pytest.raises(
         ValueError,
-        match="Missing required source file: /crates/dcbor/src/float.rs",
+        match="Missing required source file: /src/direct_decode.rs",
     ):
         CI.distributions(source_dir)
 

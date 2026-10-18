@@ -1,4 +1,4 @@
-"""Numeric wire checks independent of the vendored encoder and preflight.
+"""Numeric wire checks independent of the native encoder and preflight.
 
 Exercise IEEE exponent/sign boundaries and seeded payloads at widths larger
 than binary16. These remain useful when the decoder alone checks numeric

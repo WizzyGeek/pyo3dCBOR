@@ -1,8 +1,8 @@
 //! Small canonical dCBOR wire primitives for the direct Python encoder.
 //!
 //! These helpers append into a caller-owned buffer. They deliberately avoid
-//! constructing `dcbor::CBOR` values or allocating a temporary `Vec` per
-//! scalar. Float selection follows the patched vendored dCBOR float encoder.
+//! constructing generic CBOR value trees or allocating a temporary `Vec` per
+//! scalar. Float selection follows the dCBOR deterministic encoding rules.
 
 use half::f16;
 use std::io::{self, Write};

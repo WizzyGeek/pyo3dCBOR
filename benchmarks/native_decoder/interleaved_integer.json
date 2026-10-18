@@ -1,0 +1,387 @@
+{
+  "status": "complete",
+  "case_id": "integer_width_boundaries",
+  "operation": "encode",
+  "methodology": {
+    "runner": "benchmarks/native_decoder/interleaved_integer.py",
+    "fresh_processes": true,
+    "interleaving": "nine adjacent baseline/candidate pairs; starting role alternates",
+    "warmup_calls_per_process": 100,
+    "timed_calls_per_process": 500,
+    "clock": "time.perf_counter_ns",
+    "measurement": "batch mean nanoseconds per dumps operation"
+  },
+  "process_samples": {
+    "baseline": [
+      {
+        "pid": 3,
+        "started_at_utc": "2026-10-18T17:59:30.816788+00:00",
+        "median_sample_ns_per_operation": 26652.232,
+        "iterations": 500,
+        "warmup": 100,
+        "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+        "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+        "wire_bytes": 2435,
+        "extension_path": "/tmp/native-decoder-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+        "artifact_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581"
+      },
+      {
+        "pid": 6,
+        "started_at_utc": "2026-10-18T17:59:31.252670+00:00",
+        "median_sample_ns_per_operation": 23747.016,
+        "iterations": 500,
+        "warmup": 100,
+        "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+        "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+        "wire_bytes": 2435,
+        "extension_path": "/tmp/native-decoder-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+        "artifact_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581"
+      },
+      {
+        "pid": 7,
+        "started_at_utc": "2026-10-18T17:59:31.377713+00:00",
+        "median_sample_ns_per_operation": 23261.486,
+        "iterations": 500,
+        "warmup": 100,
+        "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+        "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+        "wire_bytes": 2435,
+        "extension_path": "/tmp/native-decoder-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+        "artifact_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581"
+      },
+      {
+        "pid": 10,
+        "started_at_utc": "2026-10-18T17:59:31.765022+00:00",
+        "median_sample_ns_per_operation": 24110.66,
+        "iterations": 500,
+        "warmup": 100,
+        "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+        "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+        "wire_bytes": 2435,
+        "extension_path": "/tmp/native-decoder-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+        "artifact_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581"
+      },
+      {
+        "pid": 11,
+        "started_at_utc": "2026-10-18T17:59:31.878491+00:00",
+        "median_sample_ns_per_operation": 23386.52,
+        "iterations": 500,
+        "warmup": 100,
+        "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+        "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+        "wire_bytes": 2435,
+        "extension_path": "/tmp/native-decoder-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+        "artifact_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581"
+      },
+      {
+        "pid": 14,
+        "started_at_utc": "2026-10-18T17:59:32.228822+00:00",
+        "median_sample_ns_per_operation": 23346.004,
+        "iterations": 500,
+        "warmup": 100,
+        "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+        "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+        "wire_bytes": 2435,
+        "extension_path": "/tmp/native-decoder-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+        "artifact_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581"
+      },
+      {
+        "pid": 15,
+        "started_at_utc": "2026-10-18T17:59:32.343003+00:00",
+        "median_sample_ns_per_operation": 23131.362,
+        "iterations": 500,
+        "warmup": 100,
+        "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+        "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+        "wire_bytes": 2435,
+        "extension_path": "/tmp/native-decoder-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+        "artifact_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581"
+      },
+      {
+        "pid": 18,
+        "started_at_utc": "2026-10-18T17:59:32.686733+00:00",
+        "median_sample_ns_per_operation": 23389.406,
+        "iterations": 500,
+        "warmup": 100,
+        "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+        "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+        "wire_bytes": 2435,
+        "extension_path": "/tmp/native-decoder-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+        "artifact_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581"
+      },
+      {
+        "pid": 19,
+        "started_at_utc": "2026-10-18T17:59:32.805060+00:00",
+        "median_sample_ns_per_operation": 23920.202,
+        "iterations": 500,
+        "warmup": 100,
+        "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+        "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+        "wire_bytes": 2435,
+        "extension_path": "/tmp/native-decoder-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+        "artifact_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581"
+      }
+    ],
+    "candidate": [
+      {
+        "pid": 4,
+        "started_at_utc": "2026-10-18T17:59:30.991110+00:00",
+        "median_sample_ns_per_operation": 28497.736,
+        "iterations": 500,
+        "warmup": 100,
+        "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+        "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+        "wire_bytes": 2435,
+        "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94"
+      },
+      {
+        "pid": 5,
+        "started_at_utc": "2026-10-18T17:59:31.117412+00:00",
+        "median_sample_ns_per_operation": 28856.208,
+        "iterations": 500,
+        "warmup": 100,
+        "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+        "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+        "wire_bytes": 2435,
+        "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94"
+      },
+      {
+        "pid": 8,
+        "started_at_utc": "2026-10-18T17:59:31.506544+00:00",
+        "median_sample_ns_per_operation": 28194.606,
+        "iterations": 500,
+        "warmup": 100,
+        "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+        "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+        "wire_bytes": 2435,
+        "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94"
+      },
+      {
+        "pid": 9,
+        "started_at_utc": "2026-10-18T17:59:31.636609+00:00",
+        "median_sample_ns_per_operation": 31346.382,
+        "iterations": 500,
+        "warmup": 100,
+        "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+        "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+        "wire_bytes": 2435,
+        "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94"
+      },
+      {
+        "pid": 12,
+        "started_at_utc": "2026-10-18T17:59:31.996759+00:00",
+        "median_sample_ns_per_operation": 28198.192,
+        "iterations": 500,
+        "warmup": 100,
+        "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+        "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+        "wire_bytes": 2435,
+        "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94"
+      },
+      {
+        "pid": 13,
+        "started_at_utc": "2026-10-18T17:59:32.110712+00:00",
+        "median_sample_ns_per_operation": 28326.334,
+        "iterations": 500,
+        "warmup": 100,
+        "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+        "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+        "wire_bytes": 2435,
+        "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94"
+      },
+      {
+        "pid": 16,
+        "started_at_utc": "2026-10-18T17:59:32.458338+00:00",
+        "median_sample_ns_per_operation": 29503.702,
+        "iterations": 500,
+        "warmup": 100,
+        "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+        "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+        "wire_bytes": 2435,
+        "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94"
+      },
+      {
+        "pid": 17,
+        "started_at_utc": "2026-10-18T17:59:32.571873+00:00",
+        "median_sample_ns_per_operation": 28385.964,
+        "iterations": 500,
+        "warmup": 100,
+        "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+        "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+        "wire_bytes": 2435,
+        "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94"
+      },
+      {
+        "pid": 20,
+        "started_at_utc": "2026-10-18T17:59:32.923236+00:00",
+        "median_sample_ns_per_operation": 28414.498,
+        "iterations": 500,
+        "warmup": 100,
+        "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+        "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+        "wire_bytes": 2435,
+        "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94"
+      }
+    ]
+  },
+  "pairs": [
+    {
+      "pair": 1,
+      "order": [
+        "baseline",
+        "candidate"
+      ],
+      "baseline_pid": 3,
+      "baseline_ns_per_operation": 26652.232,
+      "candidate_pid": 4,
+      "candidate_ns_per_operation": 28497.736
+    },
+    {
+      "pair": 2,
+      "order": [
+        "candidate",
+        "baseline"
+      ],
+      "candidate_pid": 5,
+      "candidate_ns_per_operation": 28856.208,
+      "baseline_pid": 6,
+      "baseline_ns_per_operation": 23747.016
+    },
+    {
+      "pair": 3,
+      "order": [
+        "baseline",
+        "candidate"
+      ],
+      "baseline_pid": 7,
+      "baseline_ns_per_operation": 23261.486,
+      "candidate_pid": 8,
+      "candidate_ns_per_operation": 28194.606
+    },
+    {
+      "pair": 4,
+      "order": [
+        "candidate",
+        "baseline"
+      ],
+      "candidate_pid": 9,
+      "candidate_ns_per_operation": 31346.382,
+      "baseline_pid": 10,
+      "baseline_ns_per_operation": 24110.66
+    },
+    {
+      "pair": 5,
+      "order": [
+        "baseline",
+        "candidate"
+      ],
+      "baseline_pid": 11,
+      "baseline_ns_per_operation": 23386.52,
+      "candidate_pid": 12,
+      "candidate_ns_per_operation": 28198.192
+    },
+    {
+      "pair": 6,
+      "order": [
+        "candidate",
+        "baseline"
+      ],
+      "candidate_pid": 13,
+      "candidate_ns_per_operation": 28326.334,
+      "baseline_pid": 14,
+      "baseline_ns_per_operation": 23346.004
+    },
+    {
+      "pair": 7,
+      "order": [
+        "baseline",
+        "candidate"
+      ],
+      "baseline_pid": 15,
+      "baseline_ns_per_operation": 23131.362,
+      "candidate_pid": 16,
+      "candidate_ns_per_operation": 29503.702
+    },
+    {
+      "pair": 8,
+      "order": [
+        "candidate",
+        "baseline"
+      ],
+      "candidate_pid": 17,
+      "candidate_ns_per_operation": 28385.964,
+      "baseline_pid": 18,
+      "baseline_ns_per_operation": 23389.406
+    },
+    {
+      "pair": 9,
+      "order": [
+        "baseline",
+        "candidate"
+      ],
+      "baseline_pid": 19,
+      "baseline_ns_per_operation": 23920.202,
+      "candidate_pid": 20,
+      "candidate_ns_per_operation": 28414.498
+    }
+  ],
+  "summaries": {
+    "baseline": {
+      "samples_ns_per_operation": [
+        26652.232,
+        23747.016,
+        23261.486,
+        24110.66,
+        23386.52,
+        23346.004,
+        23131.362,
+        23389.406,
+        23920.202
+      ],
+      "median_ns_per_operation": 23389.406,
+      "mad_ns_per_operation": 258.04399999999805
+    },
+    "candidate": {
+      "samples_ns_per_operation": [
+        28497.736,
+        28856.208,
+        28194.606,
+        31346.382,
+        28198.192,
+        28326.334,
+        29503.702,
+        28385.964,
+        28414.498
+      ],
+      "median_ns_per_operation": 28414.498,
+      "mad_ns_per_operation": 216.3060000000005
+    }
+  }
+}

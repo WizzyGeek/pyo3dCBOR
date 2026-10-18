@@ -5,7 +5,7 @@ build-backend = "maturin"
 [project]
 name = "dcbor"
 version = "0.1.1"
-description = "Deterministic CBOR (dCBOR) for Python — PyO3 bindings for Blockchain Commons' dcbor Rust crate"
+description = "Deterministic CBOR (dCBOR) for Python with a native Rust implementation"
 readme = "README.md"
 license = { text = "BSD-2-Clause-Patent" }
 requires-python = ">=3.9"
@@ -34,14 +34,8 @@ include = [
     { path = "scripts/**/*.py", format = "sdist" },
     { path = "tests/**/*.py", format = "sdist" },
     { path = "pytest.ini", format = "sdist" },
-    { path = "crates/dcbor/Cargo.toml", format = "sdist" },
-    { path = "crates/dcbor/Cargo.toml.orig", format = "sdist" },
-    { path = "crates/dcbor/src/**/*.rs", format = "sdist" },
-    { path = "crates/dcbor/LICENSE.md", format = "sdist" },
-    { path = "crates/dcbor/PATCHES.md", format = "sdist" },
-    { path = "crates/dcbor/local.patch", format = "sdist" },
 ]
-exclude = ["maintenance/**", "crates/dcbor/SECURITY-REVIEW.md", "crates/dcbor/README.md"]
+exclude = ["maintenance/**"]
 
 [tool.cibuildwheel]
 # Regular CPython only: no implicit additions when new interpreters appear.
