@@ -15,6 +15,7 @@ import hashlib
 import importlib.machinery
 import importlib.metadata
 import json
+import os
 import platform
 import subprocess
 import sys
@@ -26,8 +27,13 @@ from encoded_size import fixtures, equivalent_value
 
 
 ROOT = Path(__file__).resolve().parents[1]
-OUTPUT_DIR = Path(__file__).resolve().parent / "wire_size"
-SVG_PATH = ROOT / ".github" / "assets" / "graphs" / "wire-size.svg"
+ARTIFACT_DIR = Path(os.environ.get("DCBOR_BENCHMARK_ARTIFACT_DIR", ROOT / "benchmarks" / "feat004"))
+PACKAGE_ROOT = Path(os.environ.get("DCBOR_PACKAGE_ROOT", ROOT / "python"))
+RELEASE_ARTIFACT = Path(os.environ.get("DCBOR_RELEASE_ARTIFACT", ROOT / "target" / "release" / "lib_dcbor.so"))
+OUTPUT_DIR = ARTIFACT_DIR / "wire_size"
+SVG_PATH = ARTIFACT_DIR / "wire-size.svg"
+EXPECTED_DCBOR_VERSION = "0.1.1"
+sys.path.insert(0, str(PACKAGE_ROOT))
 PINNED_CBOR2 = "6.1.5"
 PINNED_CBORX = "0.2.5"
 PINNED_ORJSON = "3.13.0"
@@ -135,13 +141,13 @@ def processor_name() -> str | None:
 def release_build(dcbor: object) -> dict[str, object]:
     extension_path = Path(dcbor._dcbor.__file__).resolve()  # type: ignore[attr-defined]
     extension_hash = sha256(extension_path.read_bytes())
-    artifact = ROOT / "target" / "release" / "lib_dcbor.so"
+    artifact = RELEASE_ARTIFACT.resolve()
     artifact_hash = sha256(artifact.read_bytes()) if artifact.is_file() else None
     return {
         "profile": "release" if extension_hash == artifact_hash else "unverified",
         "extension_path": str(extension_path),
         "extension_sha256": extension_hash,
-        "release_artifact_path": artifact.relative_to(ROOT).as_posix() if artifact_hash else None,
+        "release_artifact_path": str(artifact) if artifact_hash else None,
         "release_artifact_sha256": artifact_hash,
     }
 
@@ -358,7 +364,7 @@ def main() -> int:
                 "chart_path": SVG_PATH.relative_to(ROOT).as_posix(),
             },
             "expected_versions": {
-                "dcbor": "0.1.0",
+                "dcbor": EXPECTED_DCBOR_VERSION,
                 "cbor2": PINNED_CBOR2,
                 "cborx": PINNED_CBORX,
                 "orjson": PINNED_ORJSON,
@@ -382,7 +388,7 @@ def main() -> int:
     env = environment(dcbor, cbor2, cborx, orjson, msgspec, cbrrr)
     blockers = []
     for package, expected, observed in (
-        ("dcbor", "0.1.0", dcbor.__version__),
+        ("dcbor", EXPECTED_DCBOR_VERSION, dcbor.__version__),
         ("cbor2", PINNED_CBOR2, env["cbor2_version"]),
         ("cborx", PINNED_CBORX, env["cborx_version"]),
         ("orjson", PINNED_ORJSON, env["orjson_version"]),
@@ -392,7 +398,7 @@ def main() -> int:
         if observed != expected:
             blockers.append(f"expected {package}=={expected}, found {observed}")
     if env["dcbor_build"]["profile"] != "release":
-        blockers.append("loaded dcbor extension does not match target/release/lib_dcbor.so")
+        blockers.append("loaded dcbor extension does not match configured release artifact")
     if blockers:
         report = {
             "status": "blocked",

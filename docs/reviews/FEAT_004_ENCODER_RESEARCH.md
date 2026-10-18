@@ -119,6 +119,18 @@ and recursive key context. Do not turn it into a general scratch/output cap.
 Keep a specialized `CBORMap` path if changing its existing immutable Rust
 snapshot representation would expand the feature beyond direct `dumps()`.
 
+## Future sink-based output
+
+A later file/socket API could reuse canonical scalar and header emitters over
+`std::io::Write`, with the current `Vec<u8>` path as an adapter. This feature
+still returns Python `bytes`; it does not stream or provide end-to-end
+zero-copy output. Traversal would need to stage each dict entry until encoded
+keys can be sorted, and stage callback-mutated list bodies until the final
+visited count is known; the API must define short writes, I/O errors, and
+partial-output behavior. Copy bytearray payloads into Rust-owned staging
+before any Python writer callback or blocking I/O/GIL release; never retain a
+raw bytearray slice across those boundaries.
+
 ## Compatibility guardrails
 
 - Preserve conversion order and one-call `__index__`, datetime errors/ranges,

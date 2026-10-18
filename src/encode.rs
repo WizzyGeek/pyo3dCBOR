@@ -36,7 +36,7 @@ impl Default for EncodeBudget {
     }
 }
 
-fn budget_error() -> PyErr {
+pub(crate) fn budget_error() -> PyErr {
     CBORError::new_err("encoded map key cache exceeds the maximum supported size")
 }
 
@@ -71,6 +71,25 @@ impl EncodeBudget {
     }
     pub(crate) fn bytes(&mut self, length: usize) -> PyResult<()> {
         self.wire_bytes(add(header_len(length as u64), length)?)
+    }
+
+    /// Charge just a payload length without constructing `PyErr` on failure.
+    /// Used inside a bytearray critical section so the slice length, budget
+    /// decision, and immediate copy share one protected interval.
+    pub(crate) fn try_payload_bytes(&mut self, length: usize) -> bool {
+        let Some(wire_length) = header_len(length as u64).checked_add(length) else {
+            return false;
+        };
+        let Some(amount) = wire_length.checked_mul(self.active_keys) else {
+            return false;
+        };
+        let Some(total) = self.key_bytes.checked_add(amount)
+            .filter(|total| *total <= crate::wire::MAX_KEY_CACHE_BYTES)
+        else {
+            return false;
+        };
+        self.key_bytes = total;
+        true
     }
 
     pub(crate) fn text(&mut self, text: &Bound<'_, PyString>) -> PyResult<CBOR> {

@@ -1,0 +1,332 @@
+{
+  "methodology": {
+    "operation": "dcbor.loads only, prepared wire bytes; no dumps calls in timed or warmup path",
+    "warmup_calls_per_process": 10,
+    "timed_calls_per_process": 50,
+    "fresh_process_repetitions": 9
+  },
+  "inputs": {
+    "map_10000_sorted": {
+      "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
+      "wire_bytes": 139723
+    },
+    "map_1000_sorted": {
+      "wire_sha256": "0c1eecc335fd44c29bba2009543743fc244467654b117469be3de77bb093bac4",
+      "wire_bytes": 13723
+    },
+    "nested_document": {
+      "wire_sha256": "7ecf21b19217a7a0e920a115ed051f8242de35746e2dd4dc992a8e0a906c575e",
+      "wire_bytes": 84
+    }
+  },
+  "roles": {
+    "baseline": {
+      "extension_path": "/tmp/feat004-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+      "extension_sha256": "44a625d54b2a44f0440aead0783a3a34447231e3d68d1ed4ceeebe01a663115c",
+      "pids": [
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "measurements": {
+        "map_10000_sorted": {
+          "samples_ns_per_operation": [
+            6654640.2,
+            6338787.0,
+            6369699.16,
+            6561461.7,
+            6482552.26,
+            6586389.6,
+            6300265.54,
+            6286753.12,
+            6520515.46
+          ],
+          "median_ns_per_operation": 6482552.26,
+          "mad_ns_per_operation": 112853.09999999963
+        },
+        "map_1000_sorted": {
+          "samples_ns_per_operation": [
+            413328.54,
+            402819.4,
+            401910.08,
+            416677.06,
+            397633.04,
+            396346.0,
+            394309.98,
+            403462.6,
+            401959.98
+          ],
+          "median_ns_per_operation": 401959.98,
+          "mad_ns_per_operation": 4326.940000000002
+        },
+        "nested_document": {
+          "samples_ns_per_operation": [
+            2001.76,
+            2036.02,
+            1952.28,
+            2158.66,
+            2050.66,
+            2169.28,
+            1951.48,
+            2011.78,
+            2089.34
+          ],
+          "median_ns_per_operation": 2036.02,
+          "mad_ns_per_operation": 53.320000000000164
+        }
+      },
+      "raw_process_runs": [
+        {
+          "pid": 5,
+          "extension_path": "/tmp/feat004-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+          "extension_sha256": "44a625d54b2a44f0440aead0783a3a34447231e3d68d1ed4ceeebe01a663115c",
+          "measurements_ns_per_operation": {
+            "map_10000_sorted": 6654640.2,
+            "map_1000_sorted": 413328.54,
+            "nested_document": 2001.76
+          }
+        },
+        {
+          "pid": 6,
+          "extension_path": "/tmp/feat004-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+          "extension_sha256": "44a625d54b2a44f0440aead0783a3a34447231e3d68d1ed4ceeebe01a663115c",
+          "measurements_ns_per_operation": {
+            "map_1000_sorted": 402819.4,
+            "nested_document": 2036.02,
+            "map_10000_sorted": 6338787.0
+          }
+        },
+        {
+          "pid": 7,
+          "extension_path": "/tmp/feat004-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+          "extension_sha256": "44a625d54b2a44f0440aead0783a3a34447231e3d68d1ed4ceeebe01a663115c",
+          "measurements_ns_per_operation": {
+            "nested_document": 1952.28,
+            "map_10000_sorted": 6369699.16,
+            "map_1000_sorted": 401910.08
+          }
+        },
+        {
+          "pid": 8,
+          "extension_path": "/tmp/feat004-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+          "extension_sha256": "44a625d54b2a44f0440aead0783a3a34447231e3d68d1ed4ceeebe01a663115c",
+          "measurements_ns_per_operation": {
+            "map_10000_sorted": 6561461.7,
+            "map_1000_sorted": 416677.06,
+            "nested_document": 2158.66
+          }
+        },
+        {
+          "pid": 9,
+          "extension_path": "/tmp/feat004-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+          "extension_sha256": "44a625d54b2a44f0440aead0783a3a34447231e3d68d1ed4ceeebe01a663115c",
+          "measurements_ns_per_operation": {
+            "map_1000_sorted": 397633.04,
+            "nested_document": 2050.66,
+            "map_10000_sorted": 6482552.26
+          }
+        },
+        {
+          "pid": 10,
+          "extension_path": "/tmp/feat004-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+          "extension_sha256": "44a625d54b2a44f0440aead0783a3a34447231e3d68d1ed4ceeebe01a663115c",
+          "measurements_ns_per_operation": {
+            "nested_document": 2169.28,
+            "map_10000_sorted": 6586389.6,
+            "map_1000_sorted": 396346.0
+          }
+        },
+        {
+          "pid": 11,
+          "extension_path": "/tmp/feat004-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+          "extension_sha256": "44a625d54b2a44f0440aead0783a3a34447231e3d68d1ed4ceeebe01a663115c",
+          "measurements_ns_per_operation": {
+            "map_10000_sorted": 6300265.54,
+            "map_1000_sorted": 394309.98,
+            "nested_document": 1951.48
+          }
+        },
+        {
+          "pid": 12,
+          "extension_path": "/tmp/feat004-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+          "extension_sha256": "44a625d54b2a44f0440aead0783a3a34447231e3d68d1ed4ceeebe01a663115c",
+          "measurements_ns_per_operation": {
+            "map_1000_sorted": 403462.6,
+            "nested_document": 2011.78,
+            "map_10000_sorted": 6286753.12
+          }
+        },
+        {
+          "pid": 13,
+          "extension_path": "/tmp/feat004-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+          "extension_sha256": "44a625d54b2a44f0440aead0783a3a34447231e3d68d1ed4ceeebe01a663115c",
+          "measurements_ns_per_operation": {
+            "nested_document": 2089.34,
+            "map_10000_sorted": 6520515.46,
+            "map_1000_sorted": 401959.98
+          }
+        }
+      ]
+    },
+    "candidate": {
+      "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+      "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+      "pids": [
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22
+      ],
+      "measurements": {
+        "map_10000_sorted": {
+          "samples_ns_per_operation": [
+            6325915.6,
+            6783838.84,
+            6390381.66,
+            6430816.74,
+            6435802.12,
+            6434124.56,
+            6797759.22,
+            6387430.72,
+            6454861.76
+          ],
+          "median_ns_per_operation": 6434124.56,
+          "mad_ns_per_operation": 43742.89999999944
+        },
+        "map_1000_sorted": {
+          "samples_ns_per_operation": [
+            401860.38,
+            410662.54,
+            404120.24,
+            399601.34,
+            404442.24,
+            398134.78,
+            405727.66,
+            406609.32,
+            399365.1
+          ],
+          "median_ns_per_operation": 404120.24,
+          "mad_ns_per_operation": 2489.0800000000163
+        },
+        "nested_document": {
+          "samples_ns_per_operation": [
+            2108.76,
+            2109.58,
+            1996.76,
+            1998.74,
+            2006.78,
+            2040.22,
+            2172.5,
+            2070.9,
+            2017.8
+          ],
+          "median_ns_per_operation": 2040.22,
+          "mad_ns_per_operation": 41.48000000000002
+        }
+      },
+      "raw_process_runs": [
+        {
+          "pid": 14,
+          "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+          "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+          "measurements_ns_per_operation": {
+            "map_10000_sorted": 6325915.6,
+            "map_1000_sorted": 401860.38,
+            "nested_document": 2108.76
+          }
+        },
+        {
+          "pid": 15,
+          "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+          "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+          "measurements_ns_per_operation": {
+            "map_1000_sorted": 410662.54,
+            "nested_document": 2109.58,
+            "map_10000_sorted": 6783838.84
+          }
+        },
+        {
+          "pid": 16,
+          "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+          "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+          "measurements_ns_per_operation": {
+            "nested_document": 1996.76,
+            "map_10000_sorted": 6390381.66,
+            "map_1000_sorted": 404120.24
+          }
+        },
+        {
+          "pid": 17,
+          "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+          "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+          "measurements_ns_per_operation": {
+            "map_10000_sorted": 6430816.74,
+            "map_1000_sorted": 399601.34,
+            "nested_document": 1998.74
+          }
+        },
+        {
+          "pid": 18,
+          "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+          "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+          "measurements_ns_per_operation": {
+            "map_1000_sorted": 404442.24,
+            "nested_document": 2006.78,
+            "map_10000_sorted": 6435802.12
+          }
+        },
+        {
+          "pid": 19,
+          "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+          "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+          "measurements_ns_per_operation": {
+            "nested_document": 2040.22,
+            "map_10000_sorted": 6434124.56,
+            "map_1000_sorted": 398134.78
+          }
+        },
+        {
+          "pid": 20,
+          "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+          "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+          "measurements_ns_per_operation": {
+            "map_10000_sorted": 6797759.22,
+            "map_1000_sorted": 405727.66,
+            "nested_document": 2172.5
+          }
+        },
+        {
+          "pid": 21,
+          "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+          "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+          "measurements_ns_per_operation": {
+            "map_1000_sorted": 406609.32,
+            "nested_document": 2070.9,
+            "map_10000_sorted": 6387430.72
+          }
+        },
+        {
+          "pid": 22,
+          "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+          "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+          "measurements_ns_per_operation": {
+            "nested_document": 2017.8,
+            "map_10000_sorted": 6454861.76,
+            "map_1000_sorted": 399365.1
+          }
+        }
+      ]
+    }
+  }
+}

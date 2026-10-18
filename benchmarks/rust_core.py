@@ -38,13 +38,16 @@ OUTPUT_PATH = ROOT / "benchmarks" / "rust_core" / "results.json"
 SVG_PATH = ROOT / ".github" / "assets" / "graphs" / "rust-core.svg"
 CHART_RENDERER_PATH = ROOT / "benchmarks" / "comparison_charts.py"
 DEFAULT_BINARY = ROOT / "target" / "release" / "examples" / "benchmark-core"
+PACKAGE_ROOT = Path(os.environ.get("DCBOR_PACKAGE_ROOT", ROOT / "python"))
+RELEASE_ARTIFACT = Path(os.environ.get("DCBOR_RELEASE_ARTIFACT", ROOT / "target" / "release" / "lib_dcbor.so"))
+EXPECTED_DCBOR_VERSION = "0.1.1"
 DEFAULT_WARMUP = 500
 DEFAULT_ROUNDS = 1_000
 DEFAULT_REPETITIONS = 9
 
 # Keep the repository's Python package importable when invoked from its root;
 # the loaded extension is still checked against Cargo's release artifact.
-sys.path.insert(0, str(ROOT / "python"))
+sys.path.insert(0, str(PACKAGE_ROOT))
 sys.path.insert(0, str(ROOT / "benchmarks"))
 
 from fixtures import fixtures  # noqa: E402
@@ -152,19 +155,19 @@ def release_extension_evidence(dcbor: object) -> dict[str, object]:
     if not str(extension_path).endswith(extension_suffixes):
         raise RuntimeError(f"dcbor is not loaded from a native extension: {extension_path}")
 
-    artifact_path = ROOT / "target" / "release" / "lib_dcbor.so"
+    artifact_path = RELEASE_ARTIFACT.resolve()
     artifact_hash = sha256(artifact_path.read_bytes()) if artifact_path.is_file() else None
     if artifact_hash != extension_hash:
         raise RuntimeError(
-            "loaded dcbor extension does not match target/release/lib_dcbor.so; "
+            "loaded dcbor extension does not match configured release artifact; "
             "build the release extension before collecting measurements"
         )
     return {
         "profile": "release",
-        "verified_by": "SHA-256 equality with target/release/lib_dcbor.so",
+        "verified_by": "SHA-256 equality with configured release artifact",
         "extension_path": str(extension_path),
         "extension_sha256": extension_hash,
-        "release_artifact_path": artifact_path.relative_to(ROOT).as_posix(),
+        "release_artifact_path": str(artifact_path),
         "release_artifact_sha256": artifact_hash,
     }
 
@@ -277,8 +280,8 @@ def worker(binary: Path, warmup: int, rounds: int, order_offset: int) -> dict[st
     wires = prepared_wires(dcbor, values)
     # Validate the extension for every independent worker used in the report.
     env = environment(dcbor, binary)
-    if env["dcbor_version"] != "0.1.0":
-        raise RuntimeError(f"expected dcbor==0.1.0, found {env['dcbor_version']}")
+    if env["dcbor_version"] != EXPECTED_DCBOR_VERSION:
+        raise RuntimeError(f"expected dcbor=={EXPECTED_DCBOR_VERSION}, found {env['dcbor_version']}")
 
     order = list(values)
     if order:

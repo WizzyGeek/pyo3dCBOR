@@ -1,4 +1,4 @@
-"""Measure dCBOR profile-specific map, float, and Unicode workloads.
+"""Measure dCBOR profile-specific map, numeric, Unicode, and snapshot workloads.
 
 Run from the repository root with the release extension installed::
 
@@ -32,7 +32,12 @@ from profile_fixtures import build_workloads
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = Path(__file__).resolve().parent / "profile"
-CHART_PATH = ROOT / ".github" / "assets" / "graphs" / "profile.svg"
+ARTIFACT_DIR = Path(os.environ.get("DCBOR_BENCHMARK_ARTIFACT_DIR", ROOT / "benchmarks" / "feat004"))
+PACKAGE_ROOT = Path(os.environ.get("DCBOR_PACKAGE_ROOT", ROOT / "python"))
+RELEASE_ARTIFACT = Path(os.environ.get("DCBOR_RELEASE_ARTIFACT", ROOT / "target" / "release" / "lib_dcbor.so"))
+CHART_PATH = Path(os.environ.get("DCBOR_PROFILE_SVG_PATH", ARTIFACT_DIR / "profile.svg"))
+EXPECTED_DCBOR_VERSION = "0.1.1"
+sys.path.insert(0, str(PACKAGE_ROOT))
 DEFAULT_WARMUP = 100
 DEFAULT_ROUNDS = 500
 DEFAULT_REPETITIONS = 9
@@ -109,13 +114,13 @@ def processor_name() -> str | None:
 
 def release_build_evidence(extension_path: Path) -> dict[str, object]:
     """Verify the loaded extension is byte-identical to Cargo's release artifact."""
-    artifact = ROOT / "target" / "release" / "lib_dcbor.so"
+    artifact = RELEASE_ARTIFACT.resolve()
     extension_hash = sha256(extension_path.read_bytes())
     artifact_hash = sha256(artifact.read_bytes()) if artifact.is_file() else None
     return {
         "profile": "release" if extension_hash == artifact_hash else "unverified",
-        "verified_by": "SHA-256 equality with target/release/lib_dcbor.so",
-        "release_artifact_path": artifact.relative_to(ROOT).as_posix()
+        "verified_by": "SHA-256 equality with configured release artifact",
+        "release_artifact_path": str(artifact)
         if artifact_hash
         else None,
         "release_artifact_sha256": artifact_hash,
@@ -166,6 +171,12 @@ def input_fingerprint_bytes(value: object) -> bytes:
         return b"D" + struct.pack(">Q", len(value)) + b"".join(
             input_fingerprint_bytes(key) + input_fingerprint_bytes(item)
             for key, item in value.items()
+        )
+    if type(value).__name__ == "CBORMap":
+        items = value.items()
+        return b"M" + struct.pack(">Q", len(items)) + b"".join(
+            input_fingerprint_bytes(key) + input_fingerprint_bytes(item)
+            for key, item in items
         )
     raise TypeError(f"unsupported profile input type: {type(value).__name__}")
 
@@ -227,7 +238,9 @@ def case_iteration_count(base_count: int, work_units: int) -> int:
 def prepare_cases(
     dcbor: object, warmup: int, rounds: int
 ) -> tuple[dict[str, dict[str, object]], dict[str, dict[str, object]]]:
-    workloads = build_workloads(lambda key: dcbor.dumps(key))  # type: ignore[attr-defined]
+    workloads = build_workloads(
+        lambda key: dcbor.dumps(key), cbor_map_factory=dcbor.CBORMap  # type: ignore[attr-defined]
+    )
     prepared: dict[str, dict[str, object]] = {}
     descriptors: dict[str, dict[str, object]] = {}
     maps_by_size: dict[int, bytes] = {}
@@ -280,11 +293,11 @@ def prepare_cases(
 def worker(warmup: int, rounds: int, order_offset: int) -> dict[str, object]:
     import dcbor
 
-    if dcbor.__version__ != "0.1.0":  # type: ignore[attr-defined]
-        raise RuntimeError(f"expected dcbor==0.1.0, found {dcbor.__version__}")  # type: ignore[attr-defined]
+    if dcbor.__version__ != EXPECTED_DCBOR_VERSION:  # type: ignore[attr-defined]
+        raise RuntimeError(f"expected dcbor=={EXPECTED_DCBOR_VERSION}, found {dcbor.__version__}")  # type: ignore[attr-defined]
     env = environment(dcbor)
     if env["dcbor_build"]["profile"] != "release":  # type: ignore[index]
-        raise RuntimeError("loaded dcbor extension does not match target/release/lib_dcbor.so")
+        raise RuntimeError("loaded dcbor extension does not match configured release artifact")
 
     prepared, descriptors = prepare_cases(dcbor, warmup, rounds)
     case_order = list(prepared)
@@ -422,7 +435,7 @@ def build_report(
 
     return {
         "status": "complete",
-        "measurement": "dCBOR encode/decode latency for profile-specific maps, float normalization, and Unicode NFC normalization",
+        "measurement": "dCBOR encode/decode latency for profile-specific maps, explicit integer widths, NFC key collisions, nested values, floats, Unicode, and CBORMap snapshots",
         "generated_at_utc": dt.datetime.now(dt.timezone.utc).isoformat(),
         "source": source_metadata(),
         "build": env["dcbor_build"],
@@ -435,8 +448,8 @@ def build_report(
             "rounds_base_calls": rounds,
             "independent_process_repetitions": repetitions,
             "iteration_policy": f"per case and operation count = max(1, min(base_count, floor(base_count * {ITERATION_WORK_UNITS} / work_units))); warmup zero remains zero",
-            "work_units": "map entry count, float element count, or total Unicode code points in the string list",
-            "input_fingerprint": "recursive typed tags with insertion-order maps, UTF-8 string bytes, decimal integer bytes, and exact IEEE-754 binary64 bytes",
+            "work_units": "case-specific bounded estimate recorded with each input; map entry count, scalar element count, and Unicode code points are explicit",
+            "input_fingerprint": "recursive typed tags with insertion-order dicts, CBORMap item snapshots, UTF-8 string bytes, decimal integer bytes, and exact IEEE-754 binary64 bytes",
             "map_key_order": "fixed-width ASCII string keys are ranked by their dCBOR encoded bytes; canonical output is checked byte-identical for sorted, reversed, and seeded-shuffled insertion orders. Equal-length keys isolate insertion-order sorting cost and do not distinguish bytewise ordering from length-first ordering",
             "float_profile": "dCBOR float reduction and canonicalization are checked using type-sensitive values, exact finite float.hex() values, isnan() for NaNs, and independent known CBOR hex vectors at signed-zero and integer-reduction boundaries",
             "unicode_profile": "decoded strings are checked against Python unicodedata.normalize('NFC', text)",
@@ -504,8 +517,8 @@ def main() -> int:
         return 2
 
     env = environment(dcbor)
-    if dcbor.__version__ != "0.1.0":  # type: ignore[attr-defined]
-        reason = f"expected dcbor==0.1.0, found {dcbor.__version__}"  # type: ignore[attr-defined]
+    if dcbor.__version__ != EXPECTED_DCBOR_VERSION:  # type: ignore[attr-defined]
+        reason = f"expected dcbor=={EXPECTED_DCBOR_VERSION}, found {dcbor.__version__}"  # type: ignore[attr-defined]
         report = blocked_report(reason, args.warmup, args.rounds, args.repetitions)
         report["environment"] = env
         report["build"] = env["dcbor_build"]
@@ -513,7 +526,7 @@ def main() -> int:
         print(f"Blocked: {reason}")
         return 2
     if env["dcbor_build"]["profile"] != "release":  # type: ignore[index]
-        reason = "loaded dcbor extension does not match target/release/lib_dcbor.so"
+        reason = "loaded dcbor extension does not match configured release artifact"
         report = blocked_report(reason, args.warmup, args.rounds, args.repetitions)
         report["environment"] = env
         report["build"] = env["dcbor_build"]
@@ -539,7 +552,7 @@ def main() -> int:
     worker_env = os.environ.copy()
     worker_env["PYTHONHASHSEED"] = "0"
     worker_env["PYTHONPATH"] = (
-        str(ROOT / "python")
+        str(PACKAGE_ROOT)
         + os.pathsep
         + str(ROOT / "benchmarks")
         + os.pathsep

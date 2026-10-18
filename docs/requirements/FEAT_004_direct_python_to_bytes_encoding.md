@@ -1,13 +1,18 @@
 # FEAT_004: Encode Python values directly to canonical bytes
 
-**Status:** Accepted main-sprint direction; design/measurement under review;
-implementation not started. **Development target:** `0.1.1` (development only).
+**Status:** Direct writer locally implemented; 1,580 Python tests passed,
+along with 170 vendored Rust tests/doctests and 3 binding Rust tests. Matched
+encoding and bounded-memory evidence are recorded. Open issue: mixed-profile
+10k-map decode was 8–10% slower in the default run and 25–29% in the
+reduced-round recheck; decode-only control was within 1%.
+Cause and feature owner sign-off remain pending. **Target:** `0.1.1` development.
 
 ## Problem
 
-`dumps()` builds a vendored `dcbor::CBOR` tree from Python values, serializes it,
-then runs preflight. Rust-core timing starts from a prepared tree; Python timing
-includes conversion, so it does not isolate FFI cost. It points to extra
+Before this change, `dumps()` built a vendored `dcbor::CBOR` tree from Python
+values, serialized it, then ran preflight. Rust-core timing starts from a
+prepared tree; Python timing includes conversion, so it does not isolate FFI
+cost. It points to extra
 conversion/tree construction as work to measure.
 
 Encode supported values into canonical dCBOR bytes in binding Rust, without a
@@ -20,40 +25,29 @@ promised; agree any target with the owner after the `0.1.1` baseline.
 - `dumps()` writes scalar and container values into a binding-owned output
   buffer as it visits Python values. Canonical map keys may use bounded,
   temporary encoded-byte buffers for sorting and collision resolution.
-- Measure supported `PyBytes.as_bytes()`/`PyString.to_str()` paths; text views
-  may cache UTF-8, NFC/numbers transform, and lists/tuples still traverse objects.
-  For bytearray, use PyO3 0.29.2's
-  `pyo3::sync::critical_section::with_critical_section` around the scoped
-  `unsafe { as_bytes() }` borrow and immediate copy into the Rust-owned output
-  Vec. Use this same guard on GIL-enabled and free-threaded builds: it is a
-  no-op on GIL builds and holds the object's critical section on free-threaded
-  builds. Keep the closure to slice acquisition and copying only; make no
-  Python/PyO3 calls, callbacks or re-entry, mutation, or detach while the slice
-  is borrowed, because interpreter calls can suspend the critical section.
-  This requires the current thread to remain attached. Free-threading is a
-  build capability available since CPython 3.13, not a 3.15 version boundary;
-  this requirement does not claim that free-threaded wheels are currently
-  shipped. PyO3's safe `to_vec()` uses the same short-copy guard and returns
-  owned bytes, but appending that vector adds an intermediate payload copy.
-  With the current `Vec`-to-`PyBytes::new` output, also account for the final
-  full-wire copy. Do not read
-  headers/reference bytes as payload or add buffer APIs implicitly.
-- The normal encoding path avoids constructing a recursive vendored `CBOR`
-  value graph. Decoding and the vendored codec remain in place.
-- Keep `CBORMap` and `CBORTag` supported. Read snapshots from frozen Rust state;
-  do not materialize Python `keys()`/`items()` lists. An isolated adapter may
-  serialize an existing snapshot if needed; review and measure any vendor
-  encoding as a staged exception. Ordinary `dict`/array graphs must not route
-  through a full `CBOR` tree; resolve the exception boundary before prototype
-  acceptance.
+- Prefer supported borrowed `PyBytes.as_bytes()`/`PyString.to_str()` views;
+  NFC/numeric encoding still transforms data, and lists/tuples require object
+  traversal. For bytearray, use PyO3 0.29.2
+  `with_critical_section` around length/budget checks and the immediate
+  `unsafe { as_bytes() }` copy into the Rust `Vec`. While the raw slice is live,
+  make no Python/PyO3 calls, callbacks, mutation, or detach; keep the thread
+  attached. The guard is a no-op under the GIL and protects free-threaded builds
+  (a CPython 3.13+ capability; no claim that such wheels ship). Safe `to_vec()`
+  adds a payload copy; `PyBytes::new` copies the final wire too. Do not read
+  object headers as payload or add buffer APIs. See the [memory research](../reviews/FEAT_004_MEMORY_ACCESS.md).
+- Avoid a recursive vendored `CBOR` graph for ordinary `dumps()` encoding;
+  retain vendored decoding. Support `CBORMap` and `CBORTag`; encode snapshots
+  directly from frozen Rust state, without Python `keys()`/`items()` lists or a
+  snapshot adapter. Leave `CBORMap` construction on the existing tree converter.
 - Encoded bytes and externally visible acceptance/error behavior remain
   compatible. Speed does not justify a format or correctness tradeoff.
 
 ## Scope and constraints
 
-Change only `dumps()` encoding in the Rust binding. Keep vendored decoding,
-`loads()`, validation/diagnostic parsing, the immutable `CBORMap` model, and the
-vendored dependency. Package/version policy is out of scope.
+Change only Rust binding `dumps()` encoding. Keep `CBORMap` construction on its
+existing converter and retain vendored decoding, `loads()`, validation/diagnostic
+parsing, the immutable `CBORMap` model, and the vendored dependency. Package and
+version policy is out of scope.
 
 Preserve all supported values and semantics documented in the
 [Python API](../python-api.md), including:
@@ -94,9 +88,9 @@ Preserve all supported values and semantics documented in the
 ## Acceptance criteria
 
 1. **Canonical parity:** match current `0.1.1` output byte-for-byte across the
-   full Python suite (1,569 tests at planning baseline), new writer regressions,
-   and applicable vendored Rust conformance tests. Use independent wire and
-   numeric oracles; round trips alone are insufficient.
+   full Python suite (1,580 passed locally), writer regressions, and Rust tests:
+   170 vendored tests/doctests plus 3 binding tests passed. Use independent
+   wire/numeric oracles; round trips alone are insufficient.
 2. **Compatibility:** retain API, map identity/collisions, callback count and
    fallback, datetime/error behavior, depth and key-budget boundaries. Add
    focused regressions before switching any uncovered behavior, including
@@ -139,15 +133,20 @@ Preserve all supported values and semantics documented in the
    inspect hashes, controls, regressions, and spread. Document remaining vendor
    encoder use, then switch the default after the migration gate passes.
 
-Review questions: how key buffers are bounded/released during replacement;
-whether sorting retains Python references or value bytes while callbacks run;
-how snapshots and mutable tag values cross the writer boundary; and what
-native-memory measurement supports any allocation claim. Do not weaken API or
+Review key-buffer release, callback/reference lifetime during sorting, snapshot
+and mutable-tag boundaries, and native-memory evidence. Do not weaken API or
 resource guarantees.
+
+Threading and vectorization stay on the back burner. Python traversal and
+callbacks are order-sensitive, and heterogeneous sequences offer no obvious
+bulk SIMD path; revisit only if profiling finds a substantial Rust-owned
+payload phase where synchronization and copy costs can be measured separately.
 
 ## Research references
 
 - [Rust-core benchmark method and limits](../../benchmarks/rust_core/README.md)
+- [FEAT_004 paired benchmark evidence and open decode investigation](../../benchmarks/feat004/README.md)
+- [FEAT_004 native-memory probe and its limits](../../benchmarks/feat004/memory_report.md)
 - [Benchmarking overview](../benchmarks.md)
 - [Prior architecture review: direct Python-to-output writer](../reviews/PERF_REVIEW.md#architecture-follow-up--2026-10-17)
 - [FEAT_004 encoder research notes](../reviews/FEAT_004_ENCODER_RESEARCH.md)
@@ -155,8 +154,8 @@ resource guarantees.
 - [Python API mappings, collisions, and limits](../python-api.md)
 - [Allocation measurement limits and native-memory caveat](../allocation-plan.md)
 - [Numeric compatibility and independent conformance checks](../reviews/SPEC_REVIEW.md)
-- Source paths reviewed: `src/lib.rs`, `src/encode.rs`, `src/python_types.rs`,
-  `src/scalars.rs`, `src/wire.rs`; regression areas include
-  `tests/test_numeric_oracle.py`, `tests/test_spec_conformance.py`,
-  `tests/test_encoder_budget.py`, `tests/test_dispatch_fastpath.py`, and
-  `tests/test_key_identity.py`.
+- Source paths: `src/lib.rs`, `src/direct_encode.rs`, `src/direct_wire.rs`,
+  `src/encode.rs`, `src/python_types.rs`, `src/scalars.rs`, `src/wire.rs`;
+  regressions: `tests/test_direct_encoder.py`, `tests/test_numeric_oracle.py`,
+  `tests/test_spec_conformance.py`, `tests/test_encoder_budget.py`,
+  `tests/test_dispatch_fastpath.py`, `tests/test_key_identity.py`.

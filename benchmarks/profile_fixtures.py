@@ -26,9 +26,22 @@ def _float_vector(
     }
 
 
-def build_workloads(encode_key: Callable[[str], bytes]) -> dict[str, dict[str, object]]:
-    """Build benchmark inputs; key encoding is supplied for bytewise map order."""
+def build_workloads(
+    encode_key: Callable[[str], bytes],
+    cbor_map_factory: Callable[[object], object] | None = None,
+) -> dict[str, dict[str, object]]:
+    """Build benchmark inputs; key encoding supplies canonical order."""
     cases: dict[str, dict[str, object]] = {}
+
+    def canonicalized(value: object) -> object:
+        if isinstance(value, dict):
+            return {
+                key: canonicalized(value[key])
+                for key in sorted(value, key=encode_key)
+            }
+        if isinstance(value, list):
+            return [canonicalized(item) for item in value]
+        return value
 
     for size in (10, 100, 1_000, 10_000):
         keys = [f"field-{index:04d}" for index in range(size)]
@@ -64,6 +77,79 @@ def build_workloads(encode_key: Callable[[str], bytes]) -> dict[str, dict[str, o
                 "input": {key: values_by_key[key] for key in ordered_keys},
                 "expected": expected,
             }
+
+    integer_boundaries = [
+        -(2**64), -(2**63) - 1, -(2**63), -(2**32), -25, -1, 0, 23, 24,
+        255, 256, 2**32 - 1, 2**32, 2**63 - 1, 2**64 - 1,
+    ] * 32
+    cases["integer_width_boundaries"] = {
+        "family": "integer",
+        "category": "integer",
+        "case_type": "explicit_integer_width_boundaries",
+        "size": len(integer_boundaries),
+        "work_units": len(integer_boundaries),
+        "normalization": "Explicit integers span dCBOR negative and unsigned preferred-width boundaries through the supported [-2**64, 2**64-1] range.",
+        "expected_type_rule": "Every decoded element remains an int equal to the input; floats are not used in this workload.",
+        "input": integer_boundaries,
+        "expected": list(integer_boundaries),
+    }
+
+    colliding_keys: dict[str, int] = {}
+    collision_expected: dict[str, int] = {}
+    for index in range(64):
+        nfc = f"item-{index:03d}-é"
+        nfd = unicodedata.normalize("NFD", nfc)
+        colliding_keys[nfd] = index * 2
+        colliding_keys[nfc] = index * 2 + 1
+        collision_expected[nfc] = index * 2 + 1
+    collision_expected = {
+        key: collision_expected[key]
+        for key in sorted(collision_expected, key=encode_key)
+    }
+    cases["dict_nfc_key_collisions"] = {
+        "family": "map_collision",
+        "category": "map_collision",
+        "case_type": "dict_nfc_last_entry_wins",
+        "size": len(colliding_keys),
+        "work_units": len(colliding_keys),
+        "normalization": "Each NFD key is followed by its distinct NFC-equivalent Python key; canonical-key collisions retain the later value.",
+        "expected_type_rule": "The decoded dict has 64 NFC string keys, each mapped to the later value, in canonical encoded-key order.",
+        "input": colliding_keys,
+        "expected": collision_expected,
+    }
+
+    nested: object = 0
+    for level in range(24):
+        nested = {"level": level, "items": [nested, level + 1, {"leaf": level + 2}]}
+    cases["nested_scalar_tree"] = {
+        "family": "nested",
+        "category": "nested",
+        "case_type": "nested_dict_list_scalar_tree",
+        "size": 24,
+        "work_units": 192,
+        "normalization": "A bounded 24-level dict/list/scalar tree exercises recursive traversal without approaching the depth limit.",
+        "expected_type_rule": "The nested decoded value has the same container and scalar types and values as the input.",
+        "input": nested,
+        "expected": canonicalized(nested),
+    }
+
+    if cbor_map_factory is not None:
+        snapshot_pairs = [
+            (f"snapshot-{index:03d}", {"value": index, "enabled": index % 2 == 0})
+            for index in reversed(range(64))
+        ]
+        snapshot_expected = canonicalized({key: value for key, value in snapshot_pairs})
+        cases["cbor_map_snapshot"] = {
+            "family": "cbor_map",
+            "category": "cbor_map",
+            "case_type": "immutable_snapshot_64_entries",
+            "size": len(snapshot_pairs),
+            "work_units": len(snapshot_pairs),
+            "normalization": "A CBORMap snapshot with reversed string-key insertion order serializes from its frozen Rust snapshot.",
+            "expected_type_rule": "Decoded entries preserve values and appear in canonical encoded-key order.",
+            "input": cbor_map_factory(snapshot_pairs),
+            "expected": snapshot_expected,
+        }
 
     fractional_values = [0.1, -0.1, 0.25, -1.5, 3.125, 1.1] * 64
     cases["float_fractional"] = {

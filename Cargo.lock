@@ -82,6 +82,7 @@ version = "0.1.1"
 dependencies = [
  "chrono",
  "dcbor",
+ "half",
  "pyo3",
  "unicode-normalization",
 ]

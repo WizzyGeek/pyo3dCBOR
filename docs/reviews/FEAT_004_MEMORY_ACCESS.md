@@ -33,6 +33,14 @@ cached. PyO3’s `unsafe PyStringMethods::data()` exposes storage-specific data
 and documents a C-bitfield/target assumption; it is not justified for this
 cross-platform wheel matrix without measured need and target validation.
 
+The direct writer borrows ASCII/already-NFC text and charges transformed NFC
+output before growing its normalized `String`. The locked
+`unicode-normalization` iterator can buffer a long non-starter run before it
+yields characters, so output-byte charging does not bound all normalization
+scratch. The old `EncodeBudget::text` path has the same iterator behavior;
+compare old and new peak memory on adversarial combining runs and do not claim
+the 16 MiB key-cache policy limits every normalization allocation.
+
 PyO3 0.29.2 implements safe `to_vec()` as `with_critical_section(self, ||
 unsafe { self.as_bytes() }.to_vec())`. Use the same public
 `pyo3::sync::critical_section::with_critical_section` API around a borrowed

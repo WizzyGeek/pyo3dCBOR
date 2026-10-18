@@ -1,0 +1,1121 @@
+{
+  "measurement": "isolated child process peak RSS via resource.getrusage(RUSAGE_SELF).ru_maxrss",
+  "scope_limit": "Process-level peak RSS includes interpreter, extension, source graph, output, allocator retention, and other process memory. The reported growth is only the increase over pre-encode high-water mark; it is not native allocation count or exact encoder-attributed memory.",
+  "samples_per_workload_per_revision": 5,
+  "python_executable_parent": "/usr/bin/python3",
+  "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+  "workloads": {
+    "bytes_2mib": {
+      "baseline": {
+        "python_executable": "/usr/bin/python3.14",
+        "import_root": "/tmp/feat004-baseline/site",
+        "summary": {
+          "peak_rss_growth_over_pre_encode_high_water_bytes_median": 6238208,
+          "peak_rss_growth_over_pre_encode_high_water_bytes_min_max": [
+            6234112,
+            6242304
+          ],
+          "absolute_process_peak_rss_bytes_median": 31150080,
+          "absolute_process_peak_rss_bytes_min_max": [
+            31088640,
+            31252480
+          ]
+        },
+        "samples": [
+          {
+            "workload": "bytes_2mib",
+            "extension_path": "/tmp/feat004-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "44a625d54b2a44f0440aead0783a3a34447231e3d68d1ed4ceeebe01a663115c",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "bytes: b'abcdefgh' repeated 262144 times (2097152 bytes)",
+            "input_descriptor_sha256": "5f3345ceaa46258a53e6f9523133599c7711d4db773915c11e9536914410caf6",
+            "baseline": {
+              "current_rss_bytes": 25104384,
+              "peak_rss_bytes": 24948736
+            },
+            "after_encode": {
+              "current_rss_bytes": 29237248,
+              "peak_rss_bytes": 31191040
+            },
+            "after_release": {
+              "current_rss_bytes": 29237248,
+              "peak_rss_bytes": 31191040
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 6242304,
+            "output_length": 2097157,
+            "output_sha256": "7c9f27c8f6d68971cb3bd3690979c0d5e3e17660f29b934f79429dd55dd8ce9a"
+          },
+          {
+            "workload": "bytes_2mib",
+            "extension_path": "/tmp/feat004-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "44a625d54b2a44f0440aead0783a3a34447231e3d68d1ed4ceeebe01a663115c",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "bytes: b'abcdefgh' repeated 262144 times (2097152 bytes)",
+            "input_descriptor_sha256": "5f3345ceaa46258a53e6f9523133599c7711d4db773915c11e9536914410caf6",
+            "baseline": {
+              "current_rss_bytes": 25063424,
+              "peak_rss_bytes": 24911872
+            },
+            "after_encode": {
+              "current_rss_bytes": 29196288,
+              "peak_rss_bytes": 31150080
+            },
+            "after_release": {
+              "current_rss_bytes": 29196288,
+              "peak_rss_bytes": 31150080
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 6238208,
+            "output_length": 2097157,
+            "output_sha256": "7c9f27c8f6d68971cb3bd3690979c0d5e3e17660f29b934f79429dd55dd8ce9a"
+          },
+          {
+            "workload": "bytes_2mib",
+            "extension_path": "/tmp/feat004-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "44a625d54b2a44f0440aead0783a3a34447231e3d68d1ed4ceeebe01a663115c",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "bytes: b'abcdefgh' repeated 262144 times (2097152 bytes)",
+            "input_descriptor_sha256": "5f3345ceaa46258a53e6f9523133599c7711d4db773915c11e9536914410caf6",
+            "baseline": {
+              "current_rss_bytes": 25108480,
+              "peak_rss_bytes": 24850432
+            },
+            "after_encode": {
+              "current_rss_bytes": 29241344,
+              "peak_rss_bytes": 31088640
+            },
+            "after_release": {
+              "current_rss_bytes": 29241344,
+              "peak_rss_bytes": 31088640
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 6238208,
+            "output_length": 2097157,
+            "output_sha256": "7c9f27c8f6d68971cb3bd3690979c0d5e3e17660f29b934f79429dd55dd8ce9a"
+          },
+          {
+            "workload": "bytes_2mib",
+            "extension_path": "/tmp/feat004-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "44a625d54b2a44f0440aead0783a3a34447231e3d68d1ed4ceeebe01a663115c",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "bytes: b'abcdefgh' repeated 262144 times (2097152 bytes)",
+            "input_descriptor_sha256": "5f3345ceaa46258a53e6f9523133599c7711d4db773915c11e9536914410caf6",
+            "baseline": {
+              "current_rss_bytes": 25141248,
+              "peak_rss_bytes": 24915968
+            },
+            "after_encode": {
+              "current_rss_bytes": 29274112,
+              "peak_rss_bytes": 31150080
+            },
+            "after_release": {
+              "current_rss_bytes": 29274112,
+              "peak_rss_bytes": 31150080
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 6234112,
+            "output_length": 2097157,
+            "output_sha256": "7c9f27c8f6d68971cb3bd3690979c0d5e3e17660f29b934f79429dd55dd8ce9a"
+          },
+          {
+            "workload": "bytes_2mib",
+            "extension_path": "/tmp/feat004-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "44a625d54b2a44f0440aead0783a3a34447231e3d68d1ed4ceeebe01a663115c",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "bytes: b'abcdefgh' repeated 262144 times (2097152 bytes)",
+            "input_descriptor_sha256": "5f3345ceaa46258a53e6f9523133599c7711d4db773915c11e9536914410caf6",
+            "baseline": {
+              "current_rss_bytes": 25088000,
+              "peak_rss_bytes": 25010176
+            },
+            "after_encode": {
+              "current_rss_bytes": 29220864,
+              "peak_rss_bytes": 31252480
+            },
+            "after_release": {
+              "current_rss_bytes": 29220864,
+              "peak_rss_bytes": 31252480
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 6242304,
+            "output_length": 2097157,
+            "output_sha256": "7c9f27c8f6d68971cb3bd3690979c0d5e3e17660f29b934f79429dd55dd8ce9a"
+          }
+        ]
+      },
+      "candidate": {
+        "python_executable": "/usr/bin/python3.14",
+        "import_root": "/home/wizzygeek/code/AIdCBOR/python",
+        "summary": {
+          "peak_rss_growth_over_pre_encode_high_water_bytes_median": 4194304,
+          "peak_rss_growth_over_pre_encode_high_water_bytes_min_max": [
+            4194304,
+            4194304
+          ],
+          "absolute_process_peak_rss_bytes_median": 29003776,
+          "absolute_process_peak_rss_bytes_min_max": [
+            28930048,
+            29167616
+          ]
+        },
+        "samples": [
+          {
+            "workload": "bytes_2mib",
+            "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "bytes: b'abcdefgh' repeated 262144 times (2097152 bytes)",
+            "input_descriptor_sha256": "5f3345ceaa46258a53e6f9523133599c7711d4db773915c11e9536914410caf6",
+            "baseline": {
+              "current_rss_bytes": 25018368,
+              "peak_rss_bytes": 24735744
+            },
+            "after_encode": {
+              "current_rss_bytes": 27119616,
+              "peak_rss_bytes": 28930048
+            },
+            "after_release": {
+              "current_rss_bytes": 25018368,
+              "peak_rss_bytes": 28930048
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 4194304,
+            "output_length": 2097157,
+            "output_sha256": "7c9f27c8f6d68971cb3bd3690979c0d5e3e17660f29b934f79429dd55dd8ce9a"
+          },
+          {
+            "workload": "bytes_2mib",
+            "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "bytes: b'abcdefgh' repeated 262144 times (2097152 bytes)",
+            "input_descriptor_sha256": "5f3345ceaa46258a53e6f9523133599c7711d4db773915c11e9536914410caf6",
+            "baseline": {
+              "current_rss_bytes": 25079808,
+              "peak_rss_bytes": 24788992
+            },
+            "after_encode": {
+              "current_rss_bytes": 27181056,
+              "peak_rss_bytes": 28983296
+            },
+            "after_release": {
+              "current_rss_bytes": 25079808,
+              "peak_rss_bytes": 28983296
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 4194304,
+            "output_length": 2097157,
+            "output_sha256": "7c9f27c8f6d68971cb3bd3690979c0d5e3e17660f29b934f79429dd55dd8ce9a"
+          },
+          {
+            "workload": "bytes_2mib",
+            "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "bytes: b'abcdefgh' repeated 262144 times (2097152 bytes)",
+            "input_descriptor_sha256": "5f3345ceaa46258a53e6f9523133599c7711d4db773915c11e9536914410caf6",
+            "baseline": {
+              "current_rss_bytes": 25100288,
+              "peak_rss_bytes": 24973312
+            },
+            "after_encode": {
+              "current_rss_bytes": 27201536,
+              "peak_rss_bytes": 29167616
+            },
+            "after_release": {
+              "current_rss_bytes": 25100288,
+              "peak_rss_bytes": 29167616
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 4194304,
+            "output_length": 2097157,
+            "output_sha256": "7c9f27c8f6d68971cb3bd3690979c0d5e3e17660f29b934f79429dd55dd8ce9a"
+          },
+          {
+            "workload": "bytes_2mib",
+            "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "bytes: b'abcdefgh' repeated 262144 times (2097152 bytes)",
+            "input_descriptor_sha256": "5f3345ceaa46258a53e6f9523133599c7711d4db773915c11e9536914410caf6",
+            "baseline": {
+              "current_rss_bytes": 25010176,
+              "peak_rss_bytes": 24911872
+            },
+            "after_encode": {
+              "current_rss_bytes": 27111424,
+              "peak_rss_bytes": 29106176
+            },
+            "after_release": {
+              "current_rss_bytes": 25010176,
+              "peak_rss_bytes": 29106176
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 4194304,
+            "output_length": 2097157,
+            "output_sha256": "7c9f27c8f6d68971cb3bd3690979c0d5e3e17660f29b934f79429dd55dd8ce9a"
+          },
+          {
+            "workload": "bytes_2mib",
+            "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "bytes: b'abcdefgh' repeated 262144 times (2097152 bytes)",
+            "input_descriptor_sha256": "5f3345ceaa46258a53e6f9523133599c7711d4db773915c11e9536914410caf6",
+            "baseline": {
+              "current_rss_bytes": 25169920,
+              "peak_rss_bytes": 24809472
+            },
+            "after_encode": {
+              "current_rss_bytes": 27271168,
+              "peak_rss_bytes": 29003776
+            },
+            "after_release": {
+              "current_rss_bytes": 25169920,
+              "peak_rss_bytes": 29003776
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 4194304,
+            "output_length": 2097157,
+            "output_sha256": "7c9f27c8f6d68971cb3bd3690979c0d5e3e17660f29b934f79429dd55dd8ce9a"
+          }
+        ]
+      }
+    },
+    "text_2mib": {
+      "baseline": {
+        "python_executable": "/usr/bin/python3.14",
+        "import_root": "/tmp/feat004-baseline/site",
+        "summary": {
+          "peak_rss_growth_over_pre_encode_high_water_bytes_median": 6291456,
+          "peak_rss_growth_over_pre_encode_high_water_bytes_min_max": [
+            6291456,
+            6291456
+          ],
+          "absolute_process_peak_rss_bytes_median": 31055872,
+          "absolute_process_peak_rss_bytes_min_max": [
+            30871552,
+            31162368
+          ]
+        },
+        "samples": [
+          {
+            "workload": "text_2mib",
+            "extension_path": "/tmp/feat004-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "44a625d54b2a44f0440aead0783a3a34447231e3d68d1ed4ceeebe01a663115c",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "text: 'abcdefgh' repeated 262144 times (2097152 UTF-8 bytes)",
+            "input_descriptor_sha256": "6c31f6fdc5a289cae10d9a6976dd0ef6902b722f53eebdfdb6f5179586038a38",
+            "baseline": {
+              "current_rss_bytes": 25059328,
+              "peak_rss_bytes": 24870912
+            },
+            "after_encode": {
+              "current_rss_bytes": 27160576,
+              "peak_rss_bytes": 31162368
+            },
+            "after_release": {
+              "current_rss_bytes": 25059328,
+              "peak_rss_bytes": 31162368
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 6291456,
+            "output_length": 2097157,
+            "output_sha256": "9b3aba7a7b31b00c6db83c17d0da26d725793c6abfdd0ca773e3cdccde4b5557"
+          },
+          {
+            "workload": "text_2mib",
+            "extension_path": "/tmp/feat004-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "44a625d54b2a44f0440aead0783a3a34447231e3d68d1ed4ceeebe01a663115c",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "text: 'abcdefgh' repeated 262144 times (2097152 UTF-8 bytes)",
+            "input_descriptor_sha256": "6c31f6fdc5a289cae10d9a6976dd0ef6902b722f53eebdfdb6f5179586038a38",
+            "baseline": {
+              "current_rss_bytes": 25083904,
+              "peak_rss_bytes": 24580096
+            },
+            "after_encode": {
+              "current_rss_bytes": 27185152,
+              "peak_rss_bytes": 30871552
+            },
+            "after_release": {
+              "current_rss_bytes": 25083904,
+              "peak_rss_bytes": 30871552
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 6291456,
+            "output_length": 2097157,
+            "output_sha256": "9b3aba7a7b31b00c6db83c17d0da26d725793c6abfdd0ca773e3cdccde4b5557"
+          },
+          {
+            "workload": "text_2mib",
+            "extension_path": "/tmp/feat004-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "44a625d54b2a44f0440aead0783a3a34447231e3d68d1ed4ceeebe01a663115c",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "text: 'abcdefgh' repeated 262144 times (2097152 UTF-8 bytes)",
+            "input_descriptor_sha256": "6c31f6fdc5a289cae10d9a6976dd0ef6902b722f53eebdfdb6f5179586038a38",
+            "baseline": {
+              "current_rss_bytes": 25120768,
+              "peak_rss_bytes": 24764416
+            },
+            "after_encode": {
+              "current_rss_bytes": 27222016,
+              "peak_rss_bytes": 31055872
+            },
+            "after_release": {
+              "current_rss_bytes": 25120768,
+              "peak_rss_bytes": 31055872
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 6291456,
+            "output_length": 2097157,
+            "output_sha256": "9b3aba7a7b31b00c6db83c17d0da26d725793c6abfdd0ca773e3cdccde4b5557"
+          },
+          {
+            "workload": "text_2mib",
+            "extension_path": "/tmp/feat004-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "44a625d54b2a44f0440aead0783a3a34447231e3d68d1ed4ceeebe01a663115c",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "text: 'abcdefgh' repeated 262144 times (2097152 UTF-8 bytes)",
+            "input_descriptor_sha256": "6c31f6fdc5a289cae10d9a6976dd0ef6902b722f53eebdfdb6f5179586038a38",
+            "baseline": {
+              "current_rss_bytes": 25108480,
+              "peak_rss_bytes": 24846336
+            },
+            "after_encode": {
+              "current_rss_bytes": 27209728,
+              "peak_rss_bytes": 31137792
+            },
+            "after_release": {
+              "current_rss_bytes": 25108480,
+              "peak_rss_bytes": 31137792
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 6291456,
+            "output_length": 2097157,
+            "output_sha256": "9b3aba7a7b31b00c6db83c17d0da26d725793c6abfdd0ca773e3cdccde4b5557"
+          },
+          {
+            "workload": "text_2mib",
+            "extension_path": "/tmp/feat004-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "44a625d54b2a44f0440aead0783a3a34447231e3d68d1ed4ceeebe01a663115c",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "text: 'abcdefgh' repeated 262144 times (2097152 UTF-8 bytes)",
+            "input_descriptor_sha256": "6c31f6fdc5a289cae10d9a6976dd0ef6902b722f53eebdfdb6f5179586038a38",
+            "baseline": {
+              "current_rss_bytes": 25112576,
+              "peak_rss_bytes": 24760320
+            },
+            "after_encode": {
+              "current_rss_bytes": 27217920,
+              "peak_rss_bytes": 31051776
+            },
+            "after_release": {
+              "current_rss_bytes": 25116672,
+              "peak_rss_bytes": 31051776
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 6291456,
+            "output_length": 2097157,
+            "output_sha256": "9b3aba7a7b31b00c6db83c17d0da26d725793c6abfdd0ca773e3cdccde4b5557"
+          }
+        ]
+      },
+      "candidate": {
+        "python_executable": "/usr/bin/python3.14",
+        "import_root": "/home/wizzygeek/code/AIdCBOR/python",
+        "summary": {
+          "peak_rss_growth_over_pre_encode_high_water_bytes_median": 4194304,
+          "peak_rss_growth_over_pre_encode_high_water_bytes_min_max": [
+            4194304,
+            4194304
+          ],
+          "absolute_process_peak_rss_bytes_median": 29081600,
+          "absolute_process_peak_rss_bytes_min_max": [
+            28700672,
+            29200384
+          ]
+        },
+        "samples": [
+          {
+            "workload": "text_2mib",
+            "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "text: 'abcdefgh' repeated 262144 times (2097152 UTF-8 bytes)",
+            "input_descriptor_sha256": "6c31f6fdc5a289cae10d9a6976dd0ef6902b722f53eebdfdb6f5179586038a38",
+            "baseline": {
+              "current_rss_bytes": 24993792,
+              "peak_rss_bytes": 24506368
+            },
+            "after_encode": {
+              "current_rss_bytes": 27095040,
+              "peak_rss_bytes": 28700672
+            },
+            "after_release": {
+              "current_rss_bytes": 24993792,
+              "peak_rss_bytes": 28700672
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 4194304,
+            "output_length": 2097157,
+            "output_sha256": "9b3aba7a7b31b00c6db83c17d0da26d725793c6abfdd0ca773e3cdccde4b5557"
+          },
+          {
+            "workload": "text_2mib",
+            "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "text: 'abcdefgh' repeated 262144 times (2097152 UTF-8 bytes)",
+            "input_descriptor_sha256": "6c31f6fdc5a289cae10d9a6976dd0ef6902b722f53eebdfdb6f5179586038a38",
+            "baseline": {
+              "current_rss_bytes": 25092096,
+              "peak_rss_bytes": 24895488
+            },
+            "after_encode": {
+              "current_rss_bytes": 27193344,
+              "peak_rss_bytes": 29089792
+            },
+            "after_release": {
+              "current_rss_bytes": 25092096,
+              "peak_rss_bytes": 29089792
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 4194304,
+            "output_length": 2097157,
+            "output_sha256": "9b3aba7a7b31b00c6db83c17d0da26d725793c6abfdd0ca773e3cdccde4b5557"
+          },
+          {
+            "workload": "text_2mib",
+            "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "text: 'abcdefgh' repeated 262144 times (2097152 UTF-8 bytes)",
+            "input_descriptor_sha256": "6c31f6fdc5a289cae10d9a6976dd0ef6902b722f53eebdfdb6f5179586038a38",
+            "baseline": {
+              "current_rss_bytes": 24989696,
+              "peak_rss_bytes": 24887296
+            },
+            "after_encode": {
+              "current_rss_bytes": 27090944,
+              "peak_rss_bytes": 29081600
+            },
+            "after_release": {
+              "current_rss_bytes": 24989696,
+              "peak_rss_bytes": 29081600
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 4194304,
+            "output_length": 2097157,
+            "output_sha256": "9b3aba7a7b31b00c6db83c17d0da26d725793c6abfdd0ca773e3cdccde4b5557"
+          },
+          {
+            "workload": "text_2mib",
+            "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "text: 'abcdefgh' repeated 262144 times (2097152 UTF-8 bytes)",
+            "input_descriptor_sha256": "6c31f6fdc5a289cae10d9a6976dd0ef6902b722f53eebdfdb6f5179586038a38",
+            "baseline": {
+              "current_rss_bytes": 25014272,
+              "peak_rss_bytes": 25006080
+            },
+            "after_encode": {
+              "current_rss_bytes": 27115520,
+              "peak_rss_bytes": 29200384
+            },
+            "after_release": {
+              "current_rss_bytes": 25014272,
+              "peak_rss_bytes": 29200384
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 4194304,
+            "output_length": 2097157,
+            "output_sha256": "9b3aba7a7b31b00c6db83c17d0da26d725793c6abfdd0ca773e3cdccde4b5557"
+          },
+          {
+            "workload": "text_2mib",
+            "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "text: 'abcdefgh' repeated 262144 times (2097152 UTF-8 bytes)",
+            "input_descriptor_sha256": "6c31f6fdc5a289cae10d9a6976dd0ef6902b722f53eebdfdb6f5179586038a38",
+            "baseline": {
+              "current_rss_bytes": 25128960,
+              "peak_rss_bytes": 24739840
+            },
+            "after_encode": {
+              "current_rss_bytes": 27230208,
+              "peak_rss_bytes": 28934144
+            },
+            "after_release": {
+              "current_rss_bytes": 25128960,
+              "peak_rss_bytes": 28934144
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 4194304,
+            "output_length": 2097157,
+            "output_sha256": "9b3aba7a7b31b00c6db83c17d0da26d725793c6abfdd0ca773e3cdccde4b5557"
+          }
+        ]
+      }
+    },
+    "nested_graph": {
+      "baseline": {
+        "python_executable": "/usr/bin/python3.14",
+        "import_root": "/tmp/feat004-baseline/site",
+        "summary": {
+          "peak_rss_growth_over_pre_encode_high_water_bytes_median": 4063232,
+          "peak_rss_growth_over_pre_encode_high_water_bytes_min_max": [
+            4063232,
+            4063232
+          ],
+          "absolute_process_peak_rss_bytes_median": 28291072,
+          "absolute_process_peak_rss_bytes_min_max": [
+            27975680,
+            28377088
+          ]
+        },
+        "samples": [
+          {
+            "workload": "nested_graph",
+            "extension_path": "/tmp/feat004-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "44a625d54b2a44f0440aead0783a3a34447231e3d68d1ed4ceeebe01a663115c",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "list of 2048 maps; each has integer id, entry-NNNN name, children [id, id+1, map(label=node-id, data=64 zero bytes)]",
+            "input_descriptor_sha256": "6458b3d88b33fb16e739d112a39c11b1fd5bbb4f91a05ab2ebad4fed392619b4",
+            "baseline": {
+              "current_rss_bytes": 24559616,
+              "peak_rss_bytes": 24313856
+            },
+            "after_encode": {
+              "current_rss_bytes": 28635136,
+              "peak_rss_bytes": 28377088
+            },
+            "after_release": {
+              "current_rss_bytes": 28635136,
+              "peak_rss_bytes": 28377088
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 4063232,
+            "output_length": 258151,
+            "output_sha256": "22aa02e2e464d169166d56f7ef9dc60c69aa6177a1232bd759c80fdff793f626"
+          },
+          {
+            "workload": "nested_graph",
+            "extension_path": "/tmp/feat004-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "44a625d54b2a44f0440aead0783a3a34447231e3d68d1ed4ceeebe01a663115c",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "list of 2048 maps; each has integer id, entry-NNNN name, children [id, id+1, map(label=node-id, data=64 zero bytes)]",
+            "input_descriptor_sha256": "6458b3d88b33fb16e739d112a39c11b1fd5bbb4f91a05ab2ebad4fed392619b4",
+            "baseline": {
+              "current_rss_bytes": 24526848,
+              "peak_rss_bytes": 24084480
+            },
+            "after_encode": {
+              "current_rss_bytes": 28602368,
+              "peak_rss_bytes": 28147712
+            },
+            "after_release": {
+              "current_rss_bytes": 28602368,
+              "peak_rss_bytes": 28147712
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 4063232,
+            "output_length": 258151,
+            "output_sha256": "22aa02e2e464d169166d56f7ef9dc60c69aa6177a1232bd759c80fdff793f626"
+          },
+          {
+            "workload": "nested_graph",
+            "extension_path": "/tmp/feat004-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "44a625d54b2a44f0440aead0783a3a34447231e3d68d1ed4ceeebe01a663115c",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "list of 2048 maps; each has integer id, entry-NNNN name, children [id, id+1, map(label=node-id, data=64 zero bytes)]",
+            "input_descriptor_sha256": "6458b3d88b33fb16e739d112a39c11b1fd5bbb4f91a05ab2ebad4fed392619b4",
+            "baseline": {
+              "current_rss_bytes": 24530944,
+              "peak_rss_bytes": 24297472
+            },
+            "after_encode": {
+              "current_rss_bytes": 28606464,
+              "peak_rss_bytes": 28360704
+            },
+            "after_release": {
+              "current_rss_bytes": 28606464,
+              "peak_rss_bytes": 28360704
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 4063232,
+            "output_length": 258151,
+            "output_sha256": "22aa02e2e464d169166d56f7ef9dc60c69aa6177a1232bd759c80fdff793f626"
+          },
+          {
+            "workload": "nested_graph",
+            "extension_path": "/tmp/feat004-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "44a625d54b2a44f0440aead0783a3a34447231e3d68d1ed4ceeebe01a663115c",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "list of 2048 maps; each has integer id, entry-NNNN name, children [id, id+1, map(label=node-id, data=64 zero bytes)]",
+            "input_descriptor_sha256": "6458b3d88b33fb16e739d112a39c11b1fd5bbb4f91a05ab2ebad4fed392619b4",
+            "baseline": {
+              "current_rss_bytes": 24535040,
+              "peak_rss_bytes": 24227840
+            },
+            "after_encode": {
+              "current_rss_bytes": 28610560,
+              "peak_rss_bytes": 28291072
+            },
+            "after_release": {
+              "current_rss_bytes": 28610560,
+              "peak_rss_bytes": 28291072
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 4063232,
+            "output_length": 258151,
+            "output_sha256": "22aa02e2e464d169166d56f7ef9dc60c69aa6177a1232bd759c80fdff793f626"
+          },
+          {
+            "workload": "nested_graph",
+            "extension_path": "/tmp/feat004-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "44a625d54b2a44f0440aead0783a3a34447231e3d68d1ed4ceeebe01a663115c",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "list of 2048 maps; each has integer id, entry-NNNN name, children [id, id+1, map(label=node-id, data=64 zero bytes)]",
+            "input_descriptor_sha256": "6458b3d88b33fb16e739d112a39c11b1fd5bbb4f91a05ab2ebad4fed392619b4",
+            "baseline": {
+              "current_rss_bytes": 24580096,
+              "peak_rss_bytes": 23912448
+            },
+            "after_encode": {
+              "current_rss_bytes": 28659712,
+              "peak_rss_bytes": 27975680
+            },
+            "after_release": {
+              "current_rss_bytes": 28659712,
+              "peak_rss_bytes": 27975680
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 4063232,
+            "output_length": 258151,
+            "output_sha256": "22aa02e2e464d169166d56f7ef9dc60c69aa6177a1232bd759c80fdff793f626"
+          }
+        ]
+      },
+      "candidate": {
+        "python_executable": "/usr/bin/python3.14",
+        "import_root": "/home/wizzygeek/code/AIdCBOR/python",
+        "summary": {
+          "peak_rss_growth_over_pre_encode_high_water_bytes_median": 524288,
+          "peak_rss_growth_over_pre_encode_high_water_bytes_min_max": [
+            524288,
+            524288
+          ],
+          "absolute_process_peak_rss_bytes_median": 24780800,
+          "absolute_process_peak_rss_bytes_min_max": [
+            24657920,
+            24866816
+          ]
+        },
+        "samples": [
+          {
+            "workload": "nested_graph",
+            "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "list of 2048 maps; each has integer id, entry-NNNN name, children [id, id+1, map(label=node-id, data=64 zero bytes)]",
+            "input_descriptor_sha256": "6458b3d88b33fb16e739d112a39c11b1fd5bbb4f91a05ab2ebad4fed392619b4",
+            "baseline": {
+              "current_rss_bytes": 24522752,
+              "peak_rss_bytes": 24133632
+            },
+            "after_encode": {
+              "current_rss_bytes": 24985600,
+              "peak_rss_bytes": 24657920
+            },
+            "after_release": {
+              "current_rss_bytes": 24985600,
+              "peak_rss_bytes": 24657920
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 524288,
+            "output_length": 258151,
+            "output_sha256": "22aa02e2e464d169166d56f7ef9dc60c69aa6177a1232bd759c80fdff793f626"
+          },
+          {
+            "workload": "nested_graph",
+            "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "list of 2048 maps; each has integer id, entry-NNNN name, children [id, id+1, map(label=node-id, data=64 zero bytes)]",
+            "input_descriptor_sha256": "6458b3d88b33fb16e739d112a39c11b1fd5bbb4f91a05ab2ebad4fed392619b4",
+            "baseline": {
+              "current_rss_bytes": 24502272,
+              "peak_rss_bytes": 24342528
+            },
+            "after_encode": {
+              "current_rss_bytes": 24965120,
+              "peak_rss_bytes": 24866816
+            },
+            "after_release": {
+              "current_rss_bytes": 24965120,
+              "peak_rss_bytes": 24866816
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 524288,
+            "output_length": 258151,
+            "output_sha256": "22aa02e2e464d169166d56f7ef9dc60c69aa6177a1232bd759c80fdff793f626"
+          },
+          {
+            "workload": "nested_graph",
+            "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "list of 2048 maps; each has integer id, entry-NNNN name, children [id, id+1, map(label=node-id, data=64 zero bytes)]",
+            "input_descriptor_sha256": "6458b3d88b33fb16e739d112a39c11b1fd5bbb4f91a05ab2ebad4fed392619b4",
+            "baseline": {
+              "current_rss_bytes": 24506368,
+              "peak_rss_bytes": 24276992
+            },
+            "after_encode": {
+              "current_rss_bytes": 24969216,
+              "peak_rss_bytes": 24801280
+            },
+            "after_release": {
+              "current_rss_bytes": 24969216,
+              "peak_rss_bytes": 24801280
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 524288,
+            "output_length": 258151,
+            "output_sha256": "22aa02e2e464d169166d56f7ef9dc60c69aa6177a1232bd759c80fdff793f626"
+          },
+          {
+            "workload": "nested_graph",
+            "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "list of 2048 maps; each has integer id, entry-NNNN name, children [id, id+1, map(label=node-id, data=64 zero bytes)]",
+            "input_descriptor_sha256": "6458b3d88b33fb16e739d112a39c11b1fd5bbb4f91a05ab2ebad4fed392619b4",
+            "baseline": {
+              "current_rss_bytes": 24420352,
+              "peak_rss_bytes": 24162304
+            },
+            "after_encode": {
+              "current_rss_bytes": 24883200,
+              "peak_rss_bytes": 24686592
+            },
+            "after_release": {
+              "current_rss_bytes": 24883200,
+              "peak_rss_bytes": 24686592
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 524288,
+            "output_length": 258151,
+            "output_sha256": "22aa02e2e464d169166d56f7ef9dc60c69aa6177a1232bd759c80fdff793f626"
+          },
+          {
+            "workload": "nested_graph",
+            "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "list of 2048 maps; each has integer id, entry-NNNN name, children [id, id+1, map(label=node-id, data=64 zero bytes)]",
+            "input_descriptor_sha256": "6458b3d88b33fb16e739d112a39c11b1fd5bbb4f91a05ab2ebad4fed392619b4",
+            "baseline": {
+              "current_rss_bytes": 24465408,
+              "peak_rss_bytes": 24256512
+            },
+            "after_encode": {
+              "current_rss_bytes": 24928256,
+              "peak_rss_bytes": 24780800
+            },
+            "after_release": {
+              "current_rss_bytes": 24928256,
+              "peak_rss_bytes": 24780800
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 524288,
+            "output_length": 258151,
+            "output_sha256": "22aa02e2e464d169166d56f7ef9dc60c69aa6177a1232bd759c80fdff793f626"
+          }
+        ]
+      }
+    },
+    "leading_combiners_128k": {
+      "baseline": {
+        "python_executable": "/usr/bin/python3.14",
+        "import_root": "/tmp/feat004-baseline/site",
+        "summary": {
+          "peak_rss_growth_over_pre_encode_high_water_bytes_median": 3559424,
+          "peak_rss_growth_over_pre_encode_high_water_bytes_min_max": [
+            3538944,
+            3670016
+          ],
+          "absolute_process_peak_rss_bytes_median": 27107328,
+          "absolute_process_peak_rss_bytes_min_max": [
+            26963968,
+            27410432
+          ]
+        },
+        "samples": [
+          {
+            "workload": "leading_combiners_128k",
+            "extension_path": "/tmp/feat004-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "44a625d54b2a44f0440aead0783a3a34447231e3d68d1ed4ceeebe01a663115c",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "map with one key: U+0344 repeated 131072 times; value is integer zero",
+            "input_descriptor_sha256": "0ad3bffb2333f14b04052d51feba0e4b66ef67bf80872d70d6071631faf4e406",
+            "baseline": {
+              "current_rss_bytes": 23199744,
+              "peak_rss_bytes": 23425024
+            },
+            "after_encode": {
+              "current_rss_bytes": 26411008,
+              "peak_rss_bytes": 26963968
+            },
+            "after_release": {
+              "current_rss_bytes": 26411008,
+              "peak_rss_bytes": 26963968
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 3538944,
+            "output_length": 524295,
+            "output_sha256": "4a5259175380ad227bd0ad59404e562d1ac5771d727db7be1d72bd003587155a"
+          },
+          {
+            "workload": "leading_combiners_128k",
+            "extension_path": "/tmp/feat004-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "44a625d54b2a44f0440aead0783a3a34447231e3d68d1ed4ceeebe01a663115c",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "map with one key: U+0344 repeated 131072 times; value is integer zero",
+            "input_descriptor_sha256": "0ad3bffb2333f14b04052d51feba0e4b66ef67bf80872d70d6071631faf4e406",
+            "baseline": {
+              "current_rss_bytes": 23199744,
+              "peak_rss_bytes": 23687168
+            },
+            "after_encode": {
+              "current_rss_bytes": 26411008,
+              "peak_rss_bytes": 27226112
+            },
+            "after_release": {
+              "current_rss_bytes": 26411008,
+              "peak_rss_bytes": 27226112
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 3538944,
+            "output_length": 524295,
+            "output_sha256": "4a5259175380ad227bd0ad59404e562d1ac5771d727db7be1d72bd003587155a"
+          },
+          {
+            "workload": "leading_combiners_128k",
+            "extension_path": "/tmp/feat004-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "44a625d54b2a44f0440aead0783a3a34447231e3d68d1ed4ceeebe01a663115c",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "map with one key: U+0344 repeated 131072 times; value is integer zero",
+            "input_descriptor_sha256": "0ad3bffb2333f14b04052d51feba0e4b66ef67bf80872d70d6071631faf4e406",
+            "baseline": {
+              "current_rss_bytes": 23130112,
+              "peak_rss_bytes": 23433216
+            },
+            "after_encode": {
+              "current_rss_bytes": 26341376,
+              "peak_rss_bytes": 26992640
+            },
+            "after_release": {
+              "current_rss_bytes": 26341376,
+              "peak_rss_bytes": 26992640
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 3559424,
+            "output_length": 524295,
+            "output_sha256": "4a5259175380ad227bd0ad59404e562d1ac5771d727db7be1d72bd003587155a"
+          },
+          {
+            "workload": "leading_combiners_128k",
+            "extension_path": "/tmp/feat004-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "44a625d54b2a44f0440aead0783a3a34447231e3d68d1ed4ceeebe01a663115c",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "map with one key: U+0344 repeated 131072 times; value is integer zero",
+            "input_descriptor_sha256": "0ad3bffb2333f14b04052d51feba0e4b66ef67bf80872d70d6071631faf4e406",
+            "baseline": {
+              "current_rss_bytes": 23220224,
+              "peak_rss_bytes": 23740416
+            },
+            "after_encode": {
+              "current_rss_bytes": 26431488,
+              "peak_rss_bytes": 27410432
+            },
+            "after_release": {
+              "current_rss_bytes": 26431488,
+              "peak_rss_bytes": 27410432
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 3670016,
+            "output_length": 524295,
+            "output_sha256": "4a5259175380ad227bd0ad59404e562d1ac5771d727db7be1d72bd003587155a"
+          },
+          {
+            "workload": "leading_combiners_128k",
+            "extension_path": "/tmp/feat004-baseline/site/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "44a625d54b2a44f0440aead0783a3a34447231e3d68d1ed4ceeebe01a663115c",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "map with one key: U+0344 repeated 131072 times; value is integer zero",
+            "input_descriptor_sha256": "0ad3bffb2333f14b04052d51feba0e4b66ef67bf80872d70d6071631faf4e406",
+            "baseline": {
+              "current_rss_bytes": 23207936,
+              "peak_rss_bytes": 23437312
+            },
+            "after_encode": {
+              "current_rss_bytes": 26419200,
+              "peak_rss_bytes": 27107328
+            },
+            "after_release": {
+              "current_rss_bytes": 26419200,
+              "peak_rss_bytes": 27107328
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 3670016,
+            "output_length": 524295,
+            "output_sha256": "4a5259175380ad227bd0ad59404e562d1ac5771d727db7be1d72bd003587155a"
+          }
+        ]
+      },
+      "candidate": {
+        "python_executable": "/usr/bin/python3.14",
+        "import_root": "/home/wizzygeek/code/AIdCBOR/python",
+        "summary": {
+          "peak_rss_growth_over_pre_encode_high_water_bytes_median": 2555904,
+          "peak_rss_growth_over_pre_encode_high_water_bytes_min_max": [
+            2408448,
+            2584576
+          ],
+          "absolute_process_peak_rss_bytes_median": 26144768,
+          "absolute_process_peak_rss_bytes_min_max": [
+            25985024,
+            26173440
+          ]
+        },
+        "samples": [
+          {
+            "workload": "leading_combiners_128k",
+            "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "map with one key: U+0344 repeated 131072 times; value is integer zero",
+            "input_descriptor_sha256": "0ad3bffb2333f14b04052d51feba0e4b66ef67bf80872d70d6071631faf4e406",
+            "baseline": {
+              "current_rss_bytes": 23093248,
+              "peak_rss_bytes": 23494656
+            },
+            "after_encode": {
+              "current_rss_bytes": 25321472,
+              "peak_rss_bytes": 25985024
+            },
+            "after_release": {
+              "current_rss_bytes": 25321472,
+              "peak_rss_bytes": 25985024
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 2490368,
+            "output_length": 524295,
+            "output_sha256": "4a5259175380ad227bd0ad59404e562d1ac5771d727db7be1d72bd003587155a"
+          },
+          {
+            "workload": "leading_combiners_128k",
+            "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "map with one key: U+0344 repeated 131072 times; value is integer zero",
+            "input_descriptor_sha256": "0ad3bffb2333f14b04052d51feba0e4b66ef67bf80872d70d6071631faf4e406",
+            "baseline": {
+              "current_rss_bytes": 23126016,
+              "peak_rss_bytes": 23527424
+            },
+            "after_encode": {
+              "current_rss_bytes": 25288704,
+              "peak_rss_bytes": 26112000
+            },
+            "after_release": {
+              "current_rss_bytes": 25288704,
+              "peak_rss_bytes": 26112000
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 2584576,
+            "output_length": 524295,
+            "output_sha256": "4a5259175380ad227bd0ad59404e562d1ac5771d727db7be1d72bd003587155a"
+          },
+          {
+            "workload": "leading_combiners_128k",
+            "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "map with one key: U+0344 repeated 131072 times; value is integer zero",
+            "input_descriptor_sha256": "0ad3bffb2333f14b04052d51feba0e4b66ef67bf80872d70d6071631faf4e406",
+            "baseline": {
+              "current_rss_bytes": 23207936,
+              "peak_rss_bytes": 23605248
+            },
+            "after_encode": {
+              "current_rss_bytes": 25370624,
+              "peak_rss_bytes": 26161152
+            },
+            "after_release": {
+              "current_rss_bytes": 25370624,
+              "peak_rss_bytes": 26161152
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 2555904,
+            "output_length": 524295,
+            "output_sha256": "4a5259175380ad227bd0ad59404e562d1ac5771d727db7be1d72bd003587155a"
+          },
+          {
+            "workload": "leading_combiners_128k",
+            "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "map with one key: U+0344 repeated 131072 times; value is integer zero",
+            "input_descriptor_sha256": "0ad3bffb2333f14b04052d51feba0e4b66ef67bf80872d70d6071631faf4e406",
+            "baseline": {
+              "current_rss_bytes": 23240704,
+              "peak_rss_bytes": 23764992
+            },
+            "after_encode": {
+              "current_rss_bytes": 25403392,
+              "peak_rss_bytes": 26173440
+            },
+            "after_release": {
+              "current_rss_bytes": 25403392,
+              "peak_rss_bytes": 26173440
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 2408448,
+            "output_length": 524295,
+            "output_sha256": "4a5259175380ad227bd0ad59404e562d1ac5771d727db7be1d72bd003587155a"
+          },
+          {
+            "workload": "leading_combiners_128k",
+            "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+            "extension_sha256": "36502b893f69ae0c7bf8b159d53099b17c7ec02446c14b5d6a3555a6a278d581",
+            "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+            "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+            "input_descriptor": "map with one key: U+0344 repeated 131072 times; value is integer zero",
+            "input_descriptor_sha256": "0ad3bffb2333f14b04052d51feba0e4b66ef67bf80872d70d6071631faf4e406",
+            "baseline": {
+              "current_rss_bytes": 23199744,
+              "peak_rss_bytes": 23588864
+            },
+            "after_encode": {
+              "current_rss_bytes": 25362432,
+              "peak_rss_bytes": 26144768
+            },
+            "after_release": {
+              "current_rss_bytes": 25362432,
+              "peak_rss_bytes": 26144768
+            },
+            "peak_rss_growth_over_pre_encode_high_water_bytes": 2555904,
+            "output_length": 524295,
+            "output_sha256": "4a5259175380ad227bd0ad59404e562d1ac5771d727db7be1d72bd003587155a"
+          }
+        ]
+      }
+    }
+  }
+}

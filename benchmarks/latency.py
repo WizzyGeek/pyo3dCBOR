@@ -35,7 +35,12 @@ from fixtures import fixtures
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = Path(__file__).resolve().parent / "latency"
-SVG_PATH = ROOT / ".github" / "assets" / "graphs" / "latency.svg"
+ARTIFACT_DIR = Path(os.environ.get("DCBOR_BENCHMARK_ARTIFACT_DIR", ROOT / "benchmarks" / "feat004"))
+PACKAGE_ROOT = Path(os.environ.get("DCBOR_PACKAGE_ROOT", ROOT / "python"))
+RELEASE_ARTIFACT = Path(os.environ.get("DCBOR_RELEASE_ARTIFACT", ROOT / "target" / "release" / "lib_dcbor.so"))
+SVG_PATH = Path(os.environ.get("DCBOR_LATENCY_SVG_PATH", ARTIFACT_DIR / "latency.svg"))
+EXPECTED_DCBOR_VERSION = "0.1.1"
+sys.path.insert(0, str(PACKAGE_ROOT))
 PINNED_CBOR2 = "6.1.5"
 PINNED_CBORX = "0.2.5"
 PINNED_ORJSON = "3.13.0"
@@ -162,12 +167,12 @@ def processor_name() -> str | None:
 
 def release_build_evidence(extension_path: Path) -> dict[str, object]:
     """Verify the loaded extension is byte-identical to Cargo's release artifact."""
-    release_artifact = ROOT / "target" / "release" / "lib_dcbor.so"
+    release_artifact = RELEASE_ARTIFACT.resolve()
     extension_hash = sha256(extension_path.read_bytes())
     artifact_hash = sha256(release_artifact.read_bytes()) if release_artifact.is_file() else None
     return {
         "profile": "release" if artifact_hash == extension_hash else "unverified",
-        "verified_by": "SHA-256 equality with target/release/lib_dcbor.so",
+        "verified_by": "SHA-256 equality with configured release artifact",
         "release_artifact": str(release_artifact),
         "release_artifact_sha256": artifact_hash,
         "extension_sha256": extension_hash,
@@ -289,10 +294,10 @@ def worker(warmup: int, rounds: int, order_offset: int) -> dict[str, object]:
         if observed != expected:
             raise RuntimeError(f"expected {package}=={expected}, found {observed}")
     env = environment(dcbor, cbor2, cborx, orjson, msgspec, cbrrr)
-    if dcbor.__version__ != "0.1.0":  # type: ignore[attr-defined]
-        raise RuntimeError(f"expected dcbor==0.1.0, found {dcbor.__version__}")  # type: ignore[attr-defined]
+    if dcbor.__version__ != EXPECTED_DCBOR_VERSION:  # type: ignore[attr-defined]
+        raise RuntimeError(f"expected dcbor=={EXPECTED_DCBOR_VERSION}, found {dcbor.__version__}")  # type: ignore[attr-defined]
     if env["dcbor_build"]["profile"] != "release":  # type: ignore[index]
-        raise RuntimeError("loaded dcbor extension does not match target/release/lib_dcbor.so")
+        raise RuntimeError("loaded dcbor extension does not match configured release artifact")
 
     msgpack_encoder = msgspec.msgpack.Encoder()
     msgpack_deterministic_encoder = msgspec.msgpack.Encoder(order="deterministic")
@@ -515,7 +520,7 @@ def metadata(warmup: int, rounds: int, repetitions: int) -> dict[str, object]:
             "round_trip": "one encode followed by one decode within each timed call",
             "json": "UTF-8, ensure_ascii=False, compact separators, allow_nan=False",
             "cbor_comparators": {
-                "dcbor": "dcbor source extension version 0.1.0, required release artifact",
+                "dcbor": f"dcbor source extension version {EXPECTED_DCBOR_VERSION}, required release artifact",
                 "cbor2_default": f"generic CBOR library cbor2=={PINNED_CBOR2}, dumps() default canonical=False",
                 "cbor2_canonical": f"generic CBOR library cbor2=={PINNED_CBOR2}, dumps(canonical=True), length-first key order (legacy RFC 8949 section 4.2.3)",
                 "cborx_default": f"generic CBOR library cborx=={PINNED_CBORX}, dumps() default canonical=False; backend recorded",
@@ -671,8 +676,8 @@ def main() -> int:
         blocker = f"expected cbor2=={PINNED_CBOR2}, found {cbor2_version(cbor2)}"
     elif importlib.metadata.version("cborx") != PINNED_CBORX:
         blocker = f"expected cborx=={PINNED_CBORX}, found {importlib.metadata.version('cborx')}"
-    elif dcbor.__version__ != "0.1.0":  # type: ignore[attr-defined]
-        blocker = f"expected dcbor==0.1.0, found {dcbor.__version__}"  # type: ignore[attr-defined]
+    elif dcbor.__version__ != EXPECTED_DCBOR_VERSION:  # type: ignore[attr-defined]
+        blocker = f"expected dcbor=={EXPECTED_DCBOR_VERSION}, found {dcbor.__version__}"  # type: ignore[attr-defined]
     elif env["orjson_version"] != PINNED_ORJSON:
         blocker = f"expected orjson=={PINNED_ORJSON}, found {env['orjson_version']}"
     elif env["msgspec_version"] != PINNED_MSGSPEC:
@@ -680,7 +685,7 @@ def main() -> int:
     elif env["cbrrr_version"] != PINNED_CBRRR:
         blocker = f"expected cbrrr=={PINNED_CBRRR}, found {env['cbrrr_version']}"
     elif env["dcbor_build"]["profile"] != "release":  # type: ignore[index]
-        blocker = "loaded dcbor extension does not match target/release/lib_dcbor.so"
+        blocker = "loaded dcbor extension does not match configured release artifact"
     if blocker:
         report = blocked_results(blocker, args.warmup, args.rounds, args.repetitions)
         report["environment"] = env
@@ -695,7 +700,9 @@ def main() -> int:
     ]
     worker_env = os.environ.copy()
     worker_env["PYTHONHASHSEED"] = "0"
-    worker_env["PYTHONPATH"] = str(ROOT / "python") + os.pathsep + str(ROOT / "benchmarks") + os.pathsep + worker_env.get("PYTHONPATH", "")
+    worker_env["PYTHONPATH"] = os.pathsep.join(
+        (str(PACKAGE_ROOT), str(ROOT / "benchmarks"), worker_env.get("PYTHONPATH", ""))
+    )
     for repetition in range(args.repetitions):
         process_command = worker_command + ["--order-offset", str(repetition)]
         try:

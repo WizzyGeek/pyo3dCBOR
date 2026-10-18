@@ -13,6 +13,8 @@ use pyo3::types::{
 use pyo3::IntoPyObjectExt;
 
 mod encode;
+mod direct_encode;
+mod direct_wire;
 mod python_types;
 mod key_conversion;
 mod scalars;
@@ -36,13 +38,17 @@ fn depth_err() -> PyErr {
     ))
 }
 
-fn python_integer_to_cbor(obj: &Bound<'_, PyAny>) -> PyResult<CBOR> {
+pub(crate) fn python_integer_parts(obj: &Bound<'_, PyAny>) -> PyResult<(u8, u64)> {
     // The caller has already established that `obj` is a Python int. Keep
     // the common i64 conversion cheap; every wider value in the dCBOR
     // interval fits in i128, so an i128 extraction overflow means it is out
     // of range.
     if let Ok(value) = obj.extract::<i64>() {
-        return Ok(CBOR::from(value));
+        return Ok(if value < 0 {
+            (1, (-1i128 - i128::from(value)) as u64)
+        } else {
+            (0, value as u64)
+        });
     }
     let value = obj.extract::<i128>().map_err(|_| {
         CBORError::new_err(
@@ -59,10 +65,19 @@ fn python_integer_to_cbor(obj: &Bound<'_, PyAny>) -> PyResult<CBOR> {
 
     if value < 0 {
         let magnitude = (-1i128 - value) as u64;
-        Ok(CBOR::from(CBORCase::Negative(magnitude)))
+        Ok((1, magnitude))
     } else {
-        Ok(CBOR::from(value as u64))
+        Ok((0, value as u64))
     }
+}
+
+fn python_integer_to_cbor(obj: &Bound<'_, PyAny>) -> PyResult<CBOR> {
+    let (major, argument) = python_integer_parts(obj)?;
+    Ok(if major == 1 {
+        CBOR::from(CBORCase::Negative(argument))
+    } else {
+        CBOR::from(argument)
+    })
 }
 
 /// Convert a Python object into a `dcbor::CBOR` value.
@@ -272,8 +287,14 @@ fn cbor_to_py(py: Python<'_>, cbor: &CBOR, depth: u32) -> PyResult<Py<PyAny>> {
 /// `dcbor.CBORTag` for arbitrary tagged values.
 #[pyfunction]
 fn dumps(py: Python<'_>, obj: &Bound<'_, PyAny>) -> PyResult<Py<PyBytes>> {
-    let cbor = py_to_cbor(py, obj, 0)?;
-    let data = cbor.to_cbor_data();
+    let mut data = Vec::new();
+    direct_encode::encode_into(
+        py,
+        obj,
+        0,
+        &mut data,
+        &mut encode::EncodeBudget::default(),
+    )?;
     wire::preflight(&data)?;
     Ok(PyBytes::new(py, &data).unbind())
 }

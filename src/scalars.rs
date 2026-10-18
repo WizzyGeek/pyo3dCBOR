@@ -29,10 +29,10 @@ pub(crate) fn encode_text(text: &Bound<'_, PyString>) -> PyResult<CBOR> {
     Ok(CBORCase::Text(normalized).into())
 }
 
-pub(crate) fn encode_datetime(
+pub(crate) fn datetime_timestamp(
     py: Python<'_>,
     obj: &Bound<'_, PyAny>,
-) -> PyResult<Option<CBOR>> {
+) -> PyResult<Option<f64>> {
     // Exact builtin containers cannot be datetime instances. Avoid importing
     // datetime for the common recursive-container path while preserving the
     // existing instance checks for subclasses and custom objects.
@@ -60,6 +60,16 @@ pub(crate) fn encode_datetime(
     if !seconds.is_finite() {
         return Err(CBORError::new_err("datetime timestamp must be finite"));
     }
+    Ok(Some(seconds))
+}
+
+pub(crate) fn encode_datetime(
+    py: Python<'_>,
+    obj: &Bound<'_, PyAny>,
+) -> PyResult<Option<CBOR>> {
+    let Some(seconds) = datetime_timestamp(py, obj)? else {
+        return Ok(None);
+    };
     // Direct numeric CBOR preserves negative fractions and applies dCBOR's
     // canonical integer reduction without the upstream Date constructor.
     Ok(Some(CBORCase::Tagged(Tag::with_value(1), CBOR::from(seconds)).into()))
