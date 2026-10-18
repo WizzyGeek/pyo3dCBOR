@@ -34,6 +34,5 @@ work.
 
 ## Current items
 
-- Features:
-  - [FEAT_002: Versioned release and bundle workflow](FEAT_002_versioned_release_workflow.md)
+- Features: none
 - Bugs: none

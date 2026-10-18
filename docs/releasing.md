@@ -95,3 +95,25 @@ Do not force-push or rewrite the tag.
 
 The workflow accepts stable `vX.Y.Z` tags only. It does not publish to PyPI,
 rewrite tags, or overwrite release assets.
+
+## FEAT_002 acceptance and PM sign-off
+
+Signed off by Codex GPT-6, PM agent, on **2026-10-18** following owner
+confirmation and independent source/test review.
+
+- [Published v0.1.0 release](https://github.com/WizzyGeek/pyo3dCBOR/releases/tag/v0.1.0):
+  all 46 expected assets are uploaded: 42 wheels (seven platforms for each of
+  CPython 3.9–3.14), one sdist, checksums, provenance, and the bundle ZIP.
+  All 43 distribution digests match the published checksum manifest.
+- [Successful release run 39073424944](https://github.com/WizzyGeek/pyo3dCBOR/actions/runs/39073424944):
+  the full build, tests, bundle validation, and publication passed. The tag and
+  published provenance both identify commit `ae43fc10ab804f9fdc4d4a3fc38112426cd9f70b`;
+  provenance records that same run ID.
+- Local acceptance checks cover the four-file patch bump, artifact validation,
+  and publication guards. Draft lookup uses `gh release view --json isDraft`;
+  the REST lookup by tag returns only published releases. Matching assets are
+  compared before reuse, conflicting assets are never overwritten, and
+  incomplete published releases are left untouched.
+
+FEAT_002 is complete. Its open requirement was removed under the
+[requirements cleanup protocol](requirements/README.md#sign-off-and-cleanup).

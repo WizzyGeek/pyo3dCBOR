@@ -1,5 +1,11 @@
 # PM handoff — 2026-10-17
 
+Historical snapshot. FEAT_002 was signed off on 2026-10-18 after the complete
+`v0.1.0` release passed hosted validation and publication. The release's full
+platform matrix also supersedes the pending CI follow-up below. See the
+[release acceptance record](../releasing.md#feat_002-acceptance-and-pm-sign-off)
+and [current requirements](../requirements/README.md).
+
 Repository: https://github.com/WizzyGeek/pyo3dCBOR (confirmed by owner).
 
 The review of baseline `36e0933` is addressed in the commit containing this
@@ -77,14 +83,9 @@ captures the research request for CI environment setup, macOS/Windows speedups,
 and sdist/wheel job parallelization. It is a proposal only; prioritize and
 assign it before implementation.
 
-[`FEAT_002_versioned_release_workflow.md`](../requirements/FEAT_002_versioned_release_workflow.md)
-captures the requested automated version-bump and release-fulfillment flow:
-produce commit-bound, version-identified bundles; on publication of a
-non-draft GitHub Release, reuse a verified bundle or build and validate one
-from the tag, then attach all 42 wheels, the sdist, and checksums. It proposes
-preparing version bumps as reviewable PRs and highlights artifact retention
-and the existing tag-push release job for PM/design review before
-implementation.
+FEAT_002 is complete; its accepted implementation uses a maintainer-run patch
+bump and tag-triggered bundle validation and publication. The
+[release guide](../releasing.md) contains the lasting behavior and sign-off.
 
 [`FEAT_003_evidence_focused_readme.md`](../requirements/FEAT_003_evidence_focused_readme.md)
 captures the request for a human-scannable README backed by meaningful
