@@ -34,6 +34,6 @@ work.
 
 ## Current items
 
-- Features:
-  - [FEAT_004: Encode Python values directly to canonical bytes](FEAT_004_direct_python_to_bytes_encoding.md) — accepted direction for the main sprint; design and measurement plan under review.
-- Bugs: none
+- Features: none
+- Bugs:
+  - [BUG_005: Investigate mixed-profile decode slowdown](BUG_005_mixed_profile_decode_slowdown.md) — open performance investigation.

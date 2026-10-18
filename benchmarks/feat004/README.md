@@ -1,5 +1,10 @@
 # FEAT_004 paired performance evidence
 
+**PM sign-off (2026-10-18):** the direct Python-to-bytes encoder is accepted
+and complete for development `0.1.1`; see the [encoding architecture and
+acceptance record](../../docs/encoding.md). The mixed-profile decode slowdown
+remains open as [BUG_005](../../docs/requirements/BUG_005_mixed_profile_decode_slowdown.md).
+
 The raw baseline and candidate JSON, per-process samples, SVGs, and build
 provenance are in [baseline](baseline/README.md) and `candidate/`. Both reports
 used CPython 3.14.7, Linux x86_64, Rust/Cargo 1.98.1, the same benchmark scripts,

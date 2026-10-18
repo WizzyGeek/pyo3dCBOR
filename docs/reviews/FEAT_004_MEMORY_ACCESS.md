@@ -1,7 +1,9 @@
 # FEAT_004 memory-access research
 
-This note records bounded API research for the planned direct Python-to-dCBOR
-writer. It does not change accepted values.
+**Historical research note:** FEAT_004 is complete; this records API research
+for its design and is not pending implementation work. See the current
+[encoding architecture and PM acceptance record](../encoding.md). It does not
+change accepted values.
 The repository pins PyO3 0.29.2, builds per-interpreter wheels with
 `extension-module` (no `abi3` feature), and targets regular CPython 3.9–3.14.
 Free-threaded builds are an optional CPython capability starting with 3.13.

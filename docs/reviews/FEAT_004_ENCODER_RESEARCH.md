@@ -1,15 +1,18 @@
 # FEAT_004 direct encoder research
 
-Research snapshot: 2026-10-18. This note supports the feature proposal; it does
-not implement an encoder redesign. Development version `0.1.1` was bumped
+**Historical design note:** FEAT_004 is complete. This research informed the
+accepted implementation; it is not a list of pending implementation work.
+See the current [encoding architecture and PM acceptance record](../encoding.md).
+Research snapshot: 2026-10-18. Development version `0.1.1` was bumped
 separately before encoder implementation; this note makes no runtime changes.
 
 ## Findings
 
-The current `dumps()` path constructs a full owned `dcbor::CBOR` tree before
-serializing it. The tree is an implementation convenience; direct output can
-avoid it for ordinary Python values, but maps still need temporary encoded
-entries because output order depends on each final encoded key.
+Before FEAT_004, `dumps()` constructed a full owned `dcbor::CBOR` tree before
+serializing it. The tree was an implementation convenience; the accepted
+direct output path avoids it for ordinary Python values, while maps still need
+temporary encoded entries because output order depends on each final encoded
+key.
 
 There is structural evidence of repeated allocation/copying in that path:
 
@@ -89,7 +92,7 @@ reference. See <https://github.com/ipld/serde_ipld_dagcbor>,
 <https://github.com/DavidBuchanan314/dag-cbrrr>,
 [`benchmarks/wire_size/README.md`](../../benchmarks/wire_size/README.md).
 
-## Minimum viable architecture
+## Historical minimum viable architecture plan
 
 Implement a per-call recursive `encode_into(py, object, sink, context)` for
 scalars, arrays, tags, and datetime tag 1. Write into one reusable buffer and
@@ -142,7 +145,11 @@ raw bytearray slice across those boundaries.
 - Preserve nested encoded-key budget semantics; compare exact bytes/errors
   against old `dumps()` before switching the public path.
 
-## Suggested implementation phases and ownership
+## Historical suggested implementation phases and ownership
+
+This archived phase list records the original proposal, not current work. The
+feature is complete; see the [encoding record](../encoding.md) and open
+[BUG_005](../requirements/BUG_005_mixed_profile_decode_slowdown.md).
 
 1. **Requirements/spec owner:** freeze wire/rejection vectors for numeric
    boundaries, floats, NFC/surrogates, map order/collisions, depth and budgets.

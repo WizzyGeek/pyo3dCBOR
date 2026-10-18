@@ -75,6 +75,17 @@ the raw report includes medians, MAD, samples, and parity checks.
 
 ![Rust core encode and decode compared with Python binding calls; Rust trees are prebuilt and Python conversion is included.](../.github/assets/graphs/rust-core.svg)
 
+## Direct Python encoding (`0.1.1` development)
+
+The [paired direct-encoder report](../benchmarks/feat004/README.md) compares
+matched release artifacts and identical wire output. Across the eight common
+fixtures, the median encode ratio is 3.04× (range 1.16×–4.47×); round-trip is
+1.59× and common-fixture decode is 1.02×, near parity. These ratios summarize
+this fixture set, not a promised target. The existing `0.1.0` reports and
+graphs above remain historical; they are not the `0.1.1` paired baseline. The
+mixed-profile 10,000-entry map decode regression remains open as
+[BUG_005](requirements/BUG_005_mixed_profile_decode_slowdown.md).
+
 ## Reports and reproduction
 
 - [Encoded size](../benchmarks/encoded_size/README.md)
