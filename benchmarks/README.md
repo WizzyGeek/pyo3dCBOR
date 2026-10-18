@@ -16,6 +16,8 @@ The current active capture uses dCBOR 0.1.1 at source commit `df70782`.
   normalization, and Unicode normalization workloads.
 - [Native decoder paired profile](native_decoder/README.md): decode and encode
   controls against the preserved pre-migration package.
+- [v0.2 performance review](../docs/reviews/V0_2_PERFORMANCE_REVIEW.md): native
+  instruction/counter evidence, copy audit, and proposed optimization experiments.
 
 Shared JSON fixtures are defined in [`fixtures.py`](fixtures.py); profile-only
 inputs are in [`profile_fixtures.py`](profile_fixtures.py). Figures are stored

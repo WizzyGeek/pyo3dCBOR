@@ -1,0 +1,192 @@
+===== perf stat output (trailing padding trimmed) from /tmp/profile_map_10000_shuffled_encode_roi.txt =====
+# started on Mon Oct 19 00:11:09 2026
+
+
+ Performance counter stats for '.venv/bin/python benchmarks/v02_profile/profile_native.py --perf-control-prefix /tmp/dcborperf --fixture profile:map_10000_shuffled --operation encode --rounds 100 --warmup 10':
+
+        1907436056      cycles:u
+        3884587706      instructions:u
+         773326299      branches:u
+          16563937      branch-misses:u
+          87545294      cache-references:u
+          24728455      cache-misses:u
+
+       1.497315153 seconds time elapsed
+
+       0.000000000 seconds user
+       0.000000000 seconds sys
+
+
+===== perf stat output (trailing padding trimmed) from /tmp/profile_map_10000_shuffled_decode_roi.txt =====
+# started on Mon Oct 19 00:11:11 2026
+
+
+ Performance counter stats for '.venv/bin/python benchmarks/v02_profile/profile_native.py --perf-control-prefix /tmp/dcborperf --fixture profile:map_10000_shuffled --operation decode --rounds 200 --warmup 10':
+
+        1061377099      cycles:u
+        3511724055      instructions:u
+         761377829      branches:u
+           2688033      branch-misses:u
+          37694472      cache-references:u
+           5393870      cache-misses:u
+
+       0.703491002 seconds time elapsed
+
+       0.000000000 seconds user
+       0.000000000 seconds sys
+
+
+===== perf stat output (trailing padding trimmed) from /tmp/bytes_1048576_encode_roi.txt =====
+# started on Mon Oct 19 00:11:12 2026
+
+
+ Performance counter stats for '.venv/bin/python benchmarks/v02_profile/profile_native.py --perf-control-prefix /tmp/dcborperf --fixture bytes:1048576 --operation encode --rounds 1000 --warmup 10':
+
+         171183210      cycles:u
+         199362631      instructions:u
+          16932549      branches:u
+              6388      branch-misses:u
+         121892649      cache-references:u
+          14195149      cache-misses:u
+
+       0.293463915 seconds time elapsed
+
+       0.000000000 seconds user
+       0.000000000 seconds sys
+
+
+===== perf stat output (trailing padding trimmed) from /tmp/bytes_1048576_decode_roi.txt =====
+# started on Mon Oct 19 00:11:12 2026
+
+
+ Performance counter stats for '.venv/bin/python benchmarks/v02_profile/profile_native.py --perf-control-prefix /tmp/dcborperf --fixture bytes:1048576 --operation decode --rounds 1000 --warmup 10':
+
+         102541435      cycles:u
+         100151700      instructions:u
+           8528547      branches:u
+              3724      branch-misses:u
+          65180248      cache-references:u
+           4691895      cache-misses:u
+
+       0.150498729 seconds time elapsed
+
+       0.000000000 seconds user
+       0.000000000 seconds sys
+
+
+===== perf stat output (trailing padding trimmed) from /tmp/profile_float_fractional_encode_roi.txt =====
+# started on Mon Oct 19 00:11:14 2026
+
+
+ Performance counter stats for '.venv/bin/python benchmarks/v02_profile/profile_native.py --perf-control-prefix /tmp/dcborperf --fixture profile:float_fractional --operation encode --rounds 5000 --warmup 10':
+
+         212742905      cycles:u
+         668390856      instructions:u
+         139172251      branches:u
+            696436      branch-misses:u
+            718069      cache-references:u
+             28157      cache-misses:u
+
+       0.183486290 seconds time elapsed
+
+       0.000000000 seconds user
+       0.000000000 seconds sys
+
+
+===== perf stat output (trailing padding trimmed) from /tmp/profile_float_fractional_decode_roi.txt =====
+# started on Mon Oct 19 00:11:14 2026
+
+
+ Performance counter stats for '.venv/bin/python benchmarks/v02_profile/profile_native.py --perf-control-prefix /tmp/dcborperf --fixture profile:float_fractional --operation decode --rounds 5000 --warmup 10':
+
+         329135978      cycles:u
+        1062501200      instructions:u
+         232444725      branches:u
+            173885      branch-misses:u
+           3894596      cache-references:u
+             97411      cache-misses:u
+
+       0.198955688 seconds time elapsed
+
+       0.000000000 seconds user
+       0.000000000 seconds sys
+
+
+===== perf stat output (trailing padding trimmed) from /tmp/profile_unicode_decomposed_encode_roi.txt =====
+# started on Mon Oct 19 00:11:12 2026
+
+
+ Performance counter stats for '.venv/bin/python benchmarks/v02_profile/profile_native.py --perf-control-prefix /tmp/dcborperf --fixture profile:unicode_decomposed --operation encode --rounds 2000 --warmup 10':
+
+        1484035269      cycles:u
+        5578381829      instructions:u
+        1156798086      branches:u
+           2626577      branch-misses:u
+           4739569      cache-references:u
+            267583      cache-misses:u
+
+       0.776004259 seconds time elapsed
+
+       0.000000000 seconds user
+       0.000000000 seconds sys
+
+
+===== perf stat output (trailing padding trimmed) from /tmp/profile_unicode_decomposed_decode_roi.txt =====
+# started on Mon Oct 19 00:11:13 2026
+
+
+ Performance counter stats for '.venv/bin/python benchmarks/v02_profile/profile_native.py --perf-control-prefix /tmp/dcborperf --fixture profile:unicode_decomposed --operation decode --rounds 2000 --warmup 10':
+
+         394195804      cycles:u
+        1722794401      instructions:u
+         392077110      branches:u
+             98166      branch-misses:u
+           3264789      cache-references:u
+            107055      cache-misses:u
+
+       0.283302994 seconds time elapsed
+
+       0.000000000 seconds user
+       0.000000000 seconds sys
+
+
+===== perf stat output (trailing padding trimmed) from /tmp/shared_large_collection_encode_roi.txt =====
+# started on Mon Oct 19 00:11:15 2026
+
+
+ Performance counter stats for '.venv/bin/python benchmarks/v02_profile/profile_native.py --perf-control-prefix /tmp/dcborperf --fixture shared:large_collection --operation encode --rounds 1000 --warmup 10':
+
+         321743792      cycles:u
+        1080451563      instructions:u
+         238084406      branches:u
+             84907      branch-misses:u
+           3155178      cache-references:u
+             91658      cache-misses:u
+
+       0.180288827 seconds time elapsed
+
+       0.000000000 seconds user
+       0.000000000 seconds sys
+
+
+===== perf stat output (trailing padding trimmed) from /tmp/shared_large_collection_decode_roi.txt =====
+# started on Mon Oct 19 00:11:15 2026
+
+
+ Performance counter stats for '.venv/bin/python benchmarks/v02_profile/profile_native.py --perf-control-prefix /tmp/dcborperf --fixture shared:large_collection --operation decode --rounds 1000 --warmup 10':
+
+         280931464      cycles:u
+         973959686      instructions:u
+         202588859      branches:u
+            332958      branch-misses:u
+           4390769      cache-references:u
+            182101      cache-misses:u
+
+       0.163449676 seconds time elapsed
+
+       0.000000000 seconds user
+       0.000000000 seconds sys
+
+
+===== ROI FIFO acknowledgement availability =====
+The helper consumed the enable/disable acknowledgement lines and verified each response was exactly "ack". It did not save a transcript; raw acknowledgement lines are unavailable and are not reconstructed here. perf stat output contained no running-percentage or multiplex-scaling fields.

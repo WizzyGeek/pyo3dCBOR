@@ -1,0 +1,236 @@
+{
+  "method": "perf stat hardware counters, controlled by named FIFO acknowledgements immediately around the measured call loop; imports, fixture construction, correctness checks, and 10 warmups excluded",
+  "commands": {
+    "prefix": "PYTHONPATH=python:benchmarks perf stat -D -1 --control=fifo:/tmp/dcborperf.ctl,/tmp/dcborperf.ack -o /tmp/{tag}_roi.txt -e cycles:u,instructions:u,branches:u,branch-misses:u,cache-references:u,cache-misses:u -- .venv/bin/python benchmarks/v02_profile/profile_native.py --perf-control-prefix /tmp/dcborperf --fixture {fixture} --operation {operation} --rounds {rounds} --warmup 10",
+    "helper_sha256": "535b9f552d596ba8aa9e6d283aa51bdbe2492b26b55d996fe58985c873cf0718",
+    "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94"
+  },
+  "environment": {
+    "cpu": "AMD Ryzen 7 7435HS",
+    "kernel": "Linux 7.2.4-200.fc44.x86_64",
+    "cpu_governor": "powersave",
+    "perf_event_paranoid": 2,
+    "perf_version": "perf 7.2.4"
+  },
+  "caveats": [
+    "These are hardware counter totals from a FIFO-controlled ROI around the codec-call loop, normalized by loop call count.",
+    "The ROI includes Python loop/lambda dispatch, result reference replacement/release, PyO3 and extension work, plus small enable-ack/disable-command boundary overhead; it is not Rust-only attribution.",
+    "They are not elapsed time; no branch-predictor, cache, or pipeline cause is inferred from counts alone.",
+    "Profiler counters were not collected in the same run as committed normal timing medians.",
+    "The helper consumed and validated each FIFO ack but retained no ack transcript; no raw ack lines are available.",
+    "perf_stat_raw.txt preserves the original printed fields with trailing column-padding spaces trimmed."
+  ],
+  "samples": {
+    "profile:map_10000_shuffled/encode": {
+      "rounds": 100,
+      "warmup": 10,
+      "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
+      "raw_event_counts": {
+        "cycles": 1907436056,
+        "instructions": 3884587706,
+        "branches": 773326299,
+        "branch-misses": 16563937,
+        "cache-references": 87545294,
+        "cache-misses": 24728455
+      },
+      "per_operation": {
+        "cycles": 19074360.56,
+        "instructions": 38845877.06,
+        "branches": 7733262.99,
+        "branch-misses": 165639.37,
+        "cache-references": 875452.94,
+        "cache-misses": 247284.55
+      }
+    },
+    "profile:map_10000_shuffled/decode": {
+      "rounds": 200,
+      "warmup": 10,
+      "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
+      "raw_event_counts": {
+        "cycles": 1061377099,
+        "instructions": 3511724055,
+        "branches": 761377829,
+        "branch-misses": 2688033,
+        "cache-references": 37694472,
+        "cache-misses": 5393870
+      },
+      "per_operation": {
+        "cycles": 5306885.495,
+        "instructions": 17558620.275,
+        "branches": 3806889.145,
+        "branch-misses": 13440.165,
+        "cache-references": 188472.36,
+        "cache-misses": 26969.35
+      }
+    },
+    "bytes:1048576/encode": {
+      "rounds": 1000,
+      "warmup": 10,
+      "wire_sha256": "efd35f1c9ae37a1a512025d8f416c02f3e01c017f1d37b586051b33fbcb99853",
+      "raw_event_counts": {
+        "cycles": 171183210,
+        "instructions": 199362631,
+        "branches": 16932549,
+        "branch-misses": 6388,
+        "cache-references": 121892649,
+        "cache-misses": 14195149
+      },
+      "per_operation": {
+        "cycles": 171183.21,
+        "instructions": 199362.631,
+        "branches": 16932.549,
+        "branch-misses": 6.388,
+        "cache-references": 121892.649,
+        "cache-misses": 14195.149
+      }
+    },
+    "bytes:1048576/decode": {
+      "rounds": 1000,
+      "warmup": 10,
+      "wire_sha256": "efd35f1c9ae37a1a512025d8f416c02f3e01c017f1d37b586051b33fbcb99853",
+      "raw_event_counts": {
+        "cycles": 102541435,
+        "instructions": 100151700,
+        "branches": 8528547,
+        "branch-misses": 3724,
+        "cache-references": 65180248,
+        "cache-misses": 4691895
+      },
+      "per_operation": {
+        "cycles": 102541.435,
+        "instructions": 100151.7,
+        "branches": 8528.547,
+        "branch-misses": 3.724,
+        "cache-references": 65180.248,
+        "cache-misses": 4691.895
+      }
+    },
+    "profile:float_fractional/encode": {
+      "rounds": 5000,
+      "warmup": 10,
+      "wire_sha256": "4aa650eb364032e045635504083a3a25166209dc458c53a8395b77bdd08ba172",
+      "raw_event_counts": {
+        "cycles": 212742905,
+        "instructions": 668390856,
+        "branches": 139172251,
+        "branch-misses": 696436,
+        "cache-references": 718069,
+        "cache-misses": 28157
+      },
+      "per_operation": {
+        "cycles": 42548.581,
+        "instructions": 133678.1712,
+        "branches": 27834.4502,
+        "branch-misses": 139.2872,
+        "cache-references": 143.6138,
+        "cache-misses": 5.6314
+      }
+    },
+    "profile:float_fractional/decode": {
+      "rounds": 5000,
+      "warmup": 10,
+      "wire_sha256": "4aa650eb364032e045635504083a3a25166209dc458c53a8395b77bdd08ba172",
+      "raw_event_counts": {
+        "cycles": 329135978,
+        "instructions": 1062501200,
+        "branches": 232444725,
+        "branch-misses": 173885,
+        "cache-references": 3894596,
+        "cache-misses": 97411
+      },
+      "per_operation": {
+        "cycles": 65827.1956,
+        "instructions": 212500.24,
+        "branches": 46488.945,
+        "branch-misses": 34.777,
+        "cache-references": 778.9192,
+        "cache-misses": 19.4822
+      }
+    },
+    "profile:unicode_decomposed/encode": {
+      "rounds": 2000,
+      "warmup": 10,
+      "wire_sha256": "ca8d9ac84516b620e7065b1d2da602b11c50175e345de8fa7a2c936648c07718",
+      "raw_event_counts": {
+        "cycles": 1484035269,
+        "instructions": 5578381829,
+        "branches": 1156798086,
+        "branch-misses": 2626577,
+        "cache-references": 4739569,
+        "cache-misses": 267583
+      },
+      "per_operation": {
+        "cycles": 742017.6345,
+        "instructions": 2789190.9145,
+        "branches": 578399.043,
+        "branch-misses": 1313.2885,
+        "cache-references": 2369.7845,
+        "cache-misses": 133.7915
+      }
+    },
+    "profile:unicode_decomposed/decode": {
+      "rounds": 2000,
+      "warmup": 10,
+      "wire_sha256": "ca8d9ac84516b620e7065b1d2da602b11c50175e345de8fa7a2c936648c07718",
+      "raw_event_counts": {
+        "cycles": 394195804,
+        "instructions": 1722794401,
+        "branches": 392077110,
+        "branch-misses": 98166,
+        "cache-references": 3264789,
+        "cache-misses": 107055
+      },
+      "per_operation": {
+        "cycles": 197097.902,
+        "instructions": 861397.2005,
+        "branches": 196038.555,
+        "branch-misses": 49.083,
+        "cache-references": 1632.3945,
+        "cache-misses": 53.5275
+      }
+    },
+    "shared:large_collection/encode": {
+      "rounds": 1000,
+      "warmup": 10,
+      "wire_sha256": "14a8b5fe0a9feccf03ebd7cfb71ccaf925d7b8cecd49bb3d4bb74e88279fe795",
+      "raw_event_counts": {
+        "cycles": 321743792,
+        "instructions": 1080451563,
+        "branches": 238084406,
+        "branch-misses": 84907,
+        "cache-references": 3155178,
+        "cache-misses": 91658
+      },
+      "per_operation": {
+        "cycles": 321743.792,
+        "instructions": 1080451.563,
+        "branches": 238084.406,
+        "branch-misses": 84.907,
+        "cache-references": 3155.178,
+        "cache-misses": 91.658
+      }
+    },
+    "shared:large_collection/decode": {
+      "rounds": 1000,
+      "warmup": 10,
+      "wire_sha256": "14a8b5fe0a9feccf03ebd7cfb71ccaf925d7b8cecd49bb3d4bb74e88279fe795",
+      "raw_event_counts": {
+        "cycles": 280931464,
+        "instructions": 973959686,
+        "branches": 202588859,
+        "branch-misses": 332958,
+        "cache-references": 4390769,
+        "cache-misses": 182101
+      },
+      "per_operation": {
+        "cycles": 280931.464,
+        "instructions": 973959.686,
+        "branches": 202588.859,
+        "branch-misses": 332.958,
+        "cache-references": 4390.769,
+        "cache-misses": 182.101
+      }
+    }
+  },
+  "raw_output_path": "benchmarks/v02_profile/perf_stat_raw.txt"
+}

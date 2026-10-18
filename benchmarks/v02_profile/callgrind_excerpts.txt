@@ -1,0 +1,357 @@
+Callgrind evidence excerpts (raw event format; event Ir is simulated instruction references, not elapsed runtime or hardware retired instructions).
+
+Float encoding command:
+PYTHONPATH=python:benchmarks valgrind --tool=callgrind --instr-atstart=no --callgrind-out-file=/tmp/dcbor_floatenc_pid.out.%p --quiet -- .venv/bin/python -u benchmarks/v02_profile/profile_native.py --callgrind-control --fixture profile:float_fractional --operation encode --rounds 1000 --warmup 100
+Helper SHA-256: 23cb2f7f89c89bbdf247373aa762066d394e581fdddd3b7b736f3725540772f6
+Extension SHA-256: ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94
+Wire: 2,307 bytes; SHA-256: 4aa650eb364032e045635504083a3a25166209dc458c53a8395b77bdd08ba172
+ROI: imports, fixture construction, correctness check, and 100 warmups ran before instrumentation; instrumentation was disabled immediately after the measured 1,000-call loop. callgrind_control targets only the helper Python PID.
+Raw metadata:
+cmd:  .venv/bin/python -u benchmarks/v02_profile/profile_native.py --callgrind-control --fixture profile:float_fractional --operation encode --rounds 1000 --warmup 100
+desc: Timerange: Basic block 0 - 28156118
+desc: Trigger: Program termination
+events: Ir
+totals: 135352613
+
+Raw inclusive function blocks (parent/child values overlap; do not sum):
+fn=(4231)
+0 23808000
+cfn=(4250) <_dcbor::direct_wire::FloatEncoding>::from_f64
+calls=384000 0
+0 23232000
+0 7872000
+cfn=(4254)
+calls=384000 0
+0 21990297
+0 384000
+
+fn=(4224)
+0 10000
+cfn=(4226) <pyo3::impl_::extract_argument::FunctionDescription>::extract_arguments_fastcall::<pyo3::impl_::extract_argument::NoVarargs, pyo3::impl_::extract_argument::NoVarkeywords>
+calls=1000 0
+0 69000
+0 8000
+cfn=(4228)
+calls=1000 0
+0 4000
+0 13000
+cfn=(4230)
+calls=1000 0
+0 89733892
+0 8000
+cfn=(4262) _dcbor::wire::preflight_with_mode
+calls=1000 0
+0 43091000
+0 5000
+cob=(1)
+cfi=(2)
+cfn=(4268)
+calls=1000 0
+0 694000
+0 7000
+cob=(2)
+cfi=(1)
+cfn=(1190)
+calls=1000 0
+0 146000
+0 8000
+
+fn=(4262)
+0 1959000
+cfn=(4264)
+calls=1000 0
+0 54000
+0 1152000
+cfn=(4264)
+calls=384000 0
+0 20929000
+0 6557000
+cfn=(4266)
+calls=1000 0
+0 99000
+0 12300000
+cob=(2)
+cfi=(1)
+cfn=(1190)
+calls=1000 0
+0 33000
+0 8000
+
+Map encoding command:
+PYTHONPATH=python:benchmarks valgrind --tool=callgrind --instr-atstart=no --callgrind-out-file=/tmp/dcbor_mapenc_pid.out.%p --quiet -- .venv/bin/python -u benchmarks/v02_profile/profile_native.py --callgrind-control --fixture profile:map_10000_shuffled --operation encode --rounds 1 --warmup 0
+Helper SHA-256: 23cb2f7f89c89bbdf247373aa762066d394e581fdddd3b7b736f3725540772f6
+Extension SHA-256: ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94
+Wire: 139,723 bytes; SHA-256: b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535
+ROI: imports, fixture construction, and one correctness check ran before instrumentation; instrumentation was disabled immediately after the measured single dumps call. callgrind_control targets only the helper Python PID.
+Raw metadata:
+cmd:  .venv/bin/python -u benchmarks/v02_profile/profile_native.py --callgrind-control --fixture profile:map_10000_shuffled --operation encode --rounds 1 --warmup 0
+desc: Timerange: Basic block 0 - 7918675
+desc: Trigger: Program termination
+events: Ir
+totals: 39312711
+
+Raw inclusive function blocks (parent/child values overlap; do not sum):
+fn=(4218)
+0 120050
+cob=(1)
+cfi=(2)
+cfn=(4220)
+calls=10001 0
+0 420021
+0 305376
+cfn=(4201)
+calls=9743 0
+0 6189686
+0 4112
+cfn=(4201)
+calls=257 0
+0 163217
+0 2344882
+cob=(2)
+cfi=(1)
+cfn=(2892)
+calls=181954 0
+0 4040691
+0 3135667
+cfn=(4201)
+calls=10000 0
+0 4070415
+0 2435758
+cob=(2)
+cfi=(1)
+cfn=(2892)
+calls=181954 0
+0 4040691
+0 2746761
+cob=(2)
+cfi=(1)
+cfn=(764)
+calls=1 0
+0 30
+0 321461
+cob=(2)
+cfi=(1)
+cfn=(786)
+calls=7783 0
+0 167702
+0 108962
+cob=(2)
+cfi=(1)
+cfn=(786)
+calls=7783 0
+0 186819
+0 140285
+cob=(2)
+cfi=(1)
+cfn=(764)
+calls=503 0
+0 78395
+0 1328
+cob=(2)
+cfi=(1)
+cfn=(764)
+calls=664 0
+0 103238
+0 46680
+cob=(2)
+cfi=(1)
+cfn=(786)
+calls=1167 0
+0 29402
+0 8169
+cob=(2)
+cfi=(1)
+cfn=(786)
+calls=1167 0
+0 30986
+0 25963
+cob=(2)
+cfi=(1)
+cfn=(786)
+calls=875 0
+0 15393
+0 12250
+cob=(2)
+cfi=(1)
+cfn=(786)
+calls=875 0
+0 16356
+0 58922
+cob=(2)
+cfi=(1)
+cfn=(764)
+calls=65 0
+0 9364
+0 172
+cob=(2)
+cfi=(1)
+cfn=(764)
+calls=86 0
+0 12509
+0 5889
+cob=(2)
+cfi=(1)
+cfn=(786)
+calls=151 0
+0 3834
+0 1057
+cob=(2)
+cfi=(1)
+cfn=(786)
+calls=151 0
+0 4010
+0 4530
+cob=(2)
+cfi=(1)
+cfn=(786)
+calls=151 0
+0 1812
+0 13715
+cob=(2)
+cfi=(1)
+cfn=(786)
+calls=115 0
+0 1984
+0 1725
+cob=(2)
+cfi=(1)
+cfn=(786)
+calls=115 0
+0 2114
+0 1495
+cob=(2)
+cfi=(1)
+cfn=(786)
+calls=115 0
+0 1360
+0 9586
+cob=(2)
+cfi=(1)
+cfn=(764)
+calls=4 0
+0 245
+0 21110
+cob=(2)
+cfi=(1)
+cfn=(786)
+calls=985 0
+0 21604
+0 16745
+cob=(2)
+cfi=(1)
+cfn=(786)
+calls=985 0
+0 24280
+0 12805
+cob=(2)
+cfi=(1)
+cfn=(786)
+calls=985 0
+0 12269
+0 86061
+cob=(2)
+cfi=(1)
+cfn=(786)
+calls=1 0
+0 18
+0 24
+cfn=(4270)
+calls=1 0
+0 78
+0 30000
+cfn=(4270)
+calls=10000 0
+0 706013
+0 289964
+cob=(2)
+cfi=(1)
+cfn=(786)
+calls=10000 0
+0 130000
+0 149996
+cob=(2)
+cfi=(1)
+cfn=(786)
+calls=10000 0
+0 179952
+0 60000
+cob=(2)
+cfi=(1)
+cfn=(1178)
+calls=10000 0
+0 1542281
+0 40000
+cob=(2)
+cfi=(1)
+cfn=(1178)
+calls=10000 0
+0 1843323
+0 10091
+cfn=(4244)
+calls=13 0
+0 2460
+0 64
+cfn=(4244)
+calls=2 0
+0 392
+0 10
+cfn=(4270)
+calls=1 0
+0 27
+0 19
+cfn=(4244)
+calls=1 0
+0 228
+0 3
+
+fn=(4244)
+0 690368
+cfn=(4246) <alloc::raw_vec::RawVecInner>::finish_grow
+calls=30016 0
+0 4647614
+0 270144
+
+fn=(4246)
+0 820474
+cob=(2)
+cfi=(1)
+cfn=(116)
+calls=10015 0
+0 321882
+0 180102
+cob=(2)
+cfi=(1)
+cfn=(764)
+calls=20002 0
+0 2985057
+0 340174
+
+Raw Callgrind files were /tmp/dcbor_floatenc_pid.out.2 and /tmp/dcbor_mapenc_pid.out.2. Callgrind profiles are text; compact excerpts are retained here and the full files remain in /tmp.
+Release extension has named Rust function symbols but lacks DWARF source-line data. Report line references therefore come from direct source inspection.
+
+Float profile ID-to-symbol legend (IDs are local to this profile):
+cfn=(1190) free
+cfn=(4224) _dcbor::__pyfunction_dumps
+cfn=(4226) <pyo3::impl_::extract_argument::FunctionDescription>::extract_arguments_fastcall::<pyo3::impl_::extract_argument::NoVarargs, pyo3::impl_::extract_argument::NoVarkeywords>
+fn=(4228) pyo3::impl_::extract_argument::extract_argument::<&pyo3::instance::Bound<pyo3::types::any::PyAny>, false>
+fn=(4230) _dcbor::direct_encode::encode_into
+cfn=(4231) _dcbor::direct_encode::encode_into'2
+cfn=(4250) <_dcbor::direct_wire::FloatEncoding>::from_f64
+fn=(4254) <_dcbor::direct_wire::FloatEncoding>::write_to
+cfn=(4262) _dcbor::wire::preflight_with_mode
+fn=(4264) <_dcbor::wire::Cursor>::read_header
+fn=(4266) <alloc::raw_vec::RawVec<_dcbor::wire::Frame>>::grow_one
+fn=(4268) PyBytes_FromStringAndSize
+
+Map profile ID-to-symbol legend (IDs are local to this profile):
+cfn=(116) realloc
+cfn=(764) malloc
+cfn=(786) __memcpy_avx_unaligned_erms
+cfn=(1178) free
+cfn=(2892) __memcmp_avx2_movbe
+fn=(4201) _dcbor::direct_encode::encode_into'2
+cfn=(4218) _dcbor::direct_encode::write_dict
+fn=(4220) PyDict_Next
+cfn=(4244) <alloc::raw_vec::RawVecInner<_>>::reserve::do_reserve_and_handle::<alloc::alloc::Global>
+cfn=(4246) <alloc::raw_vec::RawVecInner>::finish_grow
+fn=(4270) <alloc::collections::btree::map::IntoIter<alloc::vec::Vec<u8>, _dcbor::direct_encode::StagedEntry>>::dying_next
