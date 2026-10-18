@@ -22,13 +22,21 @@ promised; agree any target with the owner after the `0.1.1` baseline.
   temporary encoded-byte buffers for sorting and collision resolution.
 - Measure supported `PyBytes.as_bytes()`/`PyString.to_str()` paths; text views
   may cache UTF-8, NFC/numbers transform, and lists/tuples still traverse objects.
-  For current GIL-enabled CPython wheels, the desired bytearray fast path is a
-  scoped `unsafe { as_bytes() }` copied immediately to the output Vec, if its
-  safety proof holds: retain the GIL and make no Python/PyO3 call, callback or
-  re-entry, mutation, or GIL release/detach until the copy completes. PyO3's
-  safe `to_vec()` uses the same short-copy principle and returns owned bytes,
-  but appending that vector adds an intermediate payload copy. With the current
-  `Vec`-to-`PyBytes::new` output, also account for the final full-wire copy. Do not read
+  For bytearray, use PyO3 0.29.2's
+  `pyo3::sync::critical_section::with_critical_section` around the scoped
+  `unsafe { as_bytes() }` borrow and immediate copy into the Rust-owned output
+  Vec. Use this same guard on GIL-enabled and free-threaded builds: it is a
+  no-op on GIL builds and holds the object's critical section on free-threaded
+  builds. Keep the closure to slice acquisition and copying only; make no
+  Python/PyO3 calls, callbacks or re-entry, mutation, or detach while the slice
+  is borrowed, because interpreter calls can suspend the critical section.
+  This requires the current thread to remain attached. Free-threading is a
+  build capability available since CPython 3.13, not a 3.15 version boundary;
+  this requirement does not claim that free-threaded wheels are currently
+  shipped. PyO3's safe `to_vec()` uses the same short-copy guard and returns
+  owned bytes, but appending that vector adds an intermediate payload copy.
+  With the current `Vec`-to-`PyBytes::new` output, also account for the final
+  full-wire copy. Do not read
   headers/reference bytes as payload or add buffer APIs implicitly.
 - The normal encoding path avoids constructing a recursive vendored `CBOR`
   value graph. Decoding and the vendored codec remain in place.
