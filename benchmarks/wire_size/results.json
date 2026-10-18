@@ -1,19 +1,19 @@
 {
   "status": "complete",
   "measurement": "serialized payload bytes; excludes process memory, database storage, and indexes",
-  "generated_at_utc": "2026-10-17T21:18:15.432575+00:00",
+  "generated_at_utc": "2026-10-18T18:30:49.157706+00:00",
   "source": {
-    "git_commit": "0b3627e16f38b52519667ef76d7039d5e259ea64",
-    "git_worktree_dirty": false,
+    "git_commit": "df7078218cc531d9158780f68a3e522457a29375",
+    "git_worktree_dirty": true,
     "generator_path": "benchmarks/wire_size.py",
-    "generator_sha256": "d830eb087a8752f55bd7d63e85b5017f862f2b93bfa6a638d84aa409a04b596f",
+    "generator_sha256": "9b6f162cea1126774502172c67af9aa844b1bb1dfaa97908d432114984182224",
     "fixtures_sha256": "d29a87868226898a33a240edcbe832d2e2ecb115c1e302c5ee3b1bfd41bf58e4",
     "chart_style_path": "benchmarks/chart_style.py",
     "chart_style_sha256": "ff592d67401fbb7c45f66b03d53fa60c62fe4f6b6da7fb990353b44f902bc68d",
     "chart_path": ".github/assets/graphs/wire-size.svg",
     "chart_sha256": "6e713780c777d2132e5e2aaf697450761e18883c4c0c03ffc2b2cbe8aef8ed0b",
     "chart_generator_path": "benchmarks/comparison_charts.py",
-    "chart_generator_sha256": "3b8468102d2fdd044ab92ac6d152e97382dab40153b22ba652865b1b57407ccc"
+    "chart_generator_sha256": "147ed57a610129e42869a47a73d1d46c699ff6b19806d736b1dd32f6688f3ad1"
   },
   "methodology": {
     "json": "UTF-8 compact separators, ensure_ascii=False, allow_nan=False",
@@ -44,14 +44,14 @@
     "processor": "AMD Ryzen 7 7435HS",
     "rustc_version_verbose": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
     "cargo_version": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
-    "cargo_lock_sha256": "9fcd311c804f038f3b2da73c5b81f42e990b01dd267acdbc1a1f17af8fd16cf7",
-    "dcbor_version": "0.1.0",
+    "cargo_lock_sha256": "9a6cf1e35eb293efb9b5aa314f2af27652618b155b97e03dc1b6e6dd19df6441",
+    "dcbor_version": "0.1.1",
     "dcbor_build": {
       "profile": "release",
       "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
-      "extension_sha256": "0cf305e9b25f460a20cf87f6e6a4c6c8966d849ca404a45caed539f448239735",
-      "release_artifact_path": "target/release/lib_dcbor.so",
-      "release_artifact_sha256": "0cf305e9b25f460a20cf87f6e6a4c6c8966d849ca404a45caed539f448239735"
+      "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+      "release_artifact_path": "/home/wizzygeek/code/AIdCBOR/target/release/lib_dcbor.so",
+      "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94"
     },
     "cbor2_version": "6.1.5",
     "cbor2_module_path": "/home/wizzygeek/code/AIdCBOR/.venv/lib64/python3.14/site-packages/cbor2/__init__.py",

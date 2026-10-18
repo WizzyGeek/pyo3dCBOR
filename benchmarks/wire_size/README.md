@@ -1,7 +1,7 @@
 # Wire-size comparison
 
 This report measures encoded payload bytes for eight shared JSON-compatible
-fixtures. It compares compact UTF-8 JSON, dCBOR 0.1.0, four generic CBOR
+fixtures. It compares compact UTF-8 JSON, dCBOR 0.1.1, four generic CBOR
 modes, two `orjson` JSON modes, two `msgspec` MessagePack modes, and strict
 DAG-CBOR through `cbrrr`. It does not measure object memory, database storage,
 transport, or query cost.

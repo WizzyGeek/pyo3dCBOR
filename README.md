@@ -59,12 +59,14 @@ rules differ. See the [benchmark scope and reports](docs/benchmarks.md),
 [wire-size method](benchmarks/wire_size/README.md), and
 [latency method](benchmarks/latency/README.md).
 
+The active benchmark capture uses dCBOR 0.1.1 at source commit `df70782`.
+
 ## Guides
 
 | Guide | Covers |
 | --- | --- |
 | [Python API](docs/python-api.md) | `dumps()`, `loads()`, `load()`, supported values, maps, dates, errors, and limits |
-| [Benchmark reports](docs/benchmarks.md) | Size, latency, profile, and a historical Rust-core graph |
+| [Benchmark reports](docs/benchmarks.md) | Size, latency, and workload profiles |
 | [Development and CI](docs/development.md) | Build/test commands and CI matrix |
 | [Release guide](docs/releasing.md) | GitHub release process and assets |
 

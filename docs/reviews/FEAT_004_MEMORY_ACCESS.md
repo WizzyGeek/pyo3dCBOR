@@ -105,8 +105,9 @@ bytes copied into the Rust wire buffer, map-key staging bytes, final wire
 length, and the final Python-bytes copy. `tracemalloc` alone omits Rust tree and
 buffer allocations. Use CPU cache counters (for example cycles, instructions,
 cache references, cache misses) on controlled Linux runs where available; keep
-those counters separate from wall-time attribution. The existing prepared-tree
-Rust-core benchmark remains a separate comparison.
+those counters separate from wall-time attribution. The former prepared-tree
+measurement was a distinct whole-operation comparison and does not isolate
+allocator behavior.
 
 ## Primary references
 

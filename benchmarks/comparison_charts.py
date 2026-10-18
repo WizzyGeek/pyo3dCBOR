@@ -425,7 +425,7 @@ def latency_chart(report: dict[str, Any]) -> str:
 
 
 def profile_chart(report: dict[str, Any]) -> str:
-    """Plot map encode-time scaling plus direct float and Unicode profiles."""
+    """Plot map encode/decode scaling plus direct float and Unicode profiles."""
     if report.get("status") != "complete" or not isinstance(report.get("cases"), dict):
         detail = report.get("blocker") or report.get("reason") or report.get("status") or "no complete profile"
         return _unavailable("dCBOR workload profile", str(detail))
@@ -433,7 +433,10 @@ def profile_chart(report: dict[str, Any]) -> str:
     assert isinstance(cases, dict)
     order_colors = {"sorted": PALETTE["dcbor"], "reverse": PALETTE["json"], "shuffled": PALETTE["coral"]}
     order_labels = {"sorted": "Sorted", "reverse": "Reverse", "shuffled": "Shuffled"}
-    map_rows: dict[str, list[tuple[int, float, str]]] = {order: [] for order in order_colors}
+    map_rows: dict[str, dict[str, list[tuple[int, float, str]]]] = {
+        operation: {order: [] for order in order_colors}
+        for operation in ("encode", "decode")
+    }
     direct_cases: dict[str, list[tuple[str, dict[str, Any]]]] = {"float": [], "unicode": []}
     for case_id, case in cases.items():
         if not isinstance(case, dict):
@@ -441,15 +444,17 @@ def profile_chart(report: dict[str, Any]) -> str:
         category = case.get("category")
         if category == "map_order" or case.get("family") == "map_order":
             order = str(case.get("order", ""))
-            operations = case.get("operations", {})
-            encode = operations.get("encode", {}) if isinstance(operations, dict) else {}
-            median_ns = encode.get("median_ns_per_operation") if isinstance(encode, dict) else None
             size = case.get("size")
-            if order in map_rows and isinstance(size, (int, float)) and size > 0 and isinstance(median_ns, (int, float)) and median_ns > 0:
-                map_rows[order].append((int(size), float(median_ns), str(case_id)))
+            operations = case.get("operations", {})
+            if order in order_colors and isinstance(size, (int, float)) and size > 0 and isinstance(operations, dict):
+                for operation in map_rows:
+                    metric = operations.get(operation, {})
+                    median_ns = metric.get("median_ns_per_operation") if isinstance(metric, dict) else None
+                    if isinstance(median_ns, (int, float)) and median_ns > 0:
+                        map_rows[operation][order].append((int(size), float(median_ns), str(case_id)))
         elif category in direct_cases:
             direct_cases[category].append((str(case_id), case))
-    all_map_rows = [item for values in map_rows.values() for item in values]
+    all_map_rows = [item for rows in map_rows.values() for values in rows.values() for item in values]
     direct_times: list[float] = []
     for rows in direct_cases.values():
         for _, case in rows:
@@ -465,7 +470,11 @@ def profile_chart(report: dict[str, Any]) -> str:
         return _unavailable("dCBOR workload profile", "No map, float, or Unicode measurements are present")
 
     width, height = 1300, 760
-    map_plot_x, map_plot_y, map_plot_w, map_plot_h = 232, 166, 748, 218
+    map_plot_y, map_plot_h = 164, 218
+    map_panels = {
+        "encode": {"title": "Map encode scaling", "plot_x": 96, "plot_w": 490},
+        "decode": {"title": "Map decode scaling", "plot_x": 756, "plot_w": 490},
+    }
     sizes = sorted({size for size, _, _ in all_map_rows})
     map_min_x = log10(min(sizes)) if sizes else 0
     map_max_x = log10(max(sizes)) if sizes else 1
@@ -474,47 +483,55 @@ def profile_chart(report: dict[str, Any]) -> str:
     map_times_us = [ns / 1000 for _, ns, _ in all_map_rows]
     map_min_y_pow, map_max_y_pow = _power_range(map_times_us, base=10.0)
 
-    def map_x(size: int) -> float:
-        return map_plot_x + (log10(size) - map_min_x) / (map_max_x - map_min_x) * map_plot_w
-
     def map_y(us: float) -> float:
         return map_plot_y + map_plot_h - (log10(us) - map_min_y_pow) / (map_max_y_pow - map_min_y_pow) * map_plot_h
 
-    map_grid: list[str] = []
     map_tick_sizes = sizes if len(sizes) <= 6 else [sizes[0], *[size for size in sizes[1:-1] if round(log10(size)) == log10(size)], sizes[-1]]
-    for size in map_tick_sizes:
-        x = map_x(size)
-        map_grid.append(
-            f'<line x1="{x:.2f}" y1="{map_plot_y}" x2="{x:.2f}" y2="{map_plot_y + map_plot_h}" stroke="{PALETTE["line"]}" stroke-dasharray="2 5" />'
-            f'<text x="{x:.2f}" y="{map_plot_y + map_plot_h + 20}" text-anchor="middle" class="axis">{size:,}</text>'
-        )
-    for power in _power_ticks(map_min_y_pow, map_max_y_pow):
-        us = 10 ** power
-        y = map_y(us)
-        label = f"{us:g} µs" if us < 1000 else f"{us / 1000:g} ms"
-        map_grid.append(
-            f'<line x1="{map_plot_x}" y1="{y:.2f}" x2="{map_plot_x + map_plot_w}" y2="{y:.2f}" stroke="{PALETTE["line"]}" stroke-dasharray="2 5" />'
-            f'<text x="{map_plot_x - 12}" y="{y + 4:.2f}" text-anchor="end" class="axis">{xml_text(label)}</text>'
-        )
+    map_grid: list[str] = []
     map_svg: list[str] = []
-    for order, color in order_colors.items():
-        rows = sorted(map_rows[order])
-        if not rows:
-            continue
-        points = " ".join(f"{map_x(size):.2f},{map_y(ns / 1000):.2f}" for size, ns, _ in rows)
-        map_svg.append(f'<polyline points="{points}" fill="none" stroke="{color}" stroke-width="3" stroke-linejoin="round" />')
-        for size, ns, case_id in rows:
-            metric = cases[case_id].get("operations", {}).get("encode", {})
-            mad = metric.get("mad_ns_per_operation") if isinstance(metric, dict) else None
-            tooltip = xml_text(f"{order_labels[order]} {size:,}-entry map: encode median {ns:,.0f} ns/op" + (f", MAD {mad:,.0f} ns" if isinstance(mad, (int, float)) else ""))
-            x, y = map_x(size), map_y(ns / 1000)
-            if order == "reverse":
-                marker = f'<rect x="{x - 4.5:.2f}" y="{y - 4.5:.2f}" width="9" height="9" fill="{color}"><title>{tooltip}</title></rect>'
-            elif order == "shuffled":
-                marker = f'<polygon points="{x:.2f},{y - 6:.2f} {x + 6:.2f},{y + 5:.2f} {x - 6:.2f},{y + 5:.2f}" fill="{color}"><title>{tooltip}</title></polygon>'
-            else:
-                marker = f'<circle cx="{x:.2f}" cy="{y:.2f}" r="5" fill="{color}"><title>{tooltip}</title></circle>'
-            map_svg.append(marker)
+    for operation, panel in map_panels.items():
+        plot_x = panel["plot_x"]
+        plot_w = panel["plot_w"]
+
+        def map_x(size: int, *, plot_x: int = plot_x, plot_w: int = plot_w) -> float:
+            return plot_x + (log10(size) - map_min_x) / (map_max_x - map_min_x) * plot_w
+
+        for size in map_tick_sizes:
+            x = map_x(size)
+            map_grid.append(
+                f'<line x1="{x:.2f}" y1="{map_plot_y}" x2="{x:.2f}" y2="{map_plot_y + map_plot_h}" stroke="{PALETTE["line"]}" stroke-dasharray="2 5" />'
+                f'<text x="{x:.2f}" y="{map_plot_y + map_plot_h + 20}" text-anchor="middle" class="axis">{size:,}</text>'
+            )
+        for power in _power_ticks(map_min_y_pow, map_max_y_pow):
+            us = 10 ** power
+            y = map_y(us)
+            label = f"{us:g} µs" if us < 1000 else f"{us / 1000:g} ms"
+            map_grid.append(
+                f'<line x1="{plot_x}" y1="{y:.2f}" x2="{plot_x + plot_w}" y2="{y:.2f}" stroke="{PALETTE["line"]}" stroke-dasharray="2 5" />'
+                f'<text x="{plot_x - 12}" y="{y + 4:.2f}" text-anchor="end" class="axis">{xml_text(label)}</text>'
+            )
+        for order, color in order_colors.items():
+            rows = sorted(map_rows[operation][order])
+            if not rows:
+                continue
+            points = " ".join(f"{map_x(size):.2f},{map_y(ns / 1000):.2f}" for size, ns, _ in rows)
+            map_svg.append(f'<polyline points="{points}" fill="none" stroke="{color}" stroke-width="3" stroke-linejoin="round" />')
+            for size, ns, case_id in rows:
+                metric = cases[case_id].get("operations", {}).get(operation, {})
+                mad = metric.get("mad_ns_per_operation") if isinstance(metric, dict) else None
+                tooltip = xml_text(
+                    f"{order_labels[order]} source insertion order, {size:,}-entry map: "
+                    f"{operation} median {ns:,.0f} ns/op"
+                    + (f", MAD {mad:,.0f} ns" if isinstance(mad, (int, float)) else "")
+                )
+                x, y = map_x(size), map_y(ns / 1000)
+                if order == "reverse":
+                    marker = f'<rect x="{x - 4.5:.2f}" y="{y - 4.5:.2f}" width="9" height="9" fill="{color}"><title>{tooltip}</title></rect>'
+                elif order == "shuffled":
+                    marker = f'<polygon points="{x:.2f},{y - 6:.2f} {x + 6:.2f},{y + 5:.2f} {x - 6:.2f},{y + 5:.2f}" fill="{color}"><title>{tooltip}</title></polygon>'
+                else:
+                    marker = f'<circle cx="{x:.2f}" cy="{y:.2f}" r="5" fill="{color}"><title>{tooltip}</title></circle>'
+                map_svg.append(marker)
 
     direct_min_pow, direct_max_pow = _power_range(direct_times, base=10.0) if direct_times else (-1, 1)
     lower_plot_w = 275
@@ -571,7 +588,7 @@ def profile_chart(report: dict[str, Any]) -> str:
 
     return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-labelledby="title desc">
   <title id="title">dCBOR profile: map scale, floats, and Unicode</title>
-  <desc id="desc">The map panel plots median encode time against map entry count on logarithmic axes, separately for sorted, reverse, and shuffled insertion order. Float and Unicode panels show encode and decode median times as separate marks on a shared logarithmic microsecond scale, with each case's exact encoded wire bytes. Workloads have different semantics and payload sizes; ratios between those cases are not implied. Tooltips and the profile JSON retain exact medians and MAD.</desc>
+  <desc id="desc">The top side-by-side map panels plot encode and decode medians against entry count using the same logarithmic entry-count and time limits. Each distinguishes sorted, reverse, and shuffled source insertion order; these orders produce identical canonical wire, so decode differences by order are measurement variation, not evidence of an order-dependent decoder. Lower float and Unicode panels show encode and decode medians on a shared logarithmic microsecond scale, with exact encoded wire bytes. Workloads have different semantics and payload sizes; ratios between them are not implied. Tooltips and the profile JSON retain exact medians and MAD.</desc>
   <style>{COMMON_STYLE}
     .hero {{ font-size: 30px; font-weight: 760; letter-spacing: -0.55px; }}
     .dek {{ font-size: 15px; fill: {PALETTE["muted"]}; }}
@@ -581,18 +598,22 @@ def profile_chart(report: dict[str, Any]) -> str:
   </style>
   <rect width="{width}" height="{height}" fill="{PALETTE["paper"]}" />
   <text x="48" y="45" class="hero">dCBOR profile: map scale, floats, and Unicode</text>
-  <text x="48" y="72" class="dek">Map encode time scales with entry count and key order · lower panels show each case directly, not as unequal-size ratios</text>
-  <text x="48" y="126" class="panel-title">Map encode scaling</text>
-  <circle cx="257" cy="121" r="5" fill="{order_colors["sorted"]}" /><text x="269" y="126" class="legend">Sorted</text>
-  <rect x="371" y="116" width="10" height="10" fill="{order_colors["reverse"]}" /><text x="389" y="126" class="legend">Reverse</text>
-  <polygon points="503,115 509,126 497,126" fill="{order_colors["shuffled"]}" /><text x="517" y="126" class="legend">Shuffled</text>
+  <text x="48" y="72" class="dek">Map operations share log-scaled entry-count and time limits · lower panels show each case directly, not as unequal-size ratios</text>
+  <text x="48" y="126" class="legend">Source insertion order:</text>
+  <circle cx="213" cy="121" r="5" fill="{order_colors["sorted"]}" /><text x="225" y="126" class="legend">Sorted</text>
+  <rect x="326" y="116" width="10" height="10" fill="{order_colors["reverse"]}" /><text x="344" y="126" class="legend">Reverse</text>
+  <polygon points="458,115 464,126 452,126" fill="{order_colors["shuffled"]}" /><text x="472" y="126" class="legend">Shuffled</text>
+  <text x="48" y="151" class="panel-title">Map encode scaling</text>
+  <text x="708" y="151" class="panel-title">Map decode scaling</text>
   {''.join(map_grid)}
   {''.join(map_svg)}
-  <text x="{map_plot_x + map_plot_w / 2}" y="{map_plot_y + map_plot_h + 43}" text-anchor="middle" class="axis">Map entries · log scale</text>
-  <text transform="translate(32 {map_plot_y + map_plot_h / 2}) rotate(-90)" text-anchor="middle" class="axis">Encode median · µs, log scale</text>
+  <text x="341" y="{map_plot_y + map_plot_h + 43}" text-anchor="middle" class="axis">Map entries · log scale</text>
+  <text x="1001" y="{map_plot_y + map_plot_h + 43}" text-anchor="middle" class="axis">Map entries · log scale</text>
+  <text transform="translate(23 {map_plot_y + map_plot_h / 2}) rotate(-90)" text-anchor="middle" class="axis">Median · µs, log scale</text>
+  <text transform="translate(683 {map_plot_y + map_plot_h / 2}) rotate(-90)" text-anchor="middle" class="axis">Median · µs, log scale</text>
   <circle cx="57" cy="470" r="5" fill="{PALETTE["dcbor"]}" /><text x="69" y="475" class="legend">Encode</text>
   <polygon points="163,464 169,470 163,476 157,470" fill="{PALETTE["coral"]}" /><text x="178" y="475" class="legend">Decode</text>
-  <text x="275" y="475" class="caption">Shared log µs axis below · bytes are shown per case · input semantics and output sizes differ</text>
+  <text x="275" y="475" class="caption">Shared log µs axis below · map panels share limits · input and output sizes differ across lower cases</text>
   {''.join(panels)}
   <text x="48" y="{height - 14}" class="caption">Points are medians of process batch means; hover for exact values. Raw samples, MAD, and workload hashes: profile/results.json.</text>
 </svg>
@@ -622,95 +643,3 @@ def _profile_case_label(category: str, case_id: str) -> str:
         "unicode_expanding_nfc": "Expanding NFC",
     }
     return labels.get(case_id, case_id.replace("_", " ").capitalize())
-
-
-def rust_core_chart(report: dict[str, Any]) -> str:
-    """Compare Rust core and Python dCBOR as paired whole-operation ratios."""
-    unavailable = _complete(report, "Rust core comparison")
-    if unavailable:
-        return unavailable
-    fixtures = report["fixtures"]
-    assert isinstance(fixtures, dict)
-    operations = ("encode", "decode")
-    op_labels = {"encode": "Encode", "decode": "Decode"}
-    ratios: dict[str, list[tuple[str, float, float, float]]] = {op: [] for op in operations}
-    all_ratios: list[float] = []
-    for name, details in fixtures.items():
-        if not isinstance(details, dict):
-            continue
-        rust = details.get("rust_core", {})
-        python = details.get("python_dcbor", {})
-        for operation in operations:
-            rust_metric = rust.get(operation, {}) if isinstance(rust, dict) else {}
-            python_metric = python.get(operation, {}) if isinstance(python, dict) else {}
-            rust_ns = rust_metric.get("median_ns_per_operation") if isinstance(rust_metric, dict) else None
-            python_ns = python_metric.get("median_ns_per_operation") if isinstance(python_metric, dict) else None
-            if isinstance(rust_ns, (int, float)) and rust_ns > 0 and isinstance(python_ns, (int, float)) and python_ns > 0:
-                ratio = rust_ns / python_ns
-                ratios[operation].append((str(name), ratio, float(rust_ns), float(python_ns)))
-                all_ratios.append(ratio)
-    if not all_ratios:
-        return _unavailable("Rust core comparison", "No paired Rust core and Python dCBOR timings are present")
-    min_power, max_power = _power_range(all_ratios)
-    width = 1120
-    plot_x, plot_width, value_x = 330, 460, 836
-    row_top, row_pitch = 65, 29
-    panel_height = row_top + max(len(ratios[op]) for op in operations) * row_pitch + 14
-    panel_gap = 24
-    panel_y = (150, 150 + panel_height + panel_gap)
-    height = panel_y[-1] + panel_height + 48
-
-    def x_for_ratio(ratio: float) -> float:
-        return plot_x + (log2(ratio) - min_power) / (max_power - min_power) * plot_width
-
-    powers = _power_ticks(min_power, max_power)
-    panels = []
-    for operation, top in zip(operations, panel_y):
-        panel: list[str] = [
-            f'<text x="48" y="{top + 26}" class="operation">{op_labels[operation]}</text>',
-            f'<text x="{value_x}" y="{top + 26}" class="column-head">Rust core / Python ratio</text>',
-            f'<line x1="48" y1="{top + panel_height}" x2="1072" y2="{top + panel_height}" class="rule" />',
-        ]
-        for power in powers:
-            ratio = 2 ** power
-            x = x_for_ratio(ratio)
-            baseline = power == 0
-            panel.append(
-                f'<line x1="{x:.2f}" y1="{top + 38}" x2="{x:.2f}" y2="{top + panel_height - 5}" stroke="{PALETTE["ink"] if baseline else PALETTE["line"]}" stroke-width="{2 if baseline else 1}" stroke-dasharray="{"0" if baseline else "2 5"}" />'
-                f'<text x="{x:.2f}" y="{top + 53}" text-anchor="middle" class="axis">{_format_ratio_tick(ratio)}</text>'
-            )
-        for index, (name, ratio, rust_ns, python_ns) in enumerate(ratios[operation]):
-            center = top + row_top + index * row_pitch
-            color = PALETTE["coral"] if ratio > 1 else PALETTE["dcbor"]
-            tooltip = xml_text(
-                f"{_fixture_label(name)} {operation}: Rust core {rust_ns:,.0f} ns/op; Python dCBOR {python_ns:,.0f} ns/op; Rust/Python {ratio:.4f}×"
-            )
-            panel.extend(
-                [
-                    f'<text x="48" y="{center + 5}" class="row-label">{xml_text(_fixture_label(name))}</text>',
-                    f'<line x1="{x_for_ratio(min(1.0, ratio)):.2f}" y1="{center}" x2="{x_for_ratio(max(1.0, ratio)):.2f}" y2="{center}" stroke="{color}" stroke-width="3" />',
-                    f'<circle cx="{x_for_ratio(ratio):.2f}" cy="{center}" r="6" fill="{color}"><title>{tooltip}</title></circle>',
-                    f'<text x="{value_x}" y="{center + 5}" class="ratio-value" fill="{color}">{ratio:.2f}×</text>',
-                ]
-            )
-        panels.append("".join(panel))
-    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-labelledby="title desc">
-  <title id="title">Rust core and Python dCBOR whole-operation timing</title>
-  <desc id="desc">Encode and decode panels compare paired Rust core and Python dCBOR medians for each fixture. Ratios are Rust core divided by Python dCBOR; lower than one means the Rust path took less time in this measurement. This compares whole operations: Python conversion is included, Rust CBOR trees are prebuilt, and it is not an isolated FFI benchmark.</desc>
-  <style>{COMMON_STYLE}
-    .hero {{ font-size: 30px; font-weight: 760; letter-spacing: -0.55px; }}
-    .dek {{ font-size: 15px; fill: {PALETTE["muted"]}; }}
-    .operation {{ font-size: 20px; font-weight: 720; }}
-    .ratio-value {{ font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; }}
-  </style>
-  <rect width="{width}" height="{height}" fill="{PALETTE["paper"]}" />
-  <text x="48" y="45" class="hero">Rust core vs Python dCBOR</text>
-  <text x="48" y="73" class="dek">Paired fixture medians · Rust/Python ratio · lower than 1× means less elapsed time in this run</text>
-  <line x1="54" y1="105" x2="100" y2="105" stroke="{PALETTE["dcbor"]}" stroke-width="3" /><circle cx="100" cy="105" r="5" fill="{PALETTE["dcbor"]}" />
-  <text x="113" y="110" class="legend">Below baseline: Rust core took less time</text>
-  <line x1="408" y1="105" x2="454" y2="105" stroke="{PALETTE["coral"]}" stroke-width="3" /><circle cx="454" cy="105" r="5" fill="{PALETTE["coral"]}" />
-  <text x="467" y="110" class="legend">Above baseline: Python dCBOR took less time</text>
-  {''.join(panels)}
-  <text x="48" y="{height - 15}" class="caption">Whole-operation comparison: Python conversion included; Rust trees prepared. Not an isolated FFI benchmark. Process samples and MAD remain in raw JSON.</text>
-</svg>
-'''

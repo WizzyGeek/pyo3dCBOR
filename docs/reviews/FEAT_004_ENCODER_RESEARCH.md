@@ -40,17 +40,11 @@ expected end-to-end speedup.
 
 ## Measurement limits
 
-The stored Rust-core and profile reports were captured on 2026-10-17 at source
-commit `0b3627e` with package version `0.1.0`; they predate the current `0.1.1`
-commit. Treat them as historical baseline evidence until rerun against a
-matching current release build.
-
-The [Rust-core report](../../benchmarks/rust_core/README.md) times Rust encoding
-from a tree parsed before the timer and notes that map sort bytes may be warm.
-By contrast, Python `dcbor.dumps()` includes conversion from Python values.
-That comparison cannot isolate FFI overhead or quantify the gain from removing
-the tree. The [profile report](../../benchmarks/profile/README.md) times only
-the Python binding, with 10/100/1,000/10,000-entry map cases and float/Unicode
+An earlier Rust/Python comparison used Rust values prepared before timing,
+while Python `dcbor.dumps()` included conversion from Python values. That
+whole-operation comparison cannot isolate FFI overhead or quantify the gain
+from removing the tree. The [profile report](../../benchmarks/profile/README.md)
+times the Python binding on 10/100/1,000/10,000-entry maps and float/Unicode
 cases; it is useful for choosing workloads, not for assigning causality.
 [`docs/reviews/PERF_REVIEW.md`](PERF_REVIEW.md) also labels earlier experiments
 historical and warns that later key-budget/text-cache changes require fresh
@@ -163,8 +157,8 @@ feature is complete; see the [encoding record](../encoding.md) and the
 5. **Benchmark owner:** pair current release build/binary fingerprints on
    scalars/lists, 10–10,000-key maps in three orders, nested/large byte values,
    and NFC/decomposed/expanding text. Report bytes and allocation evidence;
-   measure speedup against the matched previous Python encoder, with the
-   prepared-tree Rust-core timing retained as separately labeled context.
+   measure speedup against the matched previous Python encoder; keep any
+   non-matched prepared-tree observations separate from that comparison.
 
 No source modifications, builds, tests, benchmark runs, installs, or commits
 were made as part of this research.

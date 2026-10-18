@@ -1,11 +1,11 @@
 {
   "measurement": "serialized payload bytes; not memory footprint",
-  "generated_at_utc": "2026-10-17T21:18:15.046654+00:00",
+  "generated_at_utc": "2026-10-18T18:30:46.608297+00:00",
   "source": {
-    "git_commit": "0b3627e16f38b52519667ef76d7039d5e259ea64",
-    "git_worktree_dirty": false,
+    "git_commit": "df7078218cc531d9158780f68a3e522457a29375",
+    "git_worktree_dirty": true,
     "generator_path": "benchmarks/encoded_size.py",
-    "generator_sha256": "13eac0a85dcdbb0811997a675678e5159df718dcfe0ccaa2818935bbe454bfe2",
+    "generator_sha256": "baf6ecd8e824231832cdaba5c0a8b850ea5dca6751f80dcbc26da6991b8ead07",
     "fixtures_sha256": "d29a87868226898a33a240edcbe832d2e2ecb115c1e302c5ee3b1bfd41bf58e4",
     "chart_style_path": "benchmarks/chart_style.py",
     "chart_style_sha256": "ff592d67401fbb7c45f66b03d53fa60c62fe4f6b6da7fb990353b44f902bc68d",
@@ -17,11 +17,11 @@
     "profile_verification": "imported extension SHA-256 matches the Cargo release artifact",
     "reproduction_command": "CARGO_BUILD_JOBS=2 maturin develop --release --locked",
     "release_artifact_path": "target/release/lib_dcbor.so",
-    "release_artifact_sha256": "0cf305e9b25f460a20cf87f6e6a4c6c8966d849ca404a45caed539f448239735",
+    "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
     "extension_matches_release_artifact": true,
     "rustc_version": "rustc 1.98.1 (48a229cea 2026-09-01)",
     "cargo_version": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
-    "root_cargo_lock_sha256": "9fcd311c804f038f3b2da73c5b81f42e990b01dd267acdbc1a1f17af8fd16cf7"
+    "root_cargo_lock_sha256": "9a6cf1e35eb293efb9b5aa314f2af27652618b155b97e03dc1b6e6dd19df6441"
   },
   "environment": {
     "python_version": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
@@ -29,9 +29,9 @@
     "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
     "machine": "x86_64",
     "processor": "AMD Ryzen 7 7435HS",
-    "dcbor_version": "0.1.0",
+    "dcbor_version": "0.1.1",
     "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
-    "extension_sha256": "0cf305e9b25f460a20cf87f6e6a4c6c8966d849ca404a45caed539f448239735"
+    "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94"
   },
   "json_encoding": {
     "implementation": "Python standard-library json",

@@ -8,6 +8,8 @@ capture uses CPython 3.14 on Linux). They do not measure memory, database
 storage, transport, or application behavior. Each raw report includes
 per-fixture values and run metadata.
 
+The active reports and figures use dCBOR 0.1.1 at source commit `df70782`.
+
 ## Encoded size
 
 The [compact JSON and dCBOR report](../benchmarks/encoded_size/README.md)
@@ -55,25 +57,18 @@ establishing a universal ranking.
 ## dCBOR profile workloads
 
 The [profile report](../benchmarks/profile/README.md) measures dCBOR on maps
-with 10 to 10,000 keys in sorted, reversed, and seeded-shuffled insertion
-orders; float normalization cases; and ASCII, NFC, decomposed, and expanding
-Unicode text. It reports encode/decode medians and MAD, wire sizes, hashes,
-and normalization metadata. These profile-specific cases are separate from
-the common cross-codec fixtures and use the dCBOR normalization rules in their
-correctness checks.
+with 10 to 10,000 keys in sorted, reversed, and seeded-shuffled source
+insertion orders; float normalization cases; and ASCII, NFC, decomposed, and
+expanding Unicode text. Its side-by-side map encode/decode panels share
+logarithmic entry-count and time limits. The three map orders produce
+identical canonical wire, so decode differences are measurement variation,
+not evidence of insertion-order-dependent decoding. Four extra controls
+(`integer_width_boundaries`, `dict_nfc_key_collisions`, `nested_scalar_tree`,
+and `cbor_map_snapshot`) remain in the raw report but are not charted. These
+profile-specific cases are separate from the common cross-codec fixtures and
+use dCBOR normalization rules in their correctness checks.
 
-![dCBOR profile workloads show map encoding by size and insertion order, plus float and Unicode cases.](../.github/assets/graphs/profile.svg)
-
-## Historical Rust-core comparison
-
-The [historical report](../benchmarks/rust_core/README.md) compared the
-vendored Rust core with Python binding calls before the project moved to its
-native decoder. It used prebuilt vendored `CBOR` trees for Rust encoding, while
-Python encoding included value conversion. The raw report and original figure
-remain available, but the runner and example were retired with that old
-architecture; the results do not describe current native decoder performance.
-
-![Historical vendored Rust-core and Python-binding comparison; it does not measure the current native decoder.](../.github/assets/graphs/rust-core.svg)
+![Side-by-side map encode and decode scaling share logarithmic limits; lower panels show float and Unicode cases.](../.github/assets/graphs/profile.svg)
 
 ## Direct Python encoding (`0.1.1` development)
 
@@ -81,9 +76,9 @@ The [paired direct-encoder report](../benchmarks/feat004/README.md) compares
 matched release artifacts and identical wire output. Across the eight common
 fixtures, the median encode ratio is 3.04× (range 1.16×–4.47×); round-trip is
 1.59× and common-fixture decode is 1.02×, near parity. These ratios summarize
-this fixture set, not a promised target. The existing `0.1.0` reports and
-graphs above remain historical; they are not the `0.1.1` paired baseline. The
-original mixed-profile observation is preserved in the
+this fixture set, not a promised target. This separate FEAT004 paired capture
+is distinct from the active reports above, which use dCBOR 0.1.1 at source
+commit `df70782`. The original mixed-profile observation is preserved in the
 [BUG_005 history](reviews/mixed_profile_decode_history.md).
 
 ## Native decoder paired profile
@@ -104,6 +99,5 @@ which is tracked separately as
 - [Latency](../benchmarks/latency/README.md)
 - [dCBOR profile](../benchmarks/profile/README.md)
 - [Native decoder paired profile](../benchmarks/native_decoder/README.md)
-- [Historical Rust-core report](../benchmarks/rust_core/README.md)
 - [Benchmark index and commands](../benchmarks/README.md)
 - [Codec and format landscape](competitive-landscape.md)

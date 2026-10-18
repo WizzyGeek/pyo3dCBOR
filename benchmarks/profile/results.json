@@ -1,28 +1,28 @@
 {
   "status": "complete",
-  "measurement": "dCBOR encode/decode latency for profile-specific maps, float normalization, and Unicode NFC normalization",
-  "generated_at_utc": "2026-10-17T21:20:25.260576+00:00",
+  "measurement": "dCBOR encode/decode latency for profile-specific maps, explicit integer widths, NFC key collisions, nested values, floats, Unicode, and CBORMap snapshots",
+  "generated_at_utc": "2026-10-18T18:33:13.091893+00:00",
   "source": {
-    "git_commit": "0b3627e16f38b52519667ef76d7039d5e259ea64",
-    "git_worktree_dirty": false,
+    "git_commit": "df7078218cc531d9158780f68a3e522457a29375",
+    "git_worktree_dirty": true,
     "generator_path": "benchmarks/profile.py",
-    "generator_sha256": "e1abc2bbd1190e19aa745e90d36d9c41696f8d68d47a9108ecdc45cbda87cbeb",
+    "generator_sha256": "edbee74ef2b36c02c59441bb18b268100cfc9304386d69e9dd816687558e642d",
     "fixtures_path": "benchmarks/profile_fixtures.py",
-    "fixtures_sha256": "4897753c4f1759f81fadc73394ead811610be7f9ed2fa233df7d973a2c840c22",
+    "fixtures_sha256": "90502720f32e7d88821b14a13b645853c6c12ad8f2e82860fbde222316c19526",
     "chart_path": ".github/assets/graphs/profile.svg",
-    "chart_sha256": "b11eb96253f5c844565f5775089f59c1ed0aa34749f9de2fcbb776e2cdbffb40",
+    "chart_sha256": "7a09d4cefd3174d7463b7c5ed78b2b81b33be8135b1a87003f291b9f54771209",
     "chart_generator_path": "benchmarks/comparison_charts.py",
-    "chart_generator_sha256": "3b8468102d2fdd044ab92ac6d152e97382dab40153b22ba652865b1b57407ccc",
+    "chart_generator_sha256": "147ed57a610129e42869a47a73d1d46c699ff6b19806d736b1dd32f6688f3ad1",
     "chart_style_path": "benchmarks/chart_style.py",
     "chart_style_sha256": "ff592d67401fbb7c45f66b03d53fa60c62fe4f6b6da7fb990353b44f902bc68d"
   },
   "build": {
     "profile": "release",
-    "verified_by": "SHA-256 equality with target/release/lib_dcbor.so",
-    "release_artifact_path": "target/release/lib_dcbor.so",
-    "release_artifact_sha256": "0cf305e9b25f460a20cf87f6e6a4c6c8966d849ca404a45caed539f448239735",
+    "verified_by": "SHA-256 equality with configured release artifact",
+    "release_artifact_path": "/home/wizzygeek/code/AIdCBOR/target/release/lib_dcbor.so",
+    "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
     "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
-    "extension_sha256": "0cf305e9b25f460a20cf87f6e6a4c6c8966d849ca404a45caed539f448239735"
+    "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94"
   },
   "environment": {
     "python_version": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
@@ -35,15 +35,15 @@
     "processor": "AMD Ryzen 7 7435HS",
     "rustc_version_verbose": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
     "cargo_version": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
-    "cargo_lock_sha256": "9fcd311c804f038f3b2da73c5b81f42e990b01dd267acdbc1a1f17af8fd16cf7",
-    "dcbor_version": "0.1.0",
+    "cargo_lock_sha256": "9a6cf1e35eb293efb9b5aa314f2af27652618b155b97e03dc1b6e6dd19df6441",
+    "dcbor_version": "0.1.1",
     "dcbor_build": {
       "profile": "release",
-      "verified_by": "SHA-256 equality with target/release/lib_dcbor.so",
-      "release_artifact_path": "target/release/lib_dcbor.so",
-      "release_artifact_sha256": "0cf305e9b25f460a20cf87f6e6a4c6c8966d849ca404a45caed539f448239735",
+      "verified_by": "SHA-256 equality with configured release artifact",
+      "release_artifact_path": "/home/wizzygeek/code/AIdCBOR/target/release/lib_dcbor.so",
+      "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
       "extension_path": "/home/wizzygeek/code/AIdCBOR/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
-      "extension_sha256": "0cf305e9b25f460a20cf87f6e6a4c6c8966d849ca404a45caed539f448239735"
+      "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94"
     }
   },
   "methodology": {
@@ -57,8 +57,8 @@
     "rounds_base_calls": 500,
     "independent_process_repetitions": 9,
     "iteration_policy": "per case and operation count = max(1, min(base_count, floor(base_count * 1000 / work_units))); warmup zero remains zero",
-    "work_units": "map entry count, float element count, or total Unicode code points in the string list",
-    "input_fingerprint": "recursive typed tags with insertion-order maps, UTF-8 string bytes, decimal integer bytes, and exact IEEE-754 binary64 bytes",
+    "work_units": "case-specific bounded estimate recorded with each input; map entry count, scalar element count, and Unicode code points are explicit",
+    "input_fingerprint": "recursive typed tags with insertion-order dicts, CBORMap item snapshots, UTF-8 string bytes, decimal integer bytes, and exact IEEE-754 binary64 bytes",
     "map_key_order": "fixed-width ASCII string keys are ranked by their dCBOR encoded bytes; canonical output is checked byte-identical for sorted, reversed, and seeded-shuffled insertion orders. Equal-length keys isolate insertion-order sorting cost and do not distinguish bytewise ordering from length-first ordering",
     "float_profile": "dCBOR float reduction and canonicalization are checked using type-sensitive values, exact finite float.hex() values, isnan() for NaNs, and independent known CBOR hex vectors at signed-zero and integer-reduction boundaries",
     "unicode_profile": "decoded strings are checked against Python unicodedata.normalize('NFC', text)",
@@ -88,37 +88,37 @@
       "operations": {
         "encode": {
           "samples_ns_per_operation": [
-            3913.824,
-            3452.076,
-            3410.758,
-            3846.276,
-            3400.198,
-            3424.004,
-            3521.908,
-            3507.34,
-            3439.532
+            2987.406,
+            2202.868,
+            2103.962,
+            2128.81,
+            2067.534,
+            2322.814,
+            2235.41,
+            2234.206,
+            2173.994
           ],
-          "median_ns_per_operation": 3452.076,
-          "mad_ns_per_operation": 51.878000000000156,
-          "minimum_ns_per_operation": 3400.198,
-          "maximum_ns_per_operation": 3913.824
+          "median_ns_per_operation": 2202.868,
+          "mad_ns_per_operation": 74.05799999999999,
+          "minimum_ns_per_operation": 2067.534,
+          "maximum_ns_per_operation": 2987.406
         },
         "decode": {
           "samples_ns_per_operation": [
-            2191.404,
-            2193.388,
-            2184.85,
-            2228.794,
-            2247.128,
-            2196.512,
-            2306.52,
-            2255.364,
-            2245.024
+            1909.876,
+            1462.934,
+            1451.792,
+            1392.1,
+            1542.044,
+            1486.578,
+            1502.008,
+            1450.692,
+            1460.288
           ],
-          "median_ns_per_operation": 2228.794,
-          "mad_ns_per_operation": 32.2819999999997,
-          "minimum_ns_per_operation": 2184.85,
-          "maximum_ns_per_operation": 2306.52
+          "median_ns_per_operation": 1462.934,
+          "mad_ns_per_operation": 23.644000000000005,
+          "minimum_ns_per_operation": 1392.1,
+          "maximum_ns_per_operation": 1909.876
         }
       }
     },
@@ -144,37 +144,37 @@
       "operations": {
         "encode": {
           "samples_ns_per_operation": [
-            3358.8,
-            3509.104,
-            3273.14,
-            3275.524,
-            3570.92,
-            3374.39,
-            3360.484,
-            3384.97,
-            3335.818
+            2511.008,
+            1986.762,
+            1932.94,
+            2009.284,
+            1926.668,
+            2085.326,
+            2082.28,
+            2032.446,
+            2050.842
           ],
-          "median_ns_per_operation": 3360.484,
-          "mad_ns_per_operation": 24.665999999999713,
-          "minimum_ns_per_operation": 3273.14,
-          "maximum_ns_per_operation": 3570.92
+          "median_ns_per_operation": 2032.446,
+          "mad_ns_per_operation": 49.83400000000029,
+          "minimum_ns_per_operation": 1926.668,
+          "maximum_ns_per_operation": 2511.008
         },
         "decode": {
           "samples_ns_per_operation": [
-            2208.356,
-            2232.2,
-            2290.992,
-            2236.79,
-            2218.714,
-            2223.344,
-            2255.786,
-            2203.186,
-            2204.288
+            2032.286,
+            1594.422,
+            1465.58,
+            1429.53,
+            1513.73,
+            1491.99,
+            1560.518,
+            1456.142,
+            1466.24
           ],
-          "median_ns_per_operation": 2223.344,
-          "mad_ns_per_operation": 14.987999999999829,
-          "minimum_ns_per_operation": 2203.186,
-          "maximum_ns_per_operation": 2290.992
+          "median_ns_per_operation": 1491.99,
+          "mad_ns_per_operation": 35.847999999999956,
+          "minimum_ns_per_operation": 1429.53,
+          "maximum_ns_per_operation": 2032.286
         }
       }
     },
@@ -200,37 +200,37 @@
       "operations": {
         "encode": {
           "samples_ns_per_operation": [
-            3902.484,
-            3490.108,
-            3444.082,
-            3841.088,
-            3425.968,
-            3551.462,
-            3501.69,
-            3547.616,
-            3497.122
+            3685.8,
+            2192.106,
+            2095.204,
+            2158.042,
+            2084.986,
+            2281.336,
+            2234.788,
+            2210.822,
+            2198.56
           ],
-          "median_ns_per_operation": 3501.69,
-          "mad_ns_per_operation": 49.771999999999935,
-          "minimum_ns_per_operation": 3425.968,
-          "maximum_ns_per_operation": 3902.484
+          "median_ns_per_operation": 2198.56,
+          "mad_ns_per_operation": 40.51800000000003,
+          "minimum_ns_per_operation": 2084.986,
+          "maximum_ns_per_operation": 3685.8
         },
         "decode": {
           "samples_ns_per_operation": [
-            2207.334,
-            2239.654,
-            2253.08,
-            2227.812,
-            2222.622,
-            2215.288,
-            2254.624,
-            2299.408,
-            2264.1
+            1910.818,
+            1622.054,
+            1579.054,
+            1420.314,
+            1483.232,
+            1455.94,
+            1499.464,
+            1418.85,
+            1445.482
           ],
-          "median_ns_per_operation": 2239.654,
-          "mad_ns_per_operation": 17.032000000000153,
-          "minimum_ns_per_operation": 2207.334,
-          "maximum_ns_per_operation": 2299.408
+          "median_ns_per_operation": 1483.232,
+          "mad_ns_per_operation": 62.91799999999989,
+          "minimum_ns_per_operation": 1418.85,
+          "maximum_ns_per_operation": 1910.818
         }
       }
     },
@@ -256,37 +256,37 @@
       "operations": {
         "encode": {
           "samples_ns_per_operation": [
-            51292.862,
-            49482.134,
-            50027.662,
-            50835.782,
-            51317.208,
-            46990.606,
-            49097.03,
-            48866.136,
-            48123.978
+            43548.856,
+            31038.64,
+            31299.774,
+            30308.646,
+            30301.694,
+            30321.17,
+            29689.922,
+            30708.982,
+            30613.782
           ],
-          "median_ns_per_operation": 49482.134,
-          "mad_ns_per_operation": 1353.648000000001,
-          "minimum_ns_per_operation": 46990.606,
-          "maximum_ns_per_operation": 51317.208
+          "median_ns_per_operation": 30613.782,
+          "mad_ns_per_operation": 312.08799999999974,
+          "minimum_ns_per_operation": 29689.922,
+          "maximum_ns_per_operation": 43548.856
         },
         "decode": {
           "samples_ns_per_operation": [
-            32702.94,
-            31696.626,
-            32485.972,
-            34119.046,
-            33145.492,
-            32069.306,
-            33811.546,
-            32805.814,
-            33134.032
+            18028.004,
+            15231.238,
+            13419.146,
+            13541.076,
+            13898.188,
+            13689.776,
+            13848.734,
+            13412.492,
+            13197.328
           ],
-          "median_ns_per_operation": 32805.814,
-          "mad_ns_per_operation": 339.6779999999999,
-          "minimum_ns_per_operation": 31696.626,
-          "maximum_ns_per_operation": 34119.046
+          "median_ns_per_operation": 13689.776,
+          "mad_ns_per_operation": 270.6299999999992,
+          "minimum_ns_per_operation": 13197.328,
+          "maximum_ns_per_operation": 18028.004
         }
       }
     },
@@ -312,37 +312,37 @@
       "operations": {
         "encode": {
           "samples_ns_per_operation": [
-            41032.716,
-            39338.406,
-            40139.374,
-            41660.978,
-            40715.94,
-            40614.028,
-            42070.888,
-            41558.986,
-            41132.402
+            30282.236,
+            24408.138,
+            22288.226,
+            22979.948,
+            22563.744,
+            22634.94,
+            22179.5,
+            22524.512,
+            22658.562
           ],
-          "median_ns_per_operation": 41032.716,
-          "mad_ns_per_operation": 526.2699999999968,
-          "minimum_ns_per_operation": 39338.406,
-          "maximum_ns_per_operation": 42070.888
+          "median_ns_per_operation": 22634.94,
+          "mad_ns_per_operation": 345.00800000000163,
+          "minimum_ns_per_operation": 22179.5,
+          "maximum_ns_per_operation": 30282.236
         },
         "decode": {
           "samples_ns_per_operation": [
-            32686.228,
-            32216.064,
-            31991.942,
-            34254.56,
-            32717.246,
-            31827.352,
-            33504.95,
-            32602.632,
-            32579.186
+            19130.66,
+            13624.954,
+            13470.362,
+            13630.746,
+            13838.496,
+            13704.906,
+            13970.164,
+            13491.724,
+            13382.858
           ],
-          "median_ns_per_operation": 32602.632,
-          "mad_ns_per_operation": 386.56800000000294,
-          "minimum_ns_per_operation": 31827.352,
-          "maximum_ns_per_operation": 34254.56
+          "median_ns_per_operation": 13630.746,
+          "mad_ns_per_operation": 160.38400000000001,
+          "minimum_ns_per_operation": 13382.858,
+          "maximum_ns_per_operation": 19130.66
         }
       }
     },
@@ -368,37 +368,37 @@
       "operations": {
         "encode": {
           "samples_ns_per_operation": [
-            52025.22,
-            51758.858,
-            50502.196,
-            51892.252,
-            50928.356,
-            51475.206,
-            51628.634,
-            50894.994,
-            50676.664
+            44605.466,
+            31619.154,
+            31772.742,
+            33220.67,
+            33075.816,
+            32751.106,
+            31790.978,
+            33111.844,
+            32767.136
           ],
-          "median_ns_per_operation": 51475.206,
-          "mad_ns_per_operation": 546.8499999999985,
-          "minimum_ns_per_operation": 50502.196,
-          "maximum_ns_per_operation": 52025.22
+          "median_ns_per_operation": 32767.136,
+          "mad_ns_per_operation": 453.53399999999965,
+          "minimum_ns_per_operation": 31619.154,
+          "maximum_ns_per_operation": 44605.466
         },
         "decode": {
           "samples_ns_per_operation": [
-            32955.596,
-            32258.022,
-            31937.018,
-            34155.934,
-            32487.576,
-            33058.588,
-            34112.834,
-            32207.408,
-            33149.7
+            18044.294,
+            13517.752,
+            13320.38,
+            13430.868,
+            13739.188,
+            13697.73,
+            13871.758,
+            13341.682,
+            13300.704
           ],
-          "median_ns_per_operation": 32955.596,
-          "mad_ns_per_operation": 697.5739999999969,
-          "minimum_ns_per_operation": 31937.018,
-          "maximum_ns_per_operation": 34155.934
+          "median_ns_per_operation": 13517.752,
+          "mad_ns_per_operation": 197.3720000000012,
+          "minimum_ns_per_operation": 13300.704,
+          "maximum_ns_per_operation": 18044.294
         }
       }
     },
@@ -424,37 +424,37 @@
       "operations": {
         "encode": {
           "samples_ns_per_operation": [
-            623549.768,
-            617903.604,
-            612595.334,
-            614318.136,
-            625323.866,
-            619937.29,
-            735483.102,
-            617058.472,
-            622388.882
+            539430.006,
+            439499.592,
+            437265.084,
+            402256.99,
+            401047.352,
+            406862.302,
+            399314.49,
+            406126.496,
+            415508.24
           ],
-          "median_ns_per_operation": 619937.29,
-          "mad_ns_per_operation": 3612.478000000003,
-          "minimum_ns_per_operation": 612595.334,
-          "maximum_ns_per_operation": 735483.102
+          "median_ns_per_operation": 406862.302,
+          "mad_ns_per_operation": 7547.8120000000345,
+          "minimum_ns_per_operation": 399314.49,
+          "maximum_ns_per_operation": 539430.006
         },
         "decode": {
           "samples_ns_per_operation": [
-            432957.334,
-            433285.692,
-            420840.072,
-            429454.122,
-            442322.536,
-            431432.484,
-            447253.616,
-            427694.17,
-            426485.756
+            215182.196,
+            152490.938,
+            159846.668,
+            156033.328,
+            152725.36,
+            151436.872,
+            160969.942,
+            148966.904,
+            150725.814
           ],
-          "median_ns_per_operation": 431432.484,
-          "mad_ns_per_operation": 3738.314000000013,
-          "minimum_ns_per_operation": 420840.072,
-          "maximum_ns_per_operation": 447253.616
+          "median_ns_per_operation": 152725.36,
+          "mad_ns_per_operation": 3307.9680000000226,
+          "minimum_ns_per_operation": 148966.904,
+          "maximum_ns_per_operation": 215182.196
         }
       }
     },
@@ -480,37 +480,37 @@
       "operations": {
         "encode": {
           "samples_ns_per_operation": [
-            496128.248,
-            479703.702,
-            483140.148,
-            482384.904,
-            541450.796,
-            484544.95,
-            489687.988,
-            489275.372,
-            480561.114
+            324452.476,
+            279932.15,
+            243416.396,
+            307673.964,
+            237812.546,
+            263657.868,
+            237411.812,
+            238250.128,
+            241949.516
           ],
-          "median_ns_per_operation": 484544.95,
-          "mad_ns_per_operation": 4730.421999999962,
-          "minimum_ns_per_operation": 479703.702,
-          "maximum_ns_per_operation": 541450.796
+          "median_ns_per_operation": 243416.396,
+          "mad_ns_per_operation": 6004.584000000003,
+          "minimum_ns_per_operation": 237411.812,
+          "maximum_ns_per_operation": 324452.476
         },
         "decode": {
           "samples_ns_per_operation": [
-            433609.34,
-            430878.702,
-            422219.926,
-            434619.682,
-            474633.258,
-            433009.972,
-            435580.65,
-            433906.158,
-            427263.678
+            202382.036,
+            172442.924,
+            152395.9,
+            155491.346,
+            175599.286,
+            168694.668,
+            162707.754,
+            151574.372,
+            150047.376
           ],
-          "median_ns_per_operation": 433609.34,
-          "mad_ns_per_operation": 1971.3099999999977,
-          "minimum_ns_per_operation": 422219.926,
-          "maximum_ns_per_operation": 474633.258
+          "median_ns_per_operation": 162707.754,
+          "mad_ns_per_operation": 10311.853999999992,
+          "minimum_ns_per_operation": 150047.376,
+          "maximum_ns_per_operation": 202382.036
         }
       }
     },
@@ -536,37 +536,37 @@
       "operations": {
         "encode": {
           "samples_ns_per_operation": [
-            653114.562,
-            648661.982,
-            639183.988,
-            721881.888,
-            764076.01,
-            648159.238,
-            650493.972,
-            671756.222,
-            642273.884
+            599242.844,
+            455411.092,
+            455286.696,
+            455707.09,
+            452270.336,
+            459345.018,
+            445950.038,
+            450394.866,
+            449002.404
           ],
-          "median_ns_per_operation": 650493.972,
-          "mad_ns_per_operation": 8220.087999999989,
-          "minimum_ns_per_operation": 639183.988,
-          "maximum_ns_per_operation": 764076.01
+          "median_ns_per_operation": 455286.696,
+          "mad_ns_per_operation": 4058.3219999999856,
+          "minimum_ns_per_operation": 445950.038,
+          "maximum_ns_per_operation": 599242.844
         },
         "decode": {
           "samples_ns_per_operation": [
-            426192.684,
-            435080.75,
-            429521.748,
-            440720.522,
-            460554.086,
-            430680.49,
-            441201.788,
-            439738.094,
-            430361.75
+            199379.562,
+            154940.99,
+            150588.154,
+            184344.132,
+            151011.912,
+            152223.374,
+            161475.094,
+            148450.87,
+            150306.504
           ],
-          "median_ns_per_operation": 435080.75,
-          "mad_ns_per_operation": 5559.001999999979,
-          "minimum_ns_per_operation": 426192.684,
-          "maximum_ns_per_operation": 460554.086
+          "median_ns_per_operation": 152223.374,
+          "mad_ns_per_operation": 2717.61599999998,
+          "minimum_ns_per_operation": 148450.87,
+          "maximum_ns_per_operation": 199379.562
         }
       }
     },
@@ -592,37 +592,37 @@
       "operations": {
         "encode": {
           "samples_ns_per_operation": [
-            7214396.36,
-            7588379.12,
-            7278545.08,
-            7682329.92,
-            8875386.58,
-            7315720.82,
-            8146498.38,
-            7157619.12,
-            7153830.4
+            7909770.72,
+            5106708.58,
+            5008024.36,
+            5028333.6,
+            5109705.62,
+            4965976.4,
+            4936122.78,
+            4940120.3,
+            5012449.5
           ],
-          "median_ns_per_operation": 7315720.82,
-          "mad_ns_per_operation": 161890.41999999993,
-          "minimum_ns_per_operation": 7153830.4,
-          "maximum_ns_per_operation": 8875386.58
+          "median_ns_per_operation": 5012449.5,
+          "mad_ns_per_operation": 72329.20000000019,
+          "minimum_ns_per_operation": 4936122.78,
+          "maximum_ns_per_operation": 7909770.72
         },
         "decode": {
           "samples_ns_per_operation": [
-            4991410.36,
-            5317067.58,
-            5076640.56,
-            5520971.9,
-            5514526.56,
-            5051337.96,
-            5393584.38,
-            5139889.38,
-            5009702.98
+            2908048.22,
+            1900774.68,
+            1745707.5,
+            1688870.88,
+            1753080.98,
+            1680448.24,
+            1789303.8,
+            1679056.62,
+            1658167.68
           ],
-          "median_ns_per_operation": 5139889.38,
-          "mad_ns_per_operation": 148479.01999999955,
-          "minimum_ns_per_operation": 4991410.36,
-          "maximum_ns_per_operation": 5520971.9
+          "median_ns_per_operation": 1745707.5,
+          "mad_ns_per_operation": 65259.26000000001,
+          "minimum_ns_per_operation": 1658167.68,
+          "maximum_ns_per_operation": 2908048.22
         }
       }
     },
@@ -648,37 +648,37 @@
       "operations": {
         "encode": {
           "samples_ns_per_operation": [
-            5556786.08,
-            5564628.24,
-            5346762.46,
-            6194051.48,
-            6956979.76,
-            5430212.9,
-            5858689.22,
-            5706961.5,
-            5485191.36
+            4894644.48,
+            2501178.16,
+            2624297.96,
+            2600026.06,
+            2557980.9,
+            2548621.68,
+            2486518.54,
+            2499233.88,
+            2517743.74
           ],
-          "median_ns_per_operation": 5564628.24,
-          "mad_ns_per_operation": 142333.25999999978,
-          "minimum_ns_per_operation": 5346762.46,
-          "maximum_ns_per_operation": 6956979.76
+          "median_ns_per_operation": 2548621.68,
+          "mad_ns_per_operation": 49387.80000000028,
+          "minimum_ns_per_operation": 2486518.54,
+          "maximum_ns_per_operation": 4894644.48
         },
         "decode": {
           "samples_ns_per_operation": [
-            5981489.08,
-            5282120.02,
-            4983083.5,
-            5351634.04,
-            5195540.1,
-            5124987.54,
-            5353177.54,
-            5308129.38,
-            5119360.54
+            3188541.56,
+            1762096.96,
+            1884830.86,
+            1743495.96,
+            1738492.92,
+            1682138.82,
+            1770885.52,
+            1675592.08,
+            1668049.7
           ],
-          "median_ns_per_operation": 5282120.02,
-          "mad_ns_per_operation": 86579.91999999993,
-          "minimum_ns_per_operation": 4983083.5,
-          "maximum_ns_per_operation": 5981489.08
+          "median_ns_per_operation": 1743495.96,
+          "mad_ns_per_operation": 61357.1399999999,
+          "minimum_ns_per_operation": 1668049.7,
+          "maximum_ns_per_operation": 3188541.56
         }
       }
     },
@@ -704,37 +704,237 @@
       "operations": {
         "encode": {
           "samples_ns_per_operation": [
-            9884935.34,
-            8966279.42,
-            8802281.42,
-            9559228.24,
-            9730708.72,
-            10488193.94,
-            10042079.86,
-            9509402.28,
-            9465976.96
+            9298329.96,
+            6379178.24,
+            7049767.46,
+            6575316.34,
+            6178239.9,
+            6385108.0,
+            6255637.22,
+            6100297.74,
+            6244244.58
           ],
-          "median_ns_per_operation": 9559228.24,
-          "mad_ns_per_operation": 325707.0999999996,
-          "minimum_ns_per_operation": 8802281.42,
-          "maximum_ns_per_operation": 10488193.94
+          "median_ns_per_operation": 6379178.24,
+          "mad_ns_per_operation": 196138.09999999963,
+          "minimum_ns_per_operation": 6100297.74,
+          "maximum_ns_per_operation": 9298329.96
         },
         "decode": {
           "samples_ns_per_operation": [
-            5084197.78,
-            5024750.72,
-            5028677.7,
-            5518322.1,
-            5215498.66,
-            5047527.98,
-            5257731.72,
-            5418727.7,
-            5004325.66
+            2228370.88,
+            1743262.9,
+            1750624.56,
+            1723579.04,
+            1696931.66,
+            1675156.48,
+            1770497.8,
+            1719685.3,
+            1666997.7
           ],
-          "median_ns_per_operation": 5084197.78,
-          "mad_ns_per_operation": 79872.12000000011,
-          "minimum_ns_per_operation": 5004325.66,
-          "maximum_ns_per_operation": 5518322.1
+          "median_ns_per_operation": 1723579.04,
+          "mad_ns_per_operation": 27045.52000000002,
+          "minimum_ns_per_operation": 1666997.7,
+          "maximum_ns_per_operation": 2228370.88
+        }
+      }
+    },
+    "integer_width_boundaries": {
+      "family": "integer",
+      "category": "integer",
+      "case_type": "explicit_integer_width_boundaries",
+      "size": 480,
+      "work_units": 480,
+      "normalization": "Explicit integers span dCBOR negative and unsigned preferred-width boundaries through the supported [-2**64, 2**64-1] range.",
+      "expected_type_rule": "Every decoded element remains an int equal to the input; floats are not used in this workload.",
+      "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+      "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+      "wire_bytes": 2435,
+      "iterations_per_process": 500,
+      "warmup_per_process": 100,
+      "operations": {
+        "encode": {
+          "samples_ns_per_operation": [
+            34398.688,
+            28512.604,
+            28442.974,
+            29038.996,
+            28409.372,
+            28474.974,
+            28389.712,
+            29170.022,
+            28950.83
+          ],
+          "median_ns_per_operation": 28512.604,
+          "mad_ns_per_operation": 122.89199999999983,
+          "minimum_ns_per_operation": 28389.712,
+          "maximum_ns_per_operation": 34398.688
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            26225.2,
+            22562.884,
+            22332.548,
+            22905.708,
+            22641.772,
+            23210.022,
+            22699.7,
+            22636.18,
+            22625.118
+          ],
+          "median_ns_per_operation": 22641.772,
+          "mad_ns_per_operation": 78.88800000000265,
+          "minimum_ns_per_operation": 22332.548,
+          "maximum_ns_per_operation": 26225.2
+        }
+      }
+    },
+    "dict_nfc_key_collisions": {
+      "family": "map_collision",
+      "category": "map_collision",
+      "case_type": "dict_nfc_last_entry_wins",
+      "size": 128,
+      "work_units": 128,
+      "normalization": "Each NFD key is followed by its distinct NFC-equivalent Python key; canonical-key collisions retain the later value.",
+      "expected_type_rule": "The decoded dict has 64 NFC string keys, each mapped to the later value, in canonical encoded-key order.",
+      "input_sha256": "cf96def144fab6d0f0217d90f70c25218fcf764e838fd127e604b95740650ab5",
+      "wire_sha256": "039b285859b09898f6d8f407a5772d4a19b1b76c6408e0a1986567931c3e5f7d",
+      "wire_bytes": 886,
+      "iterations_per_process": 500,
+      "warmup_per_process": 100,
+      "operations": {
+        "encode": {
+          "samples_ns_per_operation": [
+            79489.848,
+            65858.582,
+            65750.178,
+            66952.202,
+            66166.482,
+            66530.266,
+            66836.062,
+            66556.316,
+            67187.926
+          ],
+          "median_ns_per_operation": 66556.316,
+          "mad_ns_per_operation": 395.8859999999986,
+          "minimum_ns_per_operation": 65750.178,
+          "maximum_ns_per_operation": 79489.848
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            15093.498,
+            12770.124,
+            12926.94,
+            12995.048,
+            12797.596,
+            12722.996,
+            13207.368,
+            13012.44,
+            12732.614
+          ],
+          "median_ns_per_operation": 12926.94,
+          "mad_ns_per_operation": 156.8160000000007,
+          "minimum_ns_per_operation": 12722.996,
+          "maximum_ns_per_operation": 15093.498
+        }
+      }
+    },
+    "nested_scalar_tree": {
+      "family": "nested",
+      "category": "nested",
+      "case_type": "nested_dict_list_scalar_tree",
+      "size": 24,
+      "work_units": 192,
+      "normalization": "A bounded 24-level dict/list/scalar tree exercises recursive traversal without approaching the depth limit.",
+      "expected_type_rule": "The nested decoded value has the same container and scalar types and values as the input.",
+      "input_sha256": "e4d93c245e1df38d974ad1047f0487febbcef5d0152d1ca60305a7561a6a73ad",
+      "wire_sha256": "5a2813b4d77fb89af2c26859436ae100dc0ee7f42f83bcf0c078e5462e6e5e5a",
+      "wire_bytes": 556,
+      "iterations_per_process": 500,
+      "warmup_per_process": 100,
+      "operations": {
+        "encode": {
+          "samples_ns_per_operation": [
+            25271.984,
+            21525.468,
+            22055.566,
+            21740.074,
+            21649.042,
+            21816.878,
+            21951.372,
+            21474.052,
+            21894.644
+          ],
+          "median_ns_per_operation": 21816.878,
+          "mad_ns_per_operation": 167.83599999999933,
+          "minimum_ns_per_operation": 21474.052,
+          "maximum_ns_per_operation": 25271.984
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            15406.126,
+            12973.426,
+            13271.248,
+            13332.704,
+            13172.462,
+            13090.328,
+            13109.402,
+            13112.99,
+            13126.594
+          ],
+          "median_ns_per_operation": 13126.594,
+          "mad_ns_per_operation": 45.86800000000039,
+          "minimum_ns_per_operation": 12973.426,
+          "maximum_ns_per_operation": 15406.126
+        }
+      }
+    },
+    "cbor_map_snapshot": {
+      "family": "cbor_map",
+      "category": "cbor_map",
+      "case_type": "immutable_snapshot_64_entries",
+      "size": 64,
+      "work_units": 64,
+      "normalization": "A CBORMap snapshot with reversed string-key insertion order serializes from its frozen Rust snapshot.",
+      "expected_type_rule": "Decoded entries preserve values and appear in canonical encoded-key order.",
+      "input_sha256": "bf625aacd0d948f984bd2c7747e733a6eefdce05ecdcf5b6193a8b323bea865d",
+      "wire_sha256": "1d220c77f516b4789f26dc69c136f6e90c3659f8a4f2bbeeee62a07051790c6c",
+      "wire_bytes": 1962,
+      "iterations_per_process": 500,
+      "warmup_per_process": 100,
+      "operations": {
+        "encode": {
+          "samples_ns_per_operation": [
+            17835.222,
+            15562.702,
+            15525.672,
+            16030.642,
+            15692.748,
+            15670.406,
+            15935.164,
+            15830.526,
+            15924.844
+          ],
+          "median_ns_per_operation": 15830.526,
+          "mad_ns_per_operation": 160.11999999999898,
+          "minimum_ns_per_operation": 15525.672,
+          "maximum_ns_per_operation": 17835.222
+        },
+        "decode": {
+          "samples_ns_per_operation": [
+            28928.308,
+            25737.74,
+            25700.29,
+            25353.898,
+            25634.106,
+            26130.88,
+            26475.07,
+            25595.792,
+            25280.82
+          ],
+          "median_ns_per_operation": 25700.29,
+          "mad_ns_per_operation": 346.3919999999998,
+          "minimum_ns_per_operation": 25280.82,
+          "maximum_ns_per_operation": 28928.308
         }
       }
     },
@@ -770,37 +970,37 @@
       "operations": {
         "encode": {
           "samples_ns_per_operation": [
-            27609.134,
-            27284.784,
-            27238.738,
-            27574.91,
-            27210.504,
-            28664.28,
-            28680.05,
-            27999.85,
-            28335.2
+            15459.046,
+            14223.26,
+            13744.478,
+            13838.534,
+            13843.966,
+            13817.476,
+            13842.542,
+            13786.518,
+            13750.832
           ],
-          "median_ns_per_operation": 27609.134,
-          "mad_ns_per_operation": 390.71600000000035,
-          "minimum_ns_per_operation": 27210.504,
-          "maximum_ns_per_operation": 28680.05
+          "median_ns_per_operation": 13838.534,
+          "mad_ns_per_operation": 52.01599999999962,
+          "minimum_ns_per_operation": 13744.478,
+          "maximum_ns_per_operation": 15459.046
         },
         "decode": {
           "samples_ns_per_operation": [
-            23633.794,
-            22703.202,
-            23384.884,
-            23659.722,
-            23116.842,
-            23420.472,
-            23747.428,
-            23494.774,
-            23750.874
+            24016.518,
+            22569.754,
+            22084.22,
+            22505.834,
+            22260.254,
+            22366.472,
+            22690.144,
+            21926.164,
+            22449.188
           ],
-          "median_ns_per_operation": 23494.774,
-          "mad_ns_per_operation": 164.94800000000032,
-          "minimum_ns_per_operation": 22703.202,
-          "maximum_ns_per_operation": 23750.874
+          "median_ns_per_operation": 22449.188,
+          "mad_ns_per_operation": 188.93399999999747,
+          "minimum_ns_per_operation": 21926.164,
+          "maximum_ns_per_operation": 24016.518
         }
       }
     },
@@ -820,37 +1020,37 @@
       "operations": {
         "encode": {
           "samples_ns_per_operation": [
-            27441.398,
-            26298.568,
-            27074.226,
-            27356.16,
-            27742.564,
-            27670.368,
-            27804.964,
-            27372.81,
-            27703.754
+            23073.724,
+            20801.366,
+            20934.056,
+            20966.358,
+            20981.226,
+            21011.502,
+            21067.708,
+            21023.264,
+            21051.798
           ],
-          "median_ns_per_operation": 27441.398,
-          "mad_ns_per_operation": 262.35599999999977,
-          "minimum_ns_per_operation": 26298.568,
-          "maximum_ns_per_operation": 27804.964
+          "median_ns_per_operation": 21011.502,
+          "mad_ns_per_operation": 45.14400000000023,
+          "minimum_ns_per_operation": 20801.366,
+          "maximum_ns_per_operation": 23073.724
         },
         "decode": {
           "samples_ns_per_operation": [
-            25028.238,
-            23879.076,
-            24475.438,
-            25214.048,
-            25527.536,
-            25219.096,
-            25961.996,
-            24648.584,
-            24712.402
+            25619.296,
+            23258.894,
+            23372.026,
+            22874.208,
+            23284.62,
+            23286.584,
+            23268.19,
+            22831.328,
+            22941.296
           ],
-          "median_ns_per_operation": 25028.238,
-          "mad_ns_per_operation": 379.65400000000227,
-          "minimum_ns_per_operation": 23879.076,
-          "maximum_ns_per_operation": 25961.996
+          "median_ns_per_operation": 23268.19,
+          "mad_ns_per_operation": 103.83600000000297,
+          "minimum_ns_per_operation": 22831.328,
+          "maximum_ns_per_operation": 25619.296
         }
       }
     },
@@ -921,37 +1121,37 @@
       "operations": {
         "encode": {
           "samples_ns_per_operation": [
-            17450.038,
-            18418.36,
-            17519.086,
-            17589.66,
-            17961.722,
-            18057.402,
-            18632.784,
-            18431.124,
-            17945.448
+            11885.758,
+            10727.338,
+            10762.002,
+            11059.322,
+            10641.938,
+            10854.616,
+            10989.33,
+            11122.864,
+            11077.578
           ],
-          "median_ns_per_operation": 17961.722,
-          "mad_ns_per_operation": 442.63600000000224,
-          "minimum_ns_per_operation": 17450.038,
-          "maximum_ns_per_operation": 18632.784
+          "median_ns_per_operation": 10989.33,
+          "mad_ns_per_operation": 134.71399999999994,
+          "minimum_ns_per_operation": 10641.938,
+          "maximum_ns_per_operation": 11885.758
         },
         "decode": {
           "samples_ns_per_operation": [
-            15081.36,
-            15535.636,
-            15065.93,
-            15744.366,
-            15894.048,
-            15070.5,
-            15741.804,
-            15500.568,
-            15349.244
+            15683.028,
+            14508.136,
+            14376.068,
+            14198.674,
+            14088.046,
+            14519.578,
+            14195.708,
+            13931.812,
+            14241.354
           ],
-          "median_ns_per_operation": 15500.568,
-          "mad_ns_per_operation": 243.79800000000068,
-          "minimum_ns_per_operation": 15065.93,
-          "maximum_ns_per_operation": 15894.048
+          "median_ns_per_operation": 14241.354,
+          "mad_ns_per_operation": 153.30799999999908,
+          "minimum_ns_per_operation": 13931.812,
+          "maximum_ns_per_operation": 15683.028
         }
       }
     },
@@ -1036,37 +1236,37 @@
       "operations": {
         "encode": {
           "samples_ns_per_operation": [
-            17778.034,
-            17823.48,
-            17488.388,
-            17789.094,
-            18456.23,
-            17669.69,
-            19203.376,
-            18053.152,
-            18104.53
+            12522.758,
+            11349.068,
+            11428.458,
+            11333.26,
+            11275.73,
+            11416.156,
+            11346.744,
+            11471.942,
+            11446.792
           ],
-          "median_ns_per_operation": 17823.48,
-          "mad_ns_per_operation": 229.67199999999866,
-          "minimum_ns_per_operation": 17488.388,
-          "maximum_ns_per_operation": 19203.376
+          "median_ns_per_operation": 11416.156,
+          "mad_ns_per_operation": 67.08800000000156,
+          "minimum_ns_per_operation": 11275.73,
+          "maximum_ns_per_operation": 12522.758
         },
         "decode": {
           "samples_ns_per_operation": [
-            16878.882,
-            16283.122,
-            16495.662,
-            17108.094,
-            17629.796,
-            16895.154,
-            17769.156,
-            17412.046,
-            16999.47
+            17329.408,
+            16224.388,
+            16165.338,
+            16280.214,
+            15878.978,
+            16103.86,
+            16142.634,
+            16040.784,
+            16388.136
           ],
-          "median_ns_per_operation": 16999.47,
-          "mad_ns_per_operation": 412.5759999999973,
-          "minimum_ns_per_operation": 16283.122,
-          "maximum_ns_per_operation": 17769.156
+          "median_ns_per_operation": 16165.338,
+          "mad_ns_per_operation": 114.8760000000002,
+          "minimum_ns_per_operation": 15878.978,
+          "maximum_ns_per_operation": 17329.408
         }
       }
     },
@@ -1086,37 +1286,37 @@
       "operations": {
         "encode": {
           "samples_ns_per_operation": [
-            30878.11111111111,
-            31005.022222222222,
-            31595.0,
-            33866.4,
-            30756.31111111111,
-            30683.066666666666,
-            30311.266666666666,
-            30704.444444444445,
-            30117.333333333332
+            14194.288888888888,
+            13100.444444444445,
+            12472.155555555555,
+            12041.111111111111,
+            13075.955555555556,
+            13568.666666666666,
+            12274.0,
+            12028.222222222223,
+            12146.888888888889
           ],
-          "median_ns_per_operation": 30756.31111111111,
-          "mad_ns_per_operation": 248.71111111111168,
-          "minimum_ns_per_operation": 30117.333333333332,
-          "maximum_ns_per_operation": 33866.4
+          "median_ns_per_operation": 12472.155555555555,
+          "mad_ns_per_operation": 443.9333333333325,
+          "minimum_ns_per_operation": 12028.222222222223,
+          "maximum_ns_per_operation": 14194.288888888888
         },
         "decode": {
           "samples_ns_per_operation": [
-            29696.555555555555,
-            29130.355555555554,
-            29516.644444444446,
-            29662.266666666666,
-            30109.777777777777,
-            30597.355555555554,
-            31165.088888888888,
-            30171.666666666668,
-            30736.28888888889
+            26507.68888888889,
+            25651.17777777778,
+            24325.577777777777,
+            24037.48888888889,
+            24039.933333333334,
+            25174.955555555556,
+            24490.11111111111,
+            25073.666666666668,
+            24895.533333333333
           ],
-          "median_ns_per_operation": 30109.777777777777,
-          "mad_ns_per_operation": 487.57777777777665,
-          "minimum_ns_per_operation": 29130.355555555554,
-          "maximum_ns_per_operation": 31165.088888888888
+          "median_ns_per_operation": 24895.533333333333,
+          "mad_ns_per_operation": 569.9555555555562,
+          "minimum_ns_per_operation": 24037.48888888889,
+          "maximum_ns_per_operation": 26507.68888888889
         }
       }
     },
@@ -1136,37 +1336,37 @@
       "operations": {
         "encode": {
           "samples_ns_per_operation": [
-            269510.05797101447,
-            265266.85507246375,
-            267553.47826086957,
-            272637.97101449274,
-            277230.0869565217,
-            268355.1304347826,
-            269085.347826087,
-            276385.46376811597,
-            268544.768115942
+            31950.884057971016,
+            34164.608695652176,
+            29776.072463768116,
+            30039.463768115944,
+            34822.95652173913,
+            29895.565217391304,
+            31189.594202898552,
+            29432.507246376812,
+            29272.652173913044
           ],
-          "median_ns_per_operation": 269085.347826087,
-          "mad_ns_per_operation": 1531.8695652174065,
-          "minimum_ns_per_operation": 265266.85507246375,
-          "maximum_ns_per_operation": 277230.0869565217
+          "median_ns_per_operation": 30039.463768115944,
+          "mad_ns_per_operation": 766.8115942028999,
+          "minimum_ns_per_operation": 29272.652173913044,
+          "maximum_ns_per_operation": 34822.95652173913
         },
         "decode": {
           "samples_ns_per_operation": [
-            50389.463768115944,
-            49627.30434782609,
-            50894.913043478264,
-            50126.637681159424,
-            49793.710144927536,
-            50752.75362318841,
-            50418.50724637681,
-            50647.76811594203,
-            50878.34782608696
+            70234.71014492754,
+            64560.840579710144,
+            64878.24637681159,
+            64316.884057971016,
+            64526.710144927536,
+            64438.72463768116,
+            64413.159420289856,
+            64431.159420289856,
+            64411.565217391304
           ],
-          "median_ns_per_operation": 50418.50724637681,
-          "mad_ns_per_operation": 334.2463768115995,
-          "minimum_ns_per_operation": 49627.30434782609,
-          "maximum_ns_per_operation": 50894.913043478264
+          "median_ns_per_operation": 64438.72463768116,
+          "mad_ns_per_operation": 87.98550724637607,
+          "minimum_ns_per_operation": 64316.884057971016,
+          "maximum_ns_per_operation": 70234.71014492754
         }
       }
     },
@@ -1186,37 +1386,37 @@
       "operations": {
         "encode": {
           "samples_ns_per_operation": [
-            266228.8947368421,
-            258561.98245614034,
-            261675.75438596492,
-            267676.8596491228,
-            270902.9298245614,
-            263907.49122807017,
-            265538.98245614034,
-            269493.6140350877,
-            265526.50877192983
+            253764.47368421053,
+            236100.33333333334,
+            236638.54385964913,
+            235714.50877192983,
+            234977.50877192983,
+            234915.28070175438,
+            232756.84210526315,
+            233797.40350877194,
+            233689.8245614035
           ],
-          "median_ns_per_operation": 265538.98245614034,
-          "mad_ns_per_operation": 2137.8771929824725,
-          "minimum_ns_per_operation": 258561.98245614034,
-          "maximum_ns_per_operation": 270902.9298245614
+          "median_ns_per_operation": 234977.50877192983,
+          "mad_ns_per_operation": 1180.1052631578932,
+          "minimum_ns_per_operation": 232756.84210526315,
+          "maximum_ns_per_operation": 253764.47368421053
         },
         "decode": {
           "samples_ns_per_operation": [
-            50479.21052631579,
-            49519.14035087719,
-            50308.17543859649,
-            50374.087719298244,
-            53604.01754385965,
-            49874.56140350877,
-            50958.350877192985,
-            50911.245614035084,
-            50789.78947368421
+            68581.24561403508,
+            65194.85964912281,
+            65976.66666666667,
+            68430.77192982456,
+            65040.17543859649,
+            64029.491228070176,
+            64356.9649122807,
+            64352.73684210526,
+            64031.9649122807
           ],
-          "median_ns_per_operation": 50479.21052631579,
-          "mad_ns_per_operation": 432.03508771929774,
-          "minimum_ns_per_operation": 49519.14035087719,
-          "maximum_ns_per_operation": 53604.01754385965
+          "median_ns_per_operation": 65040.17543859649,
+          "mad_ns_per_operation": 936.4912280701828,
+          "minimum_ns_per_operation": 64029.491228070176,
+          "maximum_ns_per_operation": 68581.24561403508
         }
       }
     },
@@ -1236,45 +1436,45 @@
       "operations": {
         "encode": {
           "samples_ns_per_operation": [
-            80946.05327868853,
-            78522.27049180328,
-            80194.51639344262,
-            81294.90573770492,
-            81854.44262295082,
-            82355.7131147541,
-            80419.52868852459,
-            81248.21721311475,
-            81064.14344262295
+            67010.6762295082,
+            64847.30327868852,
+            64818.80737704918,
+            64513.68032786885,
+            62345.54508196721,
+            62459.07786885246,
+            65529.36475409836,
+            66581.22131147541,
+            62782.389344262294
           ],
-          "median_ns_per_operation": 81064.14344262295,
-          "mad_ns_per_operation": 644.6147540983657,
-          "minimum_ns_per_operation": 78522.27049180328,
-          "maximum_ns_per_operation": 82355.7131147541
+          "median_ns_per_operation": 64818.80737704918,
+          "mad_ns_per_operation": 1762.4139344262294,
+          "minimum_ns_per_operation": 62345.54508196721,
+          "maximum_ns_per_operation": 67010.6762295082
         },
         "decode": {
           "samples_ns_per_operation": [
-            63236.29508196721,
-            62942.82786885246,
-            63201.639344262294,
-            65406.975409836065,
-            64201.9631147541,
-            63625.42622950819,
-            66574.86885245901,
-            72071.77049180328,
-            65384.762295081964
+            88230.7581967213,
+            84950.11475409837,
+            82199.68852459016,
+            82977.62704918033,
+            82872.63524590163,
+            82087.46721311475,
+            85678.04098360655,
+            82660.51229508196,
+            85251.82786885246
           ],
-          "median_ns_per_operation": 64201.9631147541,
-          "mad_ns_per_operation": 1182.7991803278637,
-          "minimum_ns_per_operation": 62942.82786885246,
-          "maximum_ns_per_operation": 72071.77049180328
+          "median_ns_per_operation": 82977.62704918033,
+          "mad_ns_per_operation": 890.1598360655771,
+          "minimum_ns_per_operation": 82087.46721311475,
+          "maximum_ns_per_operation": 88230.7581967213
         }
       }
     }
   },
   "raw_process_runs": [
     {
-      "pid": 301,
-      "started_at_utc": "2026-10-17T21:19:47.441633+00:00",
+      "pid": 23,
+      "started_at_utc": "2026-10-18T18:32:51.631383+00:00",
       "order_offset": 0,
       "operation_order": [
         "encode",
@@ -1282,84 +1482,100 @@
       ],
       "measurements_ns_per_operation": {
         "map_10_sorted": {
-          "encode": 3913.824,
-          "decode": 2191.404
+          "encode": 2987.406,
+          "decode": 1909.876
         },
         "map_10_reverse": {
-          "encode": 3358.8,
-          "decode": 2208.356
+          "encode": 2511.008,
+          "decode": 2032.286
         },
         "map_10_shuffled": {
-          "encode": 3902.484,
-          "decode": 2207.334
+          "encode": 3685.8,
+          "decode": 1910.818
         },
         "map_100_sorted": {
-          "encode": 51292.862,
-          "decode": 32702.94
+          "encode": 43548.856,
+          "decode": 18028.004
         },
         "map_100_reverse": {
-          "encode": 41032.716,
-          "decode": 32686.228
+          "encode": 30282.236,
+          "decode": 19130.66
         },
         "map_100_shuffled": {
-          "encode": 52025.22,
-          "decode": 32955.596
+          "encode": 44605.466,
+          "decode": 18044.294
         },
         "map_1000_sorted": {
-          "encode": 623549.768,
-          "decode": 432957.334
+          "encode": 539430.006,
+          "decode": 215182.196
         },
         "map_1000_reverse": {
-          "encode": 496128.248,
-          "decode": 433609.34
+          "encode": 324452.476,
+          "decode": 202382.036
         },
         "map_1000_shuffled": {
-          "encode": 653114.562,
-          "decode": 426192.684
+          "encode": 599242.844,
+          "decode": 199379.562
         },
         "map_10000_sorted": {
-          "encode": 7214396.36,
-          "decode": 4991410.36
+          "encode": 7909770.72,
+          "decode": 2908048.22
         },
         "map_10000_reverse": {
-          "encode": 5556786.08,
-          "decode": 5981489.08
+          "encode": 4894644.48,
+          "decode": 3188541.56
         },
         "map_10000_shuffled": {
-          "encode": 9884935.34,
-          "decode": 5084197.78
+          "encode": 9298329.96,
+          "decode": 2228370.88
+        },
+        "integer_width_boundaries": {
+          "encode": 34398.688,
+          "decode": 26225.2
+        },
+        "dict_nfc_key_collisions": {
+          "encode": 79489.848,
+          "decode": 15093.498
+        },
+        "nested_scalar_tree": {
+          "encode": 25271.984,
+          "decode": 15406.126
+        },
+        "cbor_map_snapshot": {
+          "encode": 17835.222,
+          "decode": 28928.308
         },
         "float_fractional": {
-          "encode": 27609.134,
-          "decode": 23633.794
+          "encode": 15459.046,
+          "decode": 24016.518
         },
         "float_integral": {
-          "encode": 27441.398,
-          "decode": 25028.238
+          "encode": 23073.724,
+          "decode": 25619.296
         },
         "float_mixed_special": {
-          "encode": 17450.038,
-          "decode": 15081.36
+          "encode": 11885.758,
+          "decode": 15683.028
         },
         "float_boundaries": {
-          "encode": 17778.034,
-          "decode": 16878.882
+          "encode": 12522.758,
+          "decode": 17329.408
         },
         "unicode_ascii": {
-          "encode": 30878.11111111111,
-          "decode": 29696.555555555555
+          "encode": 14194.288888888888,
+          "decode": 26507.68888888889
         },
         "unicode_nfc": {
-          "encode": 269510.05797101447,
-          "decode": 50389.463768115944
+          "encode": 31950.884057971016,
+          "decode": 70234.71014492754
         },
         "unicode_decomposed": {
-          "encode": 266228.8947368421,
-          "decode": 50479.21052631579
+          "encode": 253764.47368421053,
+          "decode": 68581.24561403508
         },
         "unicode_expanding_nfc": {
-          "encode": 80946.05327868853,
-          "decode": 63236.29508196721
+          "encode": 67010.6762295082,
+          "decode": 88230.7581967213
         }
       },
       "case_fingerprints": {
@@ -1423,6 +1639,26 @@
           "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
           "wire_bytes": 139723
         },
+        "integer_width_boundaries": {
+          "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+          "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+          "wire_bytes": 2435
+        },
+        "dict_nfc_key_collisions": {
+          "input_sha256": "cf96def144fab6d0f0217d90f70c25218fcf764e838fd127e604b95740650ab5",
+          "wire_sha256": "039b285859b09898f6d8f407a5772d4a19b1b76c6408e0a1986567931c3e5f7d",
+          "wire_bytes": 886
+        },
+        "nested_scalar_tree": {
+          "input_sha256": "e4d93c245e1df38d974ad1047f0487febbcef5d0152d1ca60305a7561a6a73ad",
+          "wire_sha256": "5a2813b4d77fb89af2c26859436ae100dc0ee7f42f83bcf0c078e5462e6e5e5a",
+          "wire_bytes": 556
+        },
+        "cbor_map_snapshot": {
+          "input_sha256": "bf625aacd0d948f984bd2c7747e733a6eefdce05ecdcf5b6193a8b323bea865d",
+          "wire_sha256": "1d220c77f516b4789f26dc69c136f6e90c3659f8a4f2bbeeee62a07051790c6c",
+          "wire_bytes": 1962
+        },
         "float_fractional": {
           "input_sha256": "f617b1afa9e7d3ff990752b38d5c6620c94efe5ba9bc319312af93d8ea54bc97",
           "wire_sha256": "4aa650eb364032e045635504083a3a25166209dc458c53a8395b77bdd08ba172",
@@ -1466,8 +1702,8 @@
       }
     },
     {
-      "pid": 322,
-      "started_at_utc": "2026-10-17T21:19:52.062742+00:00",
+      "pid": 44,
+      "started_at_utc": "2026-10-18T18:32:54.364886+00:00",
       "order_offset": 1,
       "operation_order": [
         "decode",
@@ -1475,84 +1711,100 @@
       ],
       "measurements_ns_per_operation": {
         "map_10_reverse": {
-          "decode": 2232.2,
-          "encode": 3509.104
+          "decode": 1594.422,
+          "encode": 1986.762
         },
         "map_10_shuffled": {
-          "decode": 2239.654,
-          "encode": 3490.108
+          "decode": 1622.054,
+          "encode": 2192.106
         },
         "map_100_sorted": {
-          "decode": 31696.626,
-          "encode": 49482.134
+          "decode": 15231.238,
+          "encode": 31038.64
         },
         "map_100_reverse": {
-          "decode": 32216.064,
-          "encode": 39338.406
+          "decode": 13624.954,
+          "encode": 24408.138
         },
         "map_100_shuffled": {
-          "decode": 32258.022,
-          "encode": 51758.858
+          "decode": 13517.752,
+          "encode": 31619.154
         },
         "map_1000_sorted": {
-          "decode": 433285.692,
-          "encode": 617903.604
+          "decode": 152490.938,
+          "encode": 439499.592
         },
         "map_1000_reverse": {
-          "decode": 430878.702,
-          "encode": 479703.702
+          "decode": 172442.924,
+          "encode": 279932.15
         },
         "map_1000_shuffled": {
-          "decode": 435080.75,
-          "encode": 648661.982
+          "decode": 154940.99,
+          "encode": 455411.092
         },
         "map_10000_sorted": {
-          "decode": 5317067.58,
-          "encode": 7588379.12
+          "decode": 1900774.68,
+          "encode": 5106708.58
         },
         "map_10000_reverse": {
-          "decode": 5282120.02,
-          "encode": 5564628.24
+          "decode": 1762096.96,
+          "encode": 2501178.16
         },
         "map_10000_shuffled": {
-          "decode": 5024750.72,
-          "encode": 8966279.42
+          "decode": 1743262.9,
+          "encode": 6379178.24
+        },
+        "integer_width_boundaries": {
+          "decode": 22562.884,
+          "encode": 28512.604
+        },
+        "dict_nfc_key_collisions": {
+          "decode": 12770.124,
+          "encode": 65858.582
+        },
+        "nested_scalar_tree": {
+          "decode": 12973.426,
+          "encode": 21525.468
+        },
+        "cbor_map_snapshot": {
+          "decode": 25737.74,
+          "encode": 15562.702
         },
         "float_fractional": {
-          "decode": 22703.202,
-          "encode": 27284.784
+          "decode": 22569.754,
+          "encode": 14223.26
         },
         "float_integral": {
-          "decode": 23879.076,
-          "encode": 26298.568
+          "decode": 23258.894,
+          "encode": 20801.366
         },
         "float_mixed_special": {
-          "decode": 15535.636,
-          "encode": 18418.36
+          "decode": 14508.136,
+          "encode": 10727.338
         },
         "float_boundaries": {
-          "decode": 16283.122,
-          "encode": 17823.48
+          "decode": 16224.388,
+          "encode": 11349.068
         },
         "unicode_ascii": {
-          "decode": 29130.355555555554,
-          "encode": 31005.022222222222
+          "decode": 25651.17777777778,
+          "encode": 13100.444444444445
         },
         "unicode_nfc": {
-          "decode": 49627.30434782609,
-          "encode": 265266.85507246375
+          "decode": 64560.840579710144,
+          "encode": 34164.608695652176
         },
         "unicode_decomposed": {
-          "decode": 49519.14035087719,
-          "encode": 258561.98245614034
+          "decode": 65194.85964912281,
+          "encode": 236100.33333333334
         },
         "unicode_expanding_nfc": {
-          "decode": 62942.82786885246,
-          "encode": 78522.27049180328
+          "decode": 84950.11475409837,
+          "encode": 64847.30327868852
         },
         "map_10_sorted": {
-          "decode": 2193.388,
-          "encode": 3452.076
+          "decode": 1462.934,
+          "encode": 2202.868
         }
       },
       "case_fingerprints": {
@@ -1616,6 +1868,26 @@
           "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
           "wire_bytes": 139723
         },
+        "integer_width_boundaries": {
+          "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+          "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+          "wire_bytes": 2435
+        },
+        "dict_nfc_key_collisions": {
+          "input_sha256": "cf96def144fab6d0f0217d90f70c25218fcf764e838fd127e604b95740650ab5",
+          "wire_sha256": "039b285859b09898f6d8f407a5772d4a19b1b76c6408e0a1986567931c3e5f7d",
+          "wire_bytes": 886
+        },
+        "nested_scalar_tree": {
+          "input_sha256": "e4d93c245e1df38d974ad1047f0487febbcef5d0152d1ca60305a7561a6a73ad",
+          "wire_sha256": "5a2813b4d77fb89af2c26859436ae100dc0ee7f42f83bcf0c078e5462e6e5e5a",
+          "wire_bytes": 556
+        },
+        "cbor_map_snapshot": {
+          "input_sha256": "bf625aacd0d948f984bd2c7747e733a6eefdce05ecdcf5b6193a8b323bea865d",
+          "wire_sha256": "1d220c77f516b4789f26dc69c136f6e90c3659f8a4f2bbeeee62a07051790c6c",
+          "wire_bytes": 1962
+        },
         "float_fractional": {
           "input_sha256": "f617b1afa9e7d3ff990752b38d5c6620c94efe5ba9bc319312af93d8ea54bc97",
           "wire_sha256": "4aa650eb364032e045635504083a3a25166209dc458c53a8395b77bdd08ba172",
@@ -1659,8 +1931,8 @@
       }
     },
     {
-      "pid": 343,
-      "started_at_utc": "2026-10-17T21:19:56.593229+00:00",
+      "pid": 65,
+      "started_at_utc": "2026-10-18T18:32:57.107460+00:00",
       "order_offset": 2,
       "operation_order": [
         "encode",
@@ -1668,84 +1940,100 @@
       ],
       "measurements_ns_per_operation": {
         "map_10_shuffled": {
-          "encode": 3444.082,
-          "decode": 2253.08
+          "encode": 2095.204,
+          "decode": 1579.054
         },
         "map_100_sorted": {
-          "encode": 50027.662,
-          "decode": 32485.972
+          "encode": 31299.774,
+          "decode": 13419.146
         },
         "map_100_reverse": {
-          "encode": 40139.374,
-          "decode": 31991.942
+          "encode": 22288.226,
+          "decode": 13470.362
         },
         "map_100_shuffled": {
-          "encode": 50502.196,
-          "decode": 31937.018
+          "encode": 31772.742,
+          "decode": 13320.38
         },
         "map_1000_sorted": {
-          "encode": 612595.334,
-          "decode": 420840.072
+          "encode": 437265.084,
+          "decode": 159846.668
         },
         "map_1000_reverse": {
-          "encode": 483140.148,
-          "decode": 422219.926
+          "encode": 243416.396,
+          "decode": 152395.9
         },
         "map_1000_shuffled": {
-          "encode": 639183.988,
-          "decode": 429521.748
+          "encode": 455286.696,
+          "decode": 150588.154
         },
         "map_10000_sorted": {
-          "encode": 7278545.08,
-          "decode": 5076640.56
+          "encode": 5008024.36,
+          "decode": 1745707.5
         },
         "map_10000_reverse": {
-          "encode": 5346762.46,
-          "decode": 4983083.5
+          "encode": 2624297.96,
+          "decode": 1884830.86
         },
         "map_10000_shuffled": {
-          "encode": 8802281.42,
-          "decode": 5028677.7
+          "encode": 7049767.46,
+          "decode": 1750624.56
+        },
+        "integer_width_boundaries": {
+          "encode": 28442.974,
+          "decode": 22332.548
+        },
+        "dict_nfc_key_collisions": {
+          "encode": 65750.178,
+          "decode": 12926.94
+        },
+        "nested_scalar_tree": {
+          "encode": 22055.566,
+          "decode": 13271.248
+        },
+        "cbor_map_snapshot": {
+          "encode": 15525.672,
+          "decode": 25700.29
         },
         "float_fractional": {
-          "encode": 27238.738,
-          "decode": 23384.884
+          "encode": 13744.478,
+          "decode": 22084.22
         },
         "float_integral": {
-          "encode": 27074.226,
-          "decode": 24475.438
+          "encode": 20934.056,
+          "decode": 23372.026
         },
         "float_mixed_special": {
-          "encode": 17519.086,
-          "decode": 15065.93
+          "encode": 10762.002,
+          "decode": 14376.068
         },
         "float_boundaries": {
-          "encode": 17488.388,
-          "decode": 16495.662
+          "encode": 11428.458,
+          "decode": 16165.338
         },
         "unicode_ascii": {
-          "encode": 31595.0,
-          "decode": 29516.644444444446
+          "encode": 12472.155555555555,
+          "decode": 24325.577777777777
         },
         "unicode_nfc": {
-          "encode": 267553.47826086957,
-          "decode": 50894.913043478264
+          "encode": 29776.072463768116,
+          "decode": 64878.24637681159
         },
         "unicode_decomposed": {
-          "encode": 261675.75438596492,
-          "decode": 50308.17543859649
+          "encode": 236638.54385964913,
+          "decode": 65976.66666666667
         },
         "unicode_expanding_nfc": {
-          "encode": 80194.51639344262,
-          "decode": 63201.639344262294
+          "encode": 64818.80737704918,
+          "decode": 82199.68852459016
         },
         "map_10_sorted": {
-          "encode": 3410.758,
-          "decode": 2184.85
+          "encode": 2103.962,
+          "decode": 1451.792
         },
         "map_10_reverse": {
-          "encode": 3273.14,
-          "decode": 2290.992
+          "encode": 1932.94,
+          "decode": 1465.58
         }
       },
       "case_fingerprints": {
@@ -1809,6 +2097,26 @@
           "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
           "wire_bytes": 139723
         },
+        "integer_width_boundaries": {
+          "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+          "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+          "wire_bytes": 2435
+        },
+        "dict_nfc_key_collisions": {
+          "input_sha256": "cf96def144fab6d0f0217d90f70c25218fcf764e838fd127e604b95740650ab5",
+          "wire_sha256": "039b285859b09898f6d8f407a5772d4a19b1b76c6408e0a1986567931c3e5f7d",
+          "wire_bytes": 886
+        },
+        "nested_scalar_tree": {
+          "input_sha256": "e4d93c245e1df38d974ad1047f0487febbcef5d0152d1ca60305a7561a6a73ad",
+          "wire_sha256": "5a2813b4d77fb89af2c26859436ae100dc0ee7f42f83bcf0c078e5462e6e5e5a",
+          "wire_bytes": 556
+        },
+        "cbor_map_snapshot": {
+          "input_sha256": "bf625aacd0d948f984bd2c7747e733a6eefdce05ecdcf5b6193a8b323bea865d",
+          "wire_sha256": "1d220c77f516b4789f26dc69c136f6e90c3659f8a4f2bbeeee62a07051790c6c",
+          "wire_bytes": 1962
+        },
         "float_fractional": {
           "input_sha256": "f617b1afa9e7d3ff990752b38d5c6620c94efe5ba9bc319312af93d8ea54bc97",
           "wire_sha256": "4aa650eb364032e045635504083a3a25166209dc458c53a8395b77bdd08ba172",
@@ -1852,8 +2160,8 @@
       }
     },
     {
-      "pid": 364,
-      "started_at_utc": "2026-10-17T21:20:01.399873+00:00",
+      "pid": 86,
+      "started_at_utc": "2026-10-18T18:32:59.842032+00:00",
       "order_offset": 3,
       "operation_order": [
         "decode",
@@ -1861,84 +2169,100 @@
       ],
       "measurements_ns_per_operation": {
         "map_100_sorted": {
-          "decode": 34119.046,
-          "encode": 50835.782
+          "decode": 13541.076,
+          "encode": 30308.646
         },
         "map_100_reverse": {
-          "decode": 34254.56,
-          "encode": 41660.978
+          "decode": 13630.746,
+          "encode": 22979.948
         },
         "map_100_shuffled": {
-          "decode": 34155.934,
-          "encode": 51892.252
+          "decode": 13430.868,
+          "encode": 33220.67
         },
         "map_1000_sorted": {
-          "decode": 429454.122,
-          "encode": 614318.136
+          "decode": 156033.328,
+          "encode": 402256.99
         },
         "map_1000_reverse": {
-          "decode": 434619.682,
-          "encode": 482384.904
+          "decode": 155491.346,
+          "encode": 307673.964
         },
         "map_1000_shuffled": {
-          "decode": 440720.522,
-          "encode": 721881.888
+          "decode": 184344.132,
+          "encode": 455707.09
         },
         "map_10000_sorted": {
-          "decode": 5520971.9,
-          "encode": 7682329.92
+          "decode": 1688870.88,
+          "encode": 5028333.6
         },
         "map_10000_reverse": {
-          "decode": 5351634.04,
-          "encode": 6194051.48
+          "decode": 1743495.96,
+          "encode": 2600026.06
         },
         "map_10000_shuffled": {
-          "decode": 5518322.1,
-          "encode": 9559228.24
+          "decode": 1723579.04,
+          "encode": 6575316.34
+        },
+        "integer_width_boundaries": {
+          "decode": 22905.708,
+          "encode": 29038.996
+        },
+        "dict_nfc_key_collisions": {
+          "decode": 12995.048,
+          "encode": 66952.202
+        },
+        "nested_scalar_tree": {
+          "decode": 13332.704,
+          "encode": 21740.074
+        },
+        "cbor_map_snapshot": {
+          "decode": 25353.898,
+          "encode": 16030.642
         },
         "float_fractional": {
-          "decode": 23659.722,
-          "encode": 27574.91
+          "decode": 22505.834,
+          "encode": 13838.534
         },
         "float_integral": {
-          "decode": 25214.048,
-          "encode": 27356.16
+          "decode": 22874.208,
+          "encode": 20966.358
         },
         "float_mixed_special": {
-          "decode": 15744.366,
-          "encode": 17589.66
+          "decode": 14198.674,
+          "encode": 11059.322
         },
         "float_boundaries": {
-          "decode": 17108.094,
-          "encode": 17789.094
+          "decode": 16280.214,
+          "encode": 11333.26
         },
         "unicode_ascii": {
-          "decode": 29662.266666666666,
-          "encode": 33866.4
+          "decode": 24037.48888888889,
+          "encode": 12041.111111111111
         },
         "unicode_nfc": {
-          "decode": 50126.637681159424,
-          "encode": 272637.97101449274
+          "decode": 64316.884057971016,
+          "encode": 30039.463768115944
         },
         "unicode_decomposed": {
-          "decode": 50374.087719298244,
-          "encode": 267676.8596491228
+          "decode": 68430.77192982456,
+          "encode": 235714.50877192983
         },
         "unicode_expanding_nfc": {
-          "decode": 65406.975409836065,
-          "encode": 81294.90573770492
+          "decode": 82977.62704918033,
+          "encode": 64513.68032786885
         },
         "map_10_sorted": {
-          "decode": 2228.794,
-          "encode": 3846.276
+          "decode": 1392.1,
+          "encode": 2128.81
         },
         "map_10_reverse": {
-          "decode": 2236.79,
-          "encode": 3275.524
+          "decode": 1429.53,
+          "encode": 2009.284
         },
         "map_10_shuffled": {
-          "decode": 2227.812,
-          "encode": 3841.088
+          "decode": 1420.314,
+          "encode": 2158.042
         }
       },
       "case_fingerprints": {
@@ -2002,6 +2326,26 @@
           "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
           "wire_bytes": 139723
         },
+        "integer_width_boundaries": {
+          "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+          "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+          "wire_bytes": 2435
+        },
+        "dict_nfc_key_collisions": {
+          "input_sha256": "cf96def144fab6d0f0217d90f70c25218fcf764e838fd127e604b95740650ab5",
+          "wire_sha256": "039b285859b09898f6d8f407a5772d4a19b1b76c6408e0a1986567931c3e5f7d",
+          "wire_bytes": 886
+        },
+        "nested_scalar_tree": {
+          "input_sha256": "e4d93c245e1df38d974ad1047f0487febbcef5d0152d1ca60305a7561a6a73ad",
+          "wire_sha256": "5a2813b4d77fb89af2c26859436ae100dc0ee7f42f83bcf0c078e5462e6e5e5a",
+          "wire_bytes": 556
+        },
+        "cbor_map_snapshot": {
+          "input_sha256": "bf625aacd0d948f984bd2c7747e733a6eefdce05ecdcf5b6193a8b323bea865d",
+          "wire_sha256": "1d220c77f516b4789f26dc69c136f6e90c3659f8a4f2bbeeee62a07051790c6c",
+          "wire_bytes": 1962
+        },
         "float_fractional": {
           "input_sha256": "f617b1afa9e7d3ff990752b38d5c6620c94efe5ba9bc319312af93d8ea54bc97",
           "wire_sha256": "4aa650eb364032e045635504083a3a25166209dc458c53a8395b77bdd08ba172",
@@ -2045,8 +2389,8 @@
       }
     },
     {
-      "pid": 385,
-      "started_at_utc": "2026-10-17T21:20:06.445062+00:00",
+      "pid": 107,
+      "started_at_utc": "2026-10-18T18:33:02.501204+00:00",
       "order_offset": 4,
       "operation_order": [
         "encode",
@@ -2054,84 +2398,100 @@
       ],
       "measurements_ns_per_operation": {
         "map_100_reverse": {
-          "encode": 40715.94,
-          "decode": 32717.246
+          "encode": 22563.744,
+          "decode": 13838.496
         },
         "map_100_shuffled": {
-          "encode": 50928.356,
-          "decode": 32487.576
+          "encode": 33075.816,
+          "decode": 13739.188
         },
         "map_1000_sorted": {
-          "encode": 625323.866,
-          "decode": 442322.536
+          "encode": 401047.352,
+          "decode": 152725.36
         },
         "map_1000_reverse": {
-          "encode": 541450.796,
-          "decode": 474633.258
+          "encode": 237812.546,
+          "decode": 175599.286
         },
         "map_1000_shuffled": {
-          "encode": 764076.01,
-          "decode": 460554.086
+          "encode": 452270.336,
+          "decode": 151011.912
         },
         "map_10000_sorted": {
-          "encode": 8875386.58,
-          "decode": 5514526.56
+          "encode": 5109705.62,
+          "decode": 1753080.98
         },
         "map_10000_reverse": {
-          "encode": 6956979.76,
-          "decode": 5195540.1
+          "encode": 2557980.9,
+          "decode": 1738492.92
         },
         "map_10000_shuffled": {
-          "encode": 9730708.72,
-          "decode": 5215498.66
+          "encode": 6178239.9,
+          "decode": 1696931.66
+        },
+        "integer_width_boundaries": {
+          "encode": 28409.372,
+          "decode": 22641.772
+        },
+        "dict_nfc_key_collisions": {
+          "encode": 66166.482,
+          "decode": 12797.596
+        },
+        "nested_scalar_tree": {
+          "encode": 21649.042,
+          "decode": 13172.462
+        },
+        "cbor_map_snapshot": {
+          "encode": 15692.748,
+          "decode": 25634.106
         },
         "float_fractional": {
-          "encode": 27210.504,
-          "decode": 23116.842
+          "encode": 13843.966,
+          "decode": 22260.254
         },
         "float_integral": {
-          "encode": 27742.564,
-          "decode": 25527.536
+          "encode": 20981.226,
+          "decode": 23284.62
         },
         "float_mixed_special": {
-          "encode": 17961.722,
-          "decode": 15894.048
+          "encode": 10641.938,
+          "decode": 14088.046
         },
         "float_boundaries": {
-          "encode": 18456.23,
-          "decode": 17629.796
+          "encode": 11275.73,
+          "decode": 15878.978
         },
         "unicode_ascii": {
-          "encode": 30756.31111111111,
-          "decode": 30109.777777777777
+          "encode": 13075.955555555556,
+          "decode": 24039.933333333334
         },
         "unicode_nfc": {
-          "encode": 277230.0869565217,
-          "decode": 49793.710144927536
+          "encode": 34822.95652173913,
+          "decode": 64526.710144927536
         },
         "unicode_decomposed": {
-          "encode": 270902.9298245614,
-          "decode": 53604.01754385965
+          "encode": 234977.50877192983,
+          "decode": 65040.17543859649
         },
         "unicode_expanding_nfc": {
-          "encode": 81854.44262295082,
-          "decode": 64201.9631147541
+          "encode": 62345.54508196721,
+          "decode": 82872.63524590163
         },
         "map_10_sorted": {
-          "encode": 3400.198,
-          "decode": 2247.128
+          "encode": 2067.534,
+          "decode": 1542.044
         },
         "map_10_reverse": {
-          "encode": 3570.92,
-          "decode": 2218.714
+          "encode": 1926.668,
+          "decode": 1513.73
         },
         "map_10_shuffled": {
-          "encode": 3425.968,
-          "decode": 2222.622
+          "encode": 2084.986,
+          "decode": 1483.232
         },
         "map_100_sorted": {
-          "encode": 51317.208,
-          "decode": 33145.492
+          "encode": 30301.694,
+          "decode": 13898.188
         }
       },
       "case_fingerprints": {
@@ -2195,6 +2555,26 @@
           "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
           "wire_bytes": 139723
         },
+        "integer_width_boundaries": {
+          "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+          "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+          "wire_bytes": 2435
+        },
+        "dict_nfc_key_collisions": {
+          "input_sha256": "cf96def144fab6d0f0217d90f70c25218fcf764e838fd127e604b95740650ab5",
+          "wire_sha256": "039b285859b09898f6d8f407a5772d4a19b1b76c6408e0a1986567931c3e5f7d",
+          "wire_bytes": 886
+        },
+        "nested_scalar_tree": {
+          "input_sha256": "e4d93c245e1df38d974ad1047f0487febbcef5d0152d1ca60305a7561a6a73ad",
+          "wire_sha256": "5a2813b4d77fb89af2c26859436ae100dc0ee7f42f83bcf0c078e5462e6e5e5a",
+          "wire_bytes": 556
+        },
+        "cbor_map_snapshot": {
+          "input_sha256": "bf625aacd0d948f984bd2c7747e733a6eefdce05ecdcf5b6193a8b323bea865d",
+          "wire_sha256": "1d220c77f516b4789f26dc69c136f6e90c3659f8a4f2bbeeee62a07051790c6c",
+          "wire_bytes": 1962
+        },
         "float_fractional": {
           "input_sha256": "f617b1afa9e7d3ff990752b38d5c6620c94efe5ba9bc319312af93d8ea54bc97",
           "wire_sha256": "4aa650eb364032e045635504083a3a25166209dc458c53a8395b77bdd08ba172",
@@ -2238,8 +2618,8 @@
       }
     },
     {
-      "pid": 406,
-      "started_at_utc": "2026-10-17T21:20:11.105207+00:00",
+      "pid": 128,
+      "started_at_utc": "2026-10-18T18:33:05.169160+00:00",
       "order_offset": 5,
       "operation_order": [
         "decode",
@@ -2247,84 +2627,100 @@
       ],
       "measurements_ns_per_operation": {
         "map_100_shuffled": {
-          "decode": 33058.588,
-          "encode": 51475.206
+          "decode": 13697.73,
+          "encode": 32751.106
         },
         "map_1000_sorted": {
-          "decode": 431432.484,
-          "encode": 619937.29
+          "decode": 151436.872,
+          "encode": 406862.302
         },
         "map_1000_reverse": {
-          "decode": 433009.972,
-          "encode": 484544.95
+          "decode": 168694.668,
+          "encode": 263657.868
         },
         "map_1000_shuffled": {
-          "decode": 430680.49,
-          "encode": 648159.238
+          "decode": 152223.374,
+          "encode": 459345.018
         },
         "map_10000_sorted": {
-          "decode": 5051337.96,
-          "encode": 7315720.82
+          "decode": 1680448.24,
+          "encode": 4965976.4
         },
         "map_10000_reverse": {
-          "decode": 5124987.54,
-          "encode": 5430212.9
+          "decode": 1682138.82,
+          "encode": 2548621.68
         },
         "map_10000_shuffled": {
-          "decode": 5047527.98,
-          "encode": 10488193.94
+          "decode": 1675156.48,
+          "encode": 6385108.0
+        },
+        "integer_width_boundaries": {
+          "decode": 23210.022,
+          "encode": 28474.974
+        },
+        "dict_nfc_key_collisions": {
+          "decode": 12722.996,
+          "encode": 66530.266
+        },
+        "nested_scalar_tree": {
+          "decode": 13090.328,
+          "encode": 21816.878
+        },
+        "cbor_map_snapshot": {
+          "decode": 26130.88,
+          "encode": 15670.406
         },
         "float_fractional": {
-          "decode": 23420.472,
-          "encode": 28664.28
+          "decode": 22366.472,
+          "encode": 13817.476
         },
         "float_integral": {
-          "decode": 25219.096,
-          "encode": 27670.368
+          "decode": 23286.584,
+          "encode": 21011.502
         },
         "float_mixed_special": {
-          "decode": 15070.5,
-          "encode": 18057.402
+          "decode": 14519.578,
+          "encode": 10854.616
         },
         "float_boundaries": {
-          "decode": 16895.154,
-          "encode": 17669.69
+          "decode": 16103.86,
+          "encode": 11416.156
         },
         "unicode_ascii": {
-          "decode": 30597.355555555554,
-          "encode": 30683.066666666666
+          "decode": 25174.955555555556,
+          "encode": 13568.666666666666
         },
         "unicode_nfc": {
-          "decode": 50752.75362318841,
-          "encode": 268355.1304347826
+          "decode": 64438.72463768116,
+          "encode": 29895.565217391304
         },
         "unicode_decomposed": {
-          "decode": 49874.56140350877,
-          "encode": 263907.49122807017
+          "decode": 64029.491228070176,
+          "encode": 234915.28070175438
         },
         "unicode_expanding_nfc": {
-          "decode": 63625.42622950819,
-          "encode": 82355.7131147541
+          "decode": 82087.46721311475,
+          "encode": 62459.07786885246
         },
         "map_10_sorted": {
-          "decode": 2196.512,
-          "encode": 3424.004
+          "decode": 1486.578,
+          "encode": 2322.814
         },
         "map_10_reverse": {
-          "decode": 2223.344,
-          "encode": 3374.39
+          "decode": 1491.99,
+          "encode": 2085.326
         },
         "map_10_shuffled": {
-          "decode": 2215.288,
-          "encode": 3551.462
+          "decode": 1455.94,
+          "encode": 2281.336
         },
         "map_100_sorted": {
-          "decode": 32069.306,
-          "encode": 46990.606
+          "decode": 13689.776,
+          "encode": 30321.17
         },
         "map_100_reverse": {
-          "decode": 31827.352,
-          "encode": 40614.028
+          "decode": 13704.906,
+          "encode": 22634.94
         }
       },
       "case_fingerprints": {
@@ -2388,6 +2784,26 @@
           "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
           "wire_bytes": 139723
         },
+        "integer_width_boundaries": {
+          "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+          "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+          "wire_bytes": 2435
+        },
+        "dict_nfc_key_collisions": {
+          "input_sha256": "cf96def144fab6d0f0217d90f70c25218fcf764e838fd127e604b95740650ab5",
+          "wire_sha256": "039b285859b09898f6d8f407a5772d4a19b1b76c6408e0a1986567931c3e5f7d",
+          "wire_bytes": 886
+        },
+        "nested_scalar_tree": {
+          "input_sha256": "e4d93c245e1df38d974ad1047f0487febbcef5d0152d1ca60305a7561a6a73ad",
+          "wire_sha256": "5a2813b4d77fb89af2c26859436ae100dc0ee7f42f83bcf0c078e5462e6e5e5a",
+          "wire_bytes": 556
+        },
+        "cbor_map_snapshot": {
+          "input_sha256": "bf625aacd0d948f984bd2c7747e733a6eefdce05ecdcf5b6193a8b323bea865d",
+          "wire_sha256": "1d220c77f516b4789f26dc69c136f6e90c3659f8a4f2bbeeee62a07051790c6c",
+          "wire_bytes": 1962
+        },
         "float_fractional": {
           "input_sha256": "f617b1afa9e7d3ff990752b38d5c6620c94efe5ba9bc319312af93d8ea54bc97",
           "wire_sha256": "4aa650eb364032e045635504083a3a25166209dc458c53a8395b77bdd08ba172",
@@ -2431,8 +2847,8 @@
       }
     },
     {
-      "pid": 427,
-      "started_at_utc": "2026-10-17T21:20:15.966077+00:00",
+      "pid": 149,
+      "started_at_utc": "2026-10-18T18:33:07.825469+00:00",
       "order_offset": 6,
       "operation_order": [
         "encode",
@@ -2440,84 +2856,100 @@
       ],
       "measurements_ns_per_operation": {
         "map_1000_sorted": {
-          "encode": 735483.102,
-          "decode": 447253.616
+          "encode": 399314.49,
+          "decode": 160969.942
         },
         "map_1000_reverse": {
-          "encode": 489687.988,
-          "decode": 435580.65
+          "encode": 237411.812,
+          "decode": 162707.754
         },
         "map_1000_shuffled": {
-          "encode": 650493.972,
-          "decode": 441201.788
+          "encode": 445950.038,
+          "decode": 161475.094
         },
         "map_10000_sorted": {
-          "encode": 8146498.38,
-          "decode": 5393584.38
+          "encode": 4936122.78,
+          "decode": 1789303.8
         },
         "map_10000_reverse": {
-          "encode": 5858689.22,
-          "decode": 5353177.54
+          "encode": 2486518.54,
+          "decode": 1770885.52
         },
         "map_10000_shuffled": {
-          "encode": 10042079.86,
-          "decode": 5257731.72
+          "encode": 6255637.22,
+          "decode": 1770497.8
+        },
+        "integer_width_boundaries": {
+          "encode": 28389.712,
+          "decode": 22699.7
+        },
+        "dict_nfc_key_collisions": {
+          "encode": 66836.062,
+          "decode": 13207.368
+        },
+        "nested_scalar_tree": {
+          "encode": 21951.372,
+          "decode": 13109.402
+        },
+        "cbor_map_snapshot": {
+          "encode": 15935.164,
+          "decode": 26475.07
         },
         "float_fractional": {
-          "encode": 28680.05,
-          "decode": 23747.428
+          "encode": 13842.542,
+          "decode": 22690.144
         },
         "float_integral": {
-          "encode": 27804.964,
-          "decode": 25961.996
+          "encode": 21067.708,
+          "decode": 23268.19
         },
         "float_mixed_special": {
-          "encode": 18632.784,
-          "decode": 15741.804
+          "encode": 10989.33,
+          "decode": 14195.708
         },
         "float_boundaries": {
-          "encode": 19203.376,
-          "decode": 17769.156
+          "encode": 11346.744,
+          "decode": 16142.634
         },
         "unicode_ascii": {
-          "encode": 30311.266666666666,
-          "decode": 31165.088888888888
+          "encode": 12274.0,
+          "decode": 24490.11111111111
         },
         "unicode_nfc": {
-          "encode": 269085.347826087,
-          "decode": 50418.50724637681
+          "encode": 31189.594202898552,
+          "decode": 64413.159420289856
         },
         "unicode_decomposed": {
-          "encode": 265538.98245614034,
-          "decode": 50958.350877192985
+          "encode": 232756.84210526315,
+          "decode": 64356.9649122807
         },
         "unicode_expanding_nfc": {
-          "encode": 80419.52868852459,
-          "decode": 66574.86885245901
+          "encode": 65529.36475409836,
+          "decode": 85678.04098360655
         },
         "map_10_sorted": {
-          "encode": 3521.908,
-          "decode": 2306.52
+          "encode": 2235.41,
+          "decode": 1502.008
         },
         "map_10_reverse": {
-          "encode": 3360.484,
-          "decode": 2255.786
+          "encode": 2082.28,
+          "decode": 1560.518
         },
         "map_10_shuffled": {
-          "encode": 3501.69,
-          "decode": 2254.624
+          "encode": 2234.788,
+          "decode": 1499.464
         },
         "map_100_sorted": {
-          "encode": 49097.03,
-          "decode": 33811.546
+          "encode": 29689.922,
+          "decode": 13848.734
         },
         "map_100_reverse": {
-          "encode": 42070.888,
-          "decode": 33504.95
+          "encode": 22179.5,
+          "decode": 13970.164
         },
         "map_100_shuffled": {
-          "encode": 51628.634,
-          "decode": 34112.834
+          "encode": 31790.978,
+          "decode": 13871.758
         }
       },
       "case_fingerprints": {
@@ -2581,6 +3013,26 @@
           "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
           "wire_bytes": 139723
         },
+        "integer_width_boundaries": {
+          "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+          "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+          "wire_bytes": 2435
+        },
+        "dict_nfc_key_collisions": {
+          "input_sha256": "cf96def144fab6d0f0217d90f70c25218fcf764e838fd127e604b95740650ab5",
+          "wire_sha256": "039b285859b09898f6d8f407a5772d4a19b1b76c6408e0a1986567931c3e5f7d",
+          "wire_bytes": 886
+        },
+        "nested_scalar_tree": {
+          "input_sha256": "e4d93c245e1df38d974ad1047f0487febbcef5d0152d1ca60305a7561a6a73ad",
+          "wire_sha256": "5a2813b4d77fb89af2c26859436ae100dc0ee7f42f83bcf0c078e5462e6e5e5a",
+          "wire_bytes": 556
+        },
+        "cbor_map_snapshot": {
+          "input_sha256": "bf625aacd0d948f984bd2c7747e733a6eefdce05ecdcf5b6193a8b323bea865d",
+          "wire_sha256": "1d220c77f516b4789f26dc69c136f6e90c3659f8a4f2bbeeee62a07051790c6c",
+          "wire_bytes": 1962
+        },
         "float_fractional": {
           "input_sha256": "f617b1afa9e7d3ff990752b38d5c6620c94efe5ba9bc319312af93d8ea54bc97",
           "wire_sha256": "4aa650eb364032e045635504083a3a25166209dc458c53a8395b77bdd08ba172",
@@ -2624,8 +3076,8 @@
       }
     },
     {
-      "pid": 448,
-      "started_at_utc": "2026-10-17T21:20:20.659431+00:00",
+      "pid": 170,
+      "started_at_utc": "2026-10-18T18:33:10.439282+00:00",
       "order_offset": 7,
       "operation_order": [
         "decode",
@@ -2633,84 +3085,100 @@
       ],
       "measurements_ns_per_operation": {
         "map_1000_reverse": {
-          "decode": 433906.158,
-          "encode": 489275.372
+          "decode": 151574.372,
+          "encode": 238250.128
         },
         "map_1000_shuffled": {
-          "decode": 439738.094,
-          "encode": 671756.222
+          "decode": 148450.87,
+          "encode": 450394.866
         },
         "map_10000_sorted": {
-          "decode": 5139889.38,
-          "encode": 7157619.12
+          "decode": 1679056.62,
+          "encode": 4940120.3
         },
         "map_10000_reverse": {
-          "decode": 5308129.38,
-          "encode": 5706961.5
+          "decode": 1675592.08,
+          "encode": 2499233.88
         },
         "map_10000_shuffled": {
-          "decode": 5418727.7,
-          "encode": 9509402.28
+          "decode": 1719685.3,
+          "encode": 6100297.74
+        },
+        "integer_width_boundaries": {
+          "decode": 22636.18,
+          "encode": 29170.022
+        },
+        "dict_nfc_key_collisions": {
+          "decode": 13012.44,
+          "encode": 66556.316
+        },
+        "nested_scalar_tree": {
+          "decode": 13112.99,
+          "encode": 21474.052
+        },
+        "cbor_map_snapshot": {
+          "decode": 25595.792,
+          "encode": 15830.526
         },
         "float_fractional": {
-          "decode": 23494.774,
-          "encode": 27999.85
+          "decode": 21926.164,
+          "encode": 13786.518
         },
         "float_integral": {
-          "decode": 24648.584,
-          "encode": 27372.81
+          "decode": 22831.328,
+          "encode": 21023.264
         },
         "float_mixed_special": {
-          "decode": 15500.568,
-          "encode": 18431.124
+          "decode": 13931.812,
+          "encode": 11122.864
         },
         "float_boundaries": {
-          "decode": 17412.046,
-          "encode": 18053.152
+          "decode": 16040.784,
+          "encode": 11471.942
         },
         "unicode_ascii": {
-          "decode": 30171.666666666668,
-          "encode": 30704.444444444445
+          "decode": 25073.666666666668,
+          "encode": 12028.222222222223
         },
         "unicode_nfc": {
-          "decode": 50647.76811594203,
-          "encode": 276385.46376811597
+          "decode": 64431.159420289856,
+          "encode": 29432.507246376812
         },
         "unicode_decomposed": {
-          "decode": 50911.245614035084,
-          "encode": 269493.6140350877
+          "decode": 64352.73684210526,
+          "encode": 233797.40350877194
         },
         "unicode_expanding_nfc": {
-          "decode": 72071.77049180328,
-          "encode": 81248.21721311475
+          "decode": 82660.51229508196,
+          "encode": 66581.22131147541
         },
         "map_10_sorted": {
-          "decode": 2255.364,
-          "encode": 3507.34
+          "decode": 1450.692,
+          "encode": 2234.206
         },
         "map_10_reverse": {
-          "decode": 2203.186,
-          "encode": 3384.97
+          "decode": 1456.142,
+          "encode": 2032.446
         },
         "map_10_shuffled": {
-          "decode": 2299.408,
-          "encode": 3547.616
+          "decode": 1418.85,
+          "encode": 2210.822
         },
         "map_100_sorted": {
-          "decode": 32805.814,
-          "encode": 48866.136
+          "decode": 13412.492,
+          "encode": 30708.982
         },
         "map_100_reverse": {
-          "decode": 32602.632,
-          "encode": 41558.986
+          "decode": 13491.724,
+          "encode": 22524.512
         },
         "map_100_shuffled": {
-          "decode": 32207.408,
-          "encode": 50894.994
+          "decode": 13341.682,
+          "encode": 33111.844
         },
         "map_1000_sorted": {
-          "decode": 427694.17,
-          "encode": 617058.472
+          "decode": 148966.904,
+          "encode": 406126.496
         }
       },
       "case_fingerprints": {
@@ -2773,6 +3241,26 @@
           "input_sha256": "aa8ab9ed2dcfa583536c86b7786a24c41b965251419b2d9a7325a52132986be7",
           "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
           "wire_bytes": 139723
+        },
+        "integer_width_boundaries": {
+          "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+          "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+          "wire_bytes": 2435
+        },
+        "dict_nfc_key_collisions": {
+          "input_sha256": "cf96def144fab6d0f0217d90f70c25218fcf764e838fd127e604b95740650ab5",
+          "wire_sha256": "039b285859b09898f6d8f407a5772d4a19b1b76c6408e0a1986567931c3e5f7d",
+          "wire_bytes": 886
+        },
+        "nested_scalar_tree": {
+          "input_sha256": "e4d93c245e1df38d974ad1047f0487febbcef5d0152d1ca60305a7561a6a73ad",
+          "wire_sha256": "5a2813b4d77fb89af2c26859436ae100dc0ee7f42f83bcf0c078e5462e6e5e5a",
+          "wire_bytes": 556
+        },
+        "cbor_map_snapshot": {
+          "input_sha256": "bf625aacd0d948f984bd2c7747e733a6eefdce05ecdcf5b6193a8b323bea865d",
+          "wire_sha256": "1d220c77f516b4789f26dc69c136f6e90c3659f8a4f2bbeeee62a07051790c6c",
+          "wire_bytes": 1962
         },
         "float_fractional": {
           "input_sha256": "f617b1afa9e7d3ff990752b38d5c6620c94efe5ba9bc319312af93d8ea54bc97",
@@ -2817,8 +3305,8 @@
       }
     },
     {
-      "pid": 469,
-      "started_at_utc": "2026-10-17T21:20:25.249247+00:00",
+      "pid": 191,
+      "started_at_utc": "2026-10-18T18:33:13.076650+00:00",
       "order_offset": 8,
       "operation_order": [
         "encode",
@@ -2826,84 +3314,100 @@
       ],
       "measurements_ns_per_operation": {
         "map_1000_shuffled": {
-          "encode": 642273.884,
-          "decode": 430361.75
+          "encode": 449002.404,
+          "decode": 150306.504
         },
         "map_10000_sorted": {
-          "encode": 7153830.4,
-          "decode": 5009702.98
+          "encode": 5012449.5,
+          "decode": 1658167.68
         },
         "map_10000_reverse": {
-          "encode": 5485191.36,
-          "decode": 5119360.54
+          "encode": 2517743.74,
+          "decode": 1668049.7
         },
         "map_10000_shuffled": {
-          "encode": 9465976.96,
-          "decode": 5004325.66
+          "encode": 6244244.58,
+          "decode": 1666997.7
+        },
+        "integer_width_boundaries": {
+          "encode": 28950.83,
+          "decode": 22625.118
+        },
+        "dict_nfc_key_collisions": {
+          "encode": 67187.926,
+          "decode": 12732.614
+        },
+        "nested_scalar_tree": {
+          "encode": 21894.644,
+          "decode": 13126.594
+        },
+        "cbor_map_snapshot": {
+          "encode": 15924.844,
+          "decode": 25280.82
         },
         "float_fractional": {
-          "encode": 28335.2,
-          "decode": 23750.874
+          "encode": 13750.832,
+          "decode": 22449.188
         },
         "float_integral": {
-          "encode": 27703.754,
-          "decode": 24712.402
+          "encode": 21051.798,
+          "decode": 22941.296
         },
         "float_mixed_special": {
-          "encode": 17945.448,
-          "decode": 15349.244
+          "encode": 11077.578,
+          "decode": 14241.354
         },
         "float_boundaries": {
-          "encode": 18104.53,
-          "decode": 16999.47
+          "encode": 11446.792,
+          "decode": 16388.136
         },
         "unicode_ascii": {
-          "encode": 30117.333333333332,
-          "decode": 30736.28888888889
+          "encode": 12146.888888888889,
+          "decode": 24895.533333333333
         },
         "unicode_nfc": {
-          "encode": 268544.768115942,
-          "decode": 50878.34782608696
+          "encode": 29272.652173913044,
+          "decode": 64411.565217391304
         },
         "unicode_decomposed": {
-          "encode": 265526.50877192983,
-          "decode": 50789.78947368421
+          "encode": 233689.8245614035,
+          "decode": 64031.9649122807
         },
         "unicode_expanding_nfc": {
-          "encode": 81064.14344262295,
-          "decode": 65384.762295081964
+          "encode": 62782.389344262294,
+          "decode": 85251.82786885246
         },
         "map_10_sorted": {
-          "encode": 3439.532,
-          "decode": 2245.024
+          "encode": 2173.994,
+          "decode": 1460.288
         },
         "map_10_reverse": {
-          "encode": 3335.818,
-          "decode": 2204.288
+          "encode": 2050.842,
+          "decode": 1466.24
         },
         "map_10_shuffled": {
-          "encode": 3497.122,
-          "decode": 2264.1
+          "encode": 2198.56,
+          "decode": 1445.482
         },
         "map_100_sorted": {
-          "encode": 48123.978,
-          "decode": 33134.032
+          "encode": 30613.782,
+          "decode": 13197.328
         },
         "map_100_reverse": {
-          "encode": 41132.402,
-          "decode": 32579.186
+          "encode": 22658.562,
+          "decode": 13382.858
         },
         "map_100_shuffled": {
-          "encode": 50676.664,
-          "decode": 33149.7
+          "encode": 32767.136,
+          "decode": 13300.704
         },
         "map_1000_sorted": {
-          "encode": 622388.882,
-          "decode": 426485.756
+          "encode": 415508.24,
+          "decode": 150725.814
         },
         "map_1000_reverse": {
-          "encode": 480561.114,
-          "decode": 427263.678
+          "encode": 241949.516,
+          "decode": 150047.376
         }
       },
       "case_fingerprints": {
@@ -2966,6 +3470,26 @@
           "input_sha256": "aa8ab9ed2dcfa583536c86b7786a24c41b965251419b2d9a7325a52132986be7",
           "wire_sha256": "b00d8be6ee21e01910ae4c5df0d45fa4d32b0391ac231f3baa2711715bedb535",
           "wire_bytes": 139723
+        },
+        "integer_width_boundaries": {
+          "input_sha256": "149c605090eae16a67e5354524d0abfb43c24ef2cb052e2f7f61d2e849395d08",
+          "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b",
+          "wire_bytes": 2435
+        },
+        "dict_nfc_key_collisions": {
+          "input_sha256": "cf96def144fab6d0f0217d90f70c25218fcf764e838fd127e604b95740650ab5",
+          "wire_sha256": "039b285859b09898f6d8f407a5772d4a19b1b76c6408e0a1986567931c3e5f7d",
+          "wire_bytes": 886
+        },
+        "nested_scalar_tree": {
+          "input_sha256": "e4d93c245e1df38d974ad1047f0487febbcef5d0152d1ca60305a7561a6a73ad",
+          "wire_sha256": "5a2813b4d77fb89af2c26859436ae100dc0ee7f42f83bcf0c078e5462e6e5e5a",
+          "wire_bytes": 556
+        },
+        "cbor_map_snapshot": {
+          "input_sha256": "bf625aacd0d948f984bd2c7747e733a6eefdce05ecdcf5b6193a8b323bea865d",
+          "wire_sha256": "1d220c77f516b4789f26dc69c136f6e90c3659f8a4f2bbeeee62a07051790c6c",
+          "wire_bytes": 1962
         },
         "float_fractional": {
           "input_sha256": "f617b1afa9e7d3ff990752b38d5c6620c94efe5ba9bc319312af93d8ea54bc97",

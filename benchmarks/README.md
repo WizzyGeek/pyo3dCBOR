@@ -5,17 +5,17 @@ show and where their limits are. Active reports contain their methodology,
 machine-readable measurements, and reproduction command. Historical reports
 are labeled and may no longer have a runnable measurement path.
 
+The current active capture uses dCBOR 0.1.1 at source commit `df70782`.
+
 - [Encoded size](encoded_size/README.md): compact JSON and dCBOR bytes.
 - [Wire size](wire_size/README.md): JSON, dCBOR, generic CBOR, MessagePack,
   and strict DAG-CBOR bytes.
 - [Latency](latency/README.md): encode, decode, and round-trip timings for
   each measured mode.
-- [dCBOR profile](profile/README.md): map order, numeric normalization, and
-  Unicode normalization workloads.
+- [dCBOR profile](profile/README.md): map encode/decode scaling, numeric
+  normalization, and Unicode normalization workloads.
 - [Native decoder paired profile](native_decoder/README.md): decode and encode
   controls against the preserved pre-migration package.
-- [Historical Rust-core report](rust_core/README.md): retired comparison from
-  the vendored-core architecture; raw results and figure are preserved.
 
 Shared JSON fixtures are defined in [`fixtures.py`](fixtures.py); profile-only
 inputs are in [`profile_fixtures.py`](profile_fixtures.py). Figures are stored

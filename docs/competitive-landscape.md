@@ -76,14 +76,11 @@ This is a database feature comparison, not a wire-format or in-process codec com
 
 The repository compares compact JSON and dCBOR bytes, generic CBOR modes,
 `orjson` JSON, `msgspec` MessagePack, and strict DAG-CBOR. Active reports cover
-dCBOR profile workloads. An archived Rust-core versus Python binding report
-records the previous vendored-core architecture and does not describe the
-current native decoder. The reports measure one recorded host and fixture set;
+dCBOR profile workloads. The reports measure one recorded host and fixture set;
 they do not measure PostgreSQL storage or queries. See [benchmark status and scope](../benchmarks/README.md),
 the [wire-size report](../benchmarks/wire_size/README.md), the
-[latency report](../benchmarks/latency/README.md), the
-[dCBOR profile](../benchmarks/profile/README.md), and
-[historical Rust-core comparison](../benchmarks/rust_core/README.md).
+[latency report](../benchmarks/latency/README.md), and the
+[dCBOR profile](../benchmarks/profile/README.md).
 
 ## Benchmark interpretation
 

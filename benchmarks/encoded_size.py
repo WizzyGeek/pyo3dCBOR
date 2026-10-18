@@ -115,12 +115,10 @@ def source_worktree_dirty() -> bool | None:
         b"benchmarks/wire_size/results.json",
         b"benchmarks/latency/results.json",
         b"benchmarks/profile/results.json",
-        b"benchmarks/rust_core/results.json",
         b".github/assets/graphs/encoded-size.svg",
         b".github/assets/graphs/wire-size.svg",
         b".github/assets/graphs/latency.svg",
         b".github/assets/graphs/profile.svg",
-        b".github/assets/graphs/rust-core.svg",
     }
     for entry in result.stdout.split(b"\0"):
         if not entry:

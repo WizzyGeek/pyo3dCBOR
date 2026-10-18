@@ -27,11 +27,11 @@ from encoded_size import fixtures, equivalent_value
 
 
 ROOT = Path(__file__).resolve().parents[1]
-ARTIFACT_DIR = Path(os.environ.get("DCBOR_BENCHMARK_ARTIFACT_DIR", ROOT / "benchmarks" / "feat004"))
+ARTIFACT_DIR = Path(os.environ.get("DCBOR_BENCHMARK_ARTIFACT_DIR", ROOT / ".github" / "assets" / "graphs"))
 PACKAGE_ROOT = Path(os.environ.get("DCBOR_PACKAGE_ROOT", ROOT / "python"))
 RELEASE_ARTIFACT = Path(os.environ.get("DCBOR_RELEASE_ARTIFACT", ROOT / "target" / "release" / "lib_dcbor.so"))
-OUTPUT_DIR = ARTIFACT_DIR / "wire_size"
-SVG_PATH = ARTIFACT_DIR / "wire-size.svg"
+OUTPUT_DIR = Path(os.environ.get("DCBOR_WIRE_SIZE_OUTPUT_DIR", ROOT / "benchmarks" / "wire_size"))
+SVG_PATH = Path(os.environ.get("DCBOR_WIRE_SIZE_SVG_PATH", ARTIFACT_DIR / "wire-size.svg"))
 EXPECTED_DCBOR_VERSION = "0.1.1"
 sys.path.insert(0, str(PACKAGE_ROOT))
 PINNED_CBOR2 = "6.1.5"
@@ -57,12 +57,10 @@ OUTPUTS = {
     b"benchmarks/wire_size/results.json",
     b"benchmarks/latency/results.json",
     b"benchmarks/profile/results.json",
-    b"benchmarks/rust_core/results.json",
     b".github/assets/graphs/encoded-size.svg",
     b".github/assets/graphs/wire-size.svg",
     b".github/assets/graphs/latency.svg",
     b".github/assets/graphs/profile.svg",
-    b".github/assets/graphs/rust-core.svg",
 }
 
 

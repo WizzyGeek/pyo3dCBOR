@@ -32,7 +32,7 @@ from profile_fixtures import build_workloads
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = Path(__file__).resolve().parent / "profile"
-ARTIFACT_DIR = Path(os.environ.get("DCBOR_BENCHMARK_ARTIFACT_DIR", ROOT / "benchmarks" / "feat004"))
+ARTIFACT_DIR = Path(os.environ.get("DCBOR_BENCHMARK_ARTIFACT_DIR", ROOT / ".github" / "assets" / "graphs"))
 PACKAGE_ROOT = Path(os.environ.get("DCBOR_PACKAGE_ROOT", ROOT / "python"))
 RELEASE_ARTIFACT = Path(os.environ.get("DCBOR_RELEASE_ARTIFACT", ROOT / "target" / "release" / "lib_dcbor.so"))
 CHART_PATH = Path(os.environ.get("DCBOR_PROFILE_SVG_PATH", ARTIFACT_DIR / "profile.svg"))
@@ -76,12 +76,10 @@ def source_worktree_dirty() -> bool | None:
         b"benchmarks/encoded_size/results.json",
         b"benchmarks/wire_size/results.json",
         b"benchmarks/latency/results.json",
-        b"benchmarks/rust_core/results.json",
         b".github/assets/graphs/profile.svg",
         b".github/assets/graphs/encoded-size.svg",
         b".github/assets/graphs/wire-size.svg",
         b".github/assets/graphs/latency.svg",
-        b".github/assets/graphs/rust-core.svg",
     }
     for entry in result.stdout.split(b"\0"):
         if entry and entry[3:] not in generated:

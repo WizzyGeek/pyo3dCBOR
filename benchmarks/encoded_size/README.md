@@ -42,9 +42,9 @@ Compare those fields before comparing or refreshing results. The script checks
 that both JSON and dCBOR decode back to each fixture using a recursive,
 type-sensitive comparison. Numerically equal substitutions such as `True` for
 `1`, or a float for an integer, fail the check.
-The cleanliness indicator excludes the three generated benchmark JSON reports
-and three stable SVG charts; other source or worktree changes still mark the
-report dirty. It is `null` if Git status cannot be read. The generator path and
+The cleanliness indicator ignores the four active benchmark JSON reports and
+four stable SVG charts; other source or worktree changes still mark the report
+dirty. It is `null` if Git status cannot be read. The generator path and
 SHA-256 identify the exact script used to produce the report, and the chart
 path is recorded in the raw results.
 

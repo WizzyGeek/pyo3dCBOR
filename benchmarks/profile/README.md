@@ -4,20 +4,21 @@ This benchmark isolates workload shapes that exercise dCBOR's map ordering,
 numeric, and Unicode normalization behavior. It measures the dCBOR Python
 extension only; these cases are not the shared cross-codec fixture set.
 
-![dCBOR profile: map encode time by map size and insertion order, with float and Unicode encode/decode medians and wire sizes.](../../.github/assets/graphs/profile.svg)
+![Side-by-side map encode and decode scaling use the same logarithmic limits; lower panels show float and Unicode encode/decode medians and wire sizes.](../../.github/assets/graphs/profile.svg)
 
-The top panel plots map encode time against map size for sorted, reversed, and
-seeded-shuffled insertion order. Both axes use logarithmic scales. It compares
-whole-operation encoding across insertion orders; each timed call includes
+The top panels plot map encode and decode time against entry count with shared
+logarithmic entry-count and time limits. Each shows sorted, reverse, and
+seeded-shuffled source insertion order. All three orders produce identical
+canonical wire, so decode differences by order are measurement variation, not
+evidence of insertion-order-dependent decoding. The encode call includes
 Python-map conversion and encoding, so it does not isolate sort-only cost. All
-map keys have the same 10-byte ASCII width and produce identical canonical
-output; this workload cannot distinguish bytewise order from length-first
-order. The lower float and Unicode panels show encode/decode
-medians in microseconds on a shared logarithmic scale, with wire bytes shown
-for each case. Each plotted value comes from the machine-readable
-[profile report](results.json), which records category (`map_order`, `float`,
-or `unicode`), case type, medians, MAD, process samples, hashes, environment,
-and normalization metadata.
+map keys have the same 10-byte ASCII width; this workload cannot distinguish
+bytewise order from length-first order. The lower float and Unicode panels
+show encode/decode medians in microseconds on a shared logarithmic scale, with
+wire bytes shown for each case. Each plotted value comes from the machine-readable
+[profile report](results.json), which records case family, operation, medians,
+MAD, process samples, hashes, environment, and normalization metadata,
+including the four uncharted controls listed below.
 
 ## Cases
 
@@ -29,6 +30,7 @@ and normalization metadata.
 | Floats | `float_mixed_special` | Finite fractions, signed zero, infinities, and NaN payloads; `-0.0` reduces to integer zero. |
 | Floats | `float_boundaries` | `-2**63`, adjacent floats, `2**64`, adjacent floats, `-2**64`, and infinities. |
 | Text | `unicode_ascii`, `unicode_nfc`, `unicode_decomposed`, `unicode_expanding_nfc` | 256 strings per case: ASCII; NFC `Málaga café déjà vu Ångström`; its NFD form; and a prefix plus U+0344, which expands to U+0308 U+0301 under NFC. |
+| Raw-report controls | `integer_width_boundaries`, `dict_nfc_key_collisions`, `nested_scalar_tree`, `cbor_map_snapshot` | Encode/decode controls recorded in JSON but omitted from the chart; they cover explicit integer widths, normalized-key collisions, nested values, and immutable `CBORMap` snapshots. |
 
 The report records both input and encoded-wire hashes, wire byte counts,
 iteration and warmup settings, encode/decode timing samples, median, MAD, and
@@ -57,4 +59,5 @@ Pass `--warmup`, `--rounds`, or `--repetitions` to change the defaults;
 The runner writes [`results.json`](results.json) and the stable figure at
 [`profile.svg`](../../.github/assets/graphs/profile.svg). It records the source
 fingerprints, Python/platform details, and release-extension verification so
-the result can be tied to the code and environment that produced it.
+the result can be tied to the code and environment that produced it. The
+current capture uses dCBOR 0.1.1 at source commit `df70782`.
