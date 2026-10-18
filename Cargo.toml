@@ -1,6 +1,6 @@
 [package]
 name = "dcbor-py"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "Python bindings for the Blockchain Commons dcbor (deterministic CBOR) Rust crate"
 license = "BSD-2-Clause-Patent"

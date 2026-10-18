@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "dcbor"
-version = "0.1.0"
+version = "0.1.1"
 description = "Deterministic CBOR (dCBOR) for Python — PyO3 bindings for Blockchain Commons' dcbor Rust crate"
 readme = "README.md"
 license = { text = "BSD-2-Clause-Patent" }
