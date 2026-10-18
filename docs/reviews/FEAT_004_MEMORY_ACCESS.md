@@ -10,7 +10,7 @@ The repository pins PyO3 0.29.2, builds per-interpreter wheels with
 | Value | Public PyO3 path | What the view represents | Copy and canonicalization boundary |
 | --- | --- | --- | --- |
 | `bytes` | `PyBytesMethods::as_bytes()` | Borrowed immutable payload bytes; the Python object remains the owner. | `Vec::extend_from_slice` copies payload once into the Rust wire buffer. Returning with current `PyBytes::new(py, &data)` copies the complete wire buffer again into Python-owned bytes. |
-| `bytearray` | `to_vec()` is safe; `as_bytes()` is `unsafe`. | Mutable payload; a borrowed pointer/slice can be invalidated by mutation or resize. | Safe `to_vec()` then append makes a temporary payload copy and a second copy into the Rust wire buffer; returning Python bytes copies the complete wire buffer again. Do not retain a borrow across Python execution. |
+| `bytearray` | `to_vec()` is safe; `as_bytes()` is `unsafe`. | Mutable payload; the source must be protected against mutation during either copy. PyO3's `to_vec()` uses `with_critical_section` and returns an owned vector. | For current GIL-enabled wheels, a scoped `unsafe { as_bytes() }` plus immediate `wire.extend_from_slice()` can copy once into the Rust wire buffer when the caller proves no Python execution, mutation, or GIL release occurs. `to_vec()` then append uses two payload copies. Both paths still copy the full wire buffer into returned Python bytes. |
 | `str` | `PyStringMethods::to_str()` | Borrowed Rust UTF-8 view; PyO3 calls `PyUnicode_AsUTF8AndSize` in this full-API build. | CPython may create and cache UTF-8 on demand; this is not guaranteed allocation-free. dCBOR requires UTF-8 NFC, so normalize when needed, reject lone surrogates, then append normalized bytes. Final Python bytes construction copies the wire buffer. |
 | `list` / `tuple` | `PyListMethods::iter()` / `PyTupleMethods::iter()` | Iteration yields references to Python objects. A CPython list’s contiguous storage is an array of object pointers, not inline integer/float payloads. | Visit and encode each value; there is no bulk payload copy. A direct writer can avoid intermediate CBOR nodes, but still traverses each object. |
 | `bool`, `int`, `float`, `None` | PyO3 typed checks, `extract`, and `PyFloatMethods::value()` | Semantic Python value, not a wire-ready byte slice. | Integers may be arbitrary precision and are range-checked; floats are native `f64` and need dCBOR width/reduction rules. Encode canonical headers/payload bytes explicitly. |
@@ -32,15 +32,23 @@ cached. PyO3’s `unsafe PyStringMethods::data()` exposes storage-specific data
 and documents a C-bitfield/target assumption; it is not justified for this
 cross-platform wheel matrix without measured need and target validation.
 
-PyO3 marks bytearray `as_bytes()` unsafe because Python code can mutate or
-resize the object and invalidate the view. A normal CPython GIL prevents other
-threads from running Python concurrently, but does not prevent same-thread
-re-entry through callbacks. The encoder already calls user `__index__` for
-custom integer-like objects and calls datetime `utcoffset()` / `timestamp()`.
-Any borrowed mutable payload must not span such calls, recursion, exception
-handling that can run Python, or GIL release. This note does not recommend a
-new unsafe buffer strategy; the safe high-level `to_vec()` path has the extra
-copy described above.
+PyO3 0.29.2 implements safe `to_vec()` as `with_critical_section(self, ||
+unsafe { self.as_bytes() }.to_vec())`. Its safety comments say the bound object
+holds the GIL, the free-threaded build uses a critical section, and the copy
+does not call back into Python or mutate the slice. Critical sections are a
+no-op with the GIL and use a per-object lock in free-threaded Python. The
+current release matrix targets regular CPython 3.9–3.14 only.
+
+For that matrix, a direct writer may prefer one short caller-verified borrow:
+hold the GIL, acquire `unsafe { bytearray.as_bytes() }`, and immediately copy
+with `wire.extend_from_slice(slice)`. Keep the slice scope free of Python/PyO3
+calls, callbacks or re-entry, mutation, and GIL release/detach. The copy is a
+Rust slice operation; do not recurse or retain the view. This unsafe block is
+a specific caller safety proof, not a blanket prohibition. If the proof cannot
+hold, `to_vec()` provides an owned payload copy, with the extra append copy.
+Callback-capable paths such as custom `__index__` and datetime
+`utcoffset()`/`timestamp()` must stay outside the borrow scope. Both routes
+still incur the final complete Rust-wire-to-Python-bytes copy.
 
 The current Python API accepts bytes and bytearray as byte strings. Preserve
 that boundary; do not broaden it to arbitrary buffer exporters as an encoder
@@ -71,13 +79,10 @@ Rust-core benchmark remains a separate comparison.
 
 ## Primary references
 
-PyO3 API details were cross-checked against the locked 0.29.2 crate sources in
-`pyo3-0.29.2/src/types/{bytes,bytearray,string}.rs`; the links below use the
-canonical generated Rustdoc path form.
+PyO3 API declarations were checked against the locked crate source under
+`pyo3-0.29.2/src/types/{bytes,bytearray,string}.rs`; `to_vec()` protection was
+verified in `pyo3-0.29.2/src/types/bytearray.rs` and
+`pyo3-0.29.2/src/sync/critical_section.rs`.
 
-- [PyO3 0.29.2 byte methods](https://docs.rs/pyo3/0.29.2/pyo3/types/trait.PyBytesMethods.html)
-- [PyO3 0.29.2 bytearray methods](https://docs.rs/pyo3/0.29.2/pyo3/types/trait.PyByteArrayMethods.html)
-- [PyO3 0.29.2 string methods](https://docs.rs/pyo3/0.29.2/pyo3/types/trait.PyStringMethods.html)
-- [CPython Unicode C API](https://docs.python.org/3.14/c-api/unicode.html)
-- [CPython stable ABI](https://docs.python.org/3.14/c-api/stable.html)
-- [CPython buffer protocol](https://docs.python.org/3.14/c-api/buffer.html)
+- PyO3 0.29.2 docs: [bytes](https://docs.rs/pyo3/0.29.2/pyo3/types/trait.PyBytesMethods.html), [bytearray](https://docs.rs/pyo3/0.29.2/pyo3/types/trait.PyByteArrayMethods.html), [strings](https://docs.rs/pyo3/0.29.2/pyo3/types/trait.PyStringMethods.html)
+- CPython 3.14 docs: [Unicode](https://docs.python.org/3.14/c-api/unicode.html), [stable ABI](https://docs.python.org/3.14/c-api/stable.html), [buffer protocol](https://docs.python.org/3.14/c-api/buffer.html), [critical-section API](https://docs.python.org/3.14/c-api/init.html#python-critical-section-api)

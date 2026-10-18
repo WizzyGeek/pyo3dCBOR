@@ -22,9 +22,13 @@ promised; agree any target with the owner after the `0.1.1` baseline.
   temporary encoded-byte buffers for sorting and collision resolution.
 - Measure supported `PyBytes.as_bytes()`/`PyString.to_str()` paths; text views
   may cache UTF-8, NFC/numbers transform, and lists/tuples still traverse objects.
-  `PyByteArray.as_bytes()` is unsafe; prefer a safe copy unless reviewed immediate
-  append spans no Python callback/re-entry/GIL release. Borrowing saves only
-  input/intermediate copies; final Python bytes still allocate/copy. Do not read
+  For current GIL-enabled CPython wheels, the desired bytearray fast path is a
+  scoped `unsafe { as_bytes() }` copied immediately to the output Vec, if its
+  safety proof holds: retain the GIL and make no Python/PyO3 call, callback or
+  re-entry, mutation, or GIL release/detach until the copy completes. PyO3's
+  safe `to_vec()` uses the same short-copy principle and returns owned bytes,
+  but appending that vector adds an intermediate payload copy. With the current
+  `Vec`-to-`PyBytes::new` output, also account for the final full-wire copy. Do not read
   headers/reference bytes as payload or add buffer APIs implicitly.
 - The normal encoding path avoids constructing a recursive vendored `CBOR`
   value graph. Decoding and the vendored codec remain in place.
