@@ -4,7 +4,7 @@ Reference: https://datatracker.ietf.org/doc/html/draft-mcnally-deterministic-cbo
 These tests deliberately do not use dumps() to construct decoder inputs.
 Round trips alone can miss an encoder and decoder sharing the same defect.
 The full negative CBOR integer range is discussed separately in
-docs/reviews/SPEC_REVIEW.md because draft-18's normative text and Appendix A disagree.
+project-notes/reviews/SPEC_REVIEW.md because draft-18's normative text and Appendix A disagree.
 """
 
 import math

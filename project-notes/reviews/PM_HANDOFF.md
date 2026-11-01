@@ -28,8 +28,8 @@ Sol xhigh reviewer. No substantive finding remains open from that review.
 - Run the three exhaustive numeric sweeps on representative Python 3.14/Linux
   and source-package jobs; every wheel runs the remaining tests. Change-detection
   guards recognize the new typing, test-configuration, and vendor-patch inputs.
-- Keep historical review logs in `docs/reviews/`; record allocation measurements
-  and queued follow-ups in `docs/allocation-plan.md` without claiming unmeasured
+- Keep historical review logs in `project-notes/reviews/`; record allocation measurements
+  and queued follow-ups in `project-notes/allocation-plan.md` without claiming unmeasured
   improvements. Mapping inheritance and broader tag repr remain deferred.
 - Record WizzyGeek as vendor maintainer. `scripts/vendor_dcbor.py` verifies a
   checksum-pinned crates.io archive, upstream revision, and repeatable local patch
@@ -74,7 +74,7 @@ xhigh for critical independent review; model overrides need fresh task context.
 ## Requirements
 
 Feature proposals and bug reports live in
-[`docs/requirements/`](../requirements/). Use `FEAT_NNN_short_title.md` for
+[`project-notes/requirements/`](../requirements/). Use `FEAT_NNN_short_title.md` for
 features and `BUG_NNN_short_title.md` for bugs, assigning the next available
 zero-padded number from one shared serial sequence across both types. The
 directory README records the conventions and current items.

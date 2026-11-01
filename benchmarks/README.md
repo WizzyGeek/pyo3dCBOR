@@ -1,6 +1,6 @@
 # Benchmarks
 
-The [comparison overview](../docs/benchmarks.md) explains what the figures
+The [comparison overview](../project-notes/benchmarks.md) explains what the figures
 show and where their limits are. Active reports contain their methodology,
 machine-readable measurements, and reproduction command. Historical reports
 are labeled and may no longer have a runnable measurement path.
@@ -18,7 +18,7 @@ The current active capture uses dCBOR 0.1.1 at source commit `df70782`.
   controls against the preserved pre-migration package.
 - [Bounded encoding optimization cycle](optimization_cycle/README.md): isolated
   A/B evidence for the accepted map-staging change and rejected bytes fast path.
-- [v0.2 performance review](../docs/reviews/V0_2_PERFORMANCE_REVIEW.md): native
+- [v0.2 performance review](../project-notes/reviews/V0_2_PERFORMANCE_REVIEW.md): native
   instruction/counter evidence, copy audit, and proposed optimization experiments.
 
 Shared JSON fixtures are defined in [`fixtures.py`](fixtures.py); profile-only

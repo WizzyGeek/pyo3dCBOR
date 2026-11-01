@@ -80,5 +80,5 @@ Linux path `target/release/lib_dcbor.so` by SHA-256. The JSON retains all ten
 codec modes plus the compact JSON baseline, even when the graph groups modes
 into a point or range.
 
-See [benchmark scope](../../docs/benchmarks.md) for the other reports and
+See [benchmark scope](../../project-notes/benchmarks.md) for the other reports and
 comparison limits.

@@ -1,4 +1,4 @@
-"""Reproducible end-to-end workloads for docs/reviews/PERF_REVIEW.md (standard library only).
+"""Reproducible end-to-end workloads for project-notes/reviews/PERF_REVIEW.md (standard library only).
 
 Run with a freshly built release extension, without replacing the installed one:
   .venv/bin/python benchmarks/perf_review.py --extension /path/lib_dcbor.so \

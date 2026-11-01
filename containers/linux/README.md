@@ -18,7 +18,7 @@ All four were anonymously readable from GHCR on 2026-10-18. Their returned
 manifest bytes match the recorded SHA-256 values; their configs report the
 expected amd64/arm64 architecture, libc policy, and Rust 1.90.0 toolchain.
 The subsequent full trial passed all 42 wheels using these images. See the
-[trial report](../../docs/ci-linux-image-trial.md) for evidence and measurements.
+[trial report](../../project-notes/ci-linux-image-trial.md) for evidence and measurements.
 The trial establishes compatibility; it has not established a setup-speed win.
 
 ## Consumption policy and rollback

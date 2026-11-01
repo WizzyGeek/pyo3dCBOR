@@ -1,7 +1,7 @@
 # Agent contribution protocol
 
 For project build, test, and release commands, see the
-[agent workflow guide](docs/agent-workflow.md). This file defines the
+[agent workflow guide](project-notes/agent-workflow.md). This file defines the
 repository-wide contribution and commit requirements.
 
 Repository agents must follow this protocol when completing implementation,

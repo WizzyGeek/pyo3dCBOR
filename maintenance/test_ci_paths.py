@@ -40,6 +40,9 @@ def test_native_decoder_sources_trigger_ci():
     "docs/reviews/PERF_REVIEW.md", "docs/reviews/SPEC_REVIEW.md",
     "docs/allocation-plan.md", "",
     "docs/Cargo.toml.md", "docs/rust-toolchain.toml.txt",
+    "project-notes/agent-workflow.md",
+    "project-notes/requirements/README.md",
+    "project-notes/reviews/SPEC_REVIEW.md",
     "maintenance/test_ci_paths.py",
     "maintenance/test_foo.py",
 ])

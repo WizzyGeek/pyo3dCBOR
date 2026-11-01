@@ -41,7 +41,7 @@ are map entries, array elements, or total Unicode code points for that case.
 Actual counts are recorded per case; a zero warmup stays zero. Profile
 correctness checks account for dCBOR normalization: integral floats can become
 integers and text is normalized to NFC. Consult the
-[Python API guide](../../docs/python-api.md#numeric-compatibility) for the
+[Python API guide](../../project-notes/python-api.md#numeric-compatibility) for the
 documented numeric compatibility rules.
 
 ## Reproduce

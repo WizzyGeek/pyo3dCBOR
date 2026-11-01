@@ -64,5 +64,5 @@ fixture/output hashes, and all process samples are recorded in JSON.
 
 The summary describes one host and interpreter. Scheduling, CPU frequency,
 thermal state, and background load can change timings; close results should
-not be generalized. See the [comparison overview](../../docs/benchmarks.md)
+not be generalized. See the [comparison overview](../../project-notes/benchmarks.md)
 for the complete report index.

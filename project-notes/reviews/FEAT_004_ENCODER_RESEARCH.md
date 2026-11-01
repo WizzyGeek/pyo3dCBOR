@@ -46,7 +46,7 @@ whole-operation comparison cannot isolate FFI overhead or quantify the gain
 from removing the tree. The [profile report](../../benchmarks/profile/README.md)
 times the Python binding on 10/100/1,000/10,000-entry maps and float/Unicode
 cases; it is useful for choosing workloads, not for assigning causality.
-[`docs/reviews/PERF_REVIEW.md`](PERF_REVIEW.md) also labels earlier experiments
+[`project-notes/reviews/PERF_REVIEW.md`](PERF_REVIEW.md) also labels earlier experiments
 historical and warns that later key-budget/text-cache changes require fresh
 measurement.
 

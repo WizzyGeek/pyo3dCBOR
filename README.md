@@ -28,7 +28,7 @@ python -m pip install target/wheels/dcbor-*.whl
 ```
 
 PyPI publication is not configured; packaged releases are distributed through
-[GitHub Releases](docs/releasing.md).
+[GitHub Releases](project-notes/releasing.md).
 
 ## Try it
 
@@ -55,7 +55,7 @@ representation.
 
 The byte chart includes a scientific-notation case where compact JSON is
 smaller than dCBOR. Timing results cover one host; codec ordering and numeric
-rules differ. See the [benchmark scope and reports](docs/benchmarks.md),
+rules differ. See the [benchmark scope and reports](project-notes/benchmarks.md),
 [wire-size method](benchmarks/wire_size/README.md), and
 [latency method](benchmarks/latency/README.md).
 
@@ -65,15 +65,15 @@ The active benchmark capture uses dCBOR 0.1.1 at source commit `df70782`.
 
 | Guide | Covers |
 | --- | --- |
-| [Python API](docs/python-api.md) | `dumps()`, `loads()`, `load()`, supported values, maps, dates, errors, and limits |
-| [Encoding architecture](docs/encoding.md) | Native codec design and accepted performance changes |
-| [Benchmark reports](docs/benchmarks.md) | Size, latency, and workload profiles |
-| [Development and CI](docs/development.md) | Build/test commands and CI matrix |
-| [Release guide](docs/releasing.md) | GitHub release process and assets |
+| [Python API](project-notes/python-api.md) | `dumps()`, `loads()`, `load()`, supported values, maps, dates, errors, and limits |
+| [Encoding architecture](project-notes/encoding.md) | Native codec design and accepted performance changes |
+| [Benchmark reports](project-notes/benchmarks.md) | Size, latency, and workload profiles |
+| [Development and CI](project-notes/development.md) | Build/test commands and CI matrix |
+| [Release guide](project-notes/releasing.md) | GitHub release process and assets |
 
 Targets [RFC 8949 deterministic encoding](https://www.rfc-editor.org/rfc/rfc8949.html)
 with the [dCBOR application profile](https://www.ietf.org/archive/id/draft-mcnally-deterministic-cbor-18.html#section-2.5).
 Project tests provide implementation evidence, not external certification.
-The numeric compatibility note is in the [Python API guide](docs/python-api.md#numeric-compatibility).
+The numeric compatibility note is in the [Python API guide](project-notes/python-api.md#numeric-compatibility).
 
 BSD-2-Clause-Patent, matching the upstream `dcbor` Rust crate.

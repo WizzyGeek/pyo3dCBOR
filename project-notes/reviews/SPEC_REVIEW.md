@@ -356,7 +356,7 @@ but the normative text does not clearly prohibit them. Existing integer-range
 tests and README allow -2**64. Pin the intended target and resolve this ambiguity
 before changing that API; the new tests deliberately do not enforce either side.
 
-Please read docs/reviews/SPEC_REVIEW.md for reproductions, affected paths, coverage gaps and
+Please read project-notes/reviews/SPEC_REVIEW.md for reproductions, affected paths, coverage gaps and
 the small existing TZ-test isolation issue. I changed no implementation files
 and left the conformance failures visible for the developing agent to resolve.
 ```

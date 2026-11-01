@@ -2,9 +2,9 @@
 
 **PM sign-off (2026-10-18):** the direct Python-to-bytes encoder is accepted
 and complete for development `0.1.1`; see the [encoding architecture and
-acceptance record](../../docs/encoding.md). The original mixed-profile decode
+acceptance record](../../project-notes/encoding.md). The original mixed-profile decode
 observation is preserved in
-[BUG_005 history](../../docs/reviews/mixed_profile_decode_history.md) and was
+[BUG_005 history](../../project-notes/reviews/mixed_profile_decode_history.md) and was
 later superseded for the current implementation by the
 [paired native-decoder profile](../native_decoder/README.md), without
 establishing its cause.
