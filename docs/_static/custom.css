@@ -1,0 +1,82 @@
+/* Use local system fonts; the site does not load remote fonts or scripts. */
+body {
+  --font-stack: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-stack--monospace: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --color-brand-primary: #145a9e;
+  --color-brand-content: #145a9e;
+  line-height: 1.68;
+}
+
+body[data-theme="dark"] {
+  --color-brand-primary: #91caff;
+  --color-brand-content: #91caff;
+}
+
+.content {
+  max-width: 78rem;
+}
+
+.docs-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 2rem 0 2.5rem;
+}
+
+.docs-card {
+  min-width: 0;
+  border: 1px solid var(--color-foreground-border);
+  border-radius: 0.8rem;
+  background: var(--color-background-secondary);
+}
+
+/* Furo's [role=main] .container rule removes horizontal container padding. */
+.docs-cards > .docs-card.docutils.container {
+  padding: 1.25rem 1.35rem;
+}
+
+.docs-card > .rubric {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  font-size: 1.08rem;
+  font-weight: 700;
+}
+
+.docs-card p:last-child {
+  margin-bottom: 0;
+}
+
+.docs-card a {
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.15em;
+}
+
+@media (max-width: 42rem) {
+  .docs-cards {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+
+  .docs-cards > .docs-card.docutils.container {
+    padding: 1rem 1.1rem;
+  }
+}
+
+@media (prefers-contrast: more) {
+  body[data-theme="dark"] {
+    --color-foreground-border: #c1c8d2;
+  }
+
+  body {
+    --color-foreground-border: #667085;
+  }
+
+  .docs-card {
+    border-width: 2px;
+  }
+
+  a {
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+  }
+}

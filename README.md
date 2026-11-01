@@ -65,15 +65,19 @@ The active benchmark capture uses dCBOR 0.1.1 at source commit `df70782`.
 
 | Guide | Covers |
 | --- | --- |
-| [Python API](project-notes/python-api.md) | `dumps()`, `loads()`, `load()`, supported values, maps, dates, errors, and limits |
+| [Python API](docs/reference/index.md) | `dumps()`, `loads()`, `load()`, supported values, maps, dates, errors, and limits |
 | [Encoding architecture](project-notes/encoding.md) | Native codec design and accepted performance changes |
 | [Benchmark reports](project-notes/benchmarks.md) | Size, latency, and workload profiles |
 | [Development and CI](project-notes/development.md) | Build/test commands and CI matrix |
 | [Release guide](project-notes/releasing.md) | GitHub release process and assets |
 
+The [documentation](docs/index.md) includes a [first tutorial](docs/tutorials/first-round-trip.md),
+[task guides](docs/how-to/index.md), explanations, and a [glossary](docs/glossary.md). See its
+[maintenance guide](docs/contributing.md) for local builds and review.
+
 Targets [RFC 8949 deterministic encoding](https://www.rfc-editor.org/rfc/rfc8949.html)
 with the [dCBOR application profile](https://www.ietf.org/archive/id/draft-mcnally-deterministic-cbor-18.html#section-2.5).
 Project tests provide implementation evidence, not external certification.
-The numeric compatibility note is in the [Python API guide](project-notes/python-api.md#numeric-compatibility).
+The numeric compatibility note is in the [API reference](docs/reference/types-and-limits.md#floats-and-integers).
 
 BSD-2-Clause-Patent, matching the upstream `dcbor` Rust crate.

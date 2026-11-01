@@ -1,0 +1,145 @@
+name: Documentation
+
+on:
+  pull_request:
+    paths:
+      - "docs/**"
+      - "requirements-docs.txt"
+      - "scripts/docs.py"
+      - "scripts/check_docs_api.py"
+      - "python/dcbor/__init__.py"
+      - "python/dcbor/__init__.pyi"
+      - "src/**"
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - "pyproject.toml"
+      - "README.md"
+      - ".github/workflows/docs.yml"
+  push:
+    branches: [master]
+    paths:
+      - "docs/**"
+      - "requirements-docs.txt"
+      - "scripts/docs.py"
+      - "scripts/check_docs_api.py"
+      - "python/dcbor/__init__.py"
+      - "python/dcbor/__init__.pyi"
+      - "src/**"
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - "pyproject.toml"
+      - "README.md"
+      - ".github/workflows/docs.yml"
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: Deploy to GitHub Pages after validation (master only)
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  RUST_VERSION: "1.90.0"
+  CARGO_BUILD_JOBS: "2"
+
+jobs:
+  build:
+    name: Build HTML and EPUB
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.14"
+      - name: Create isolated documentation environment
+        run: |
+          python -m venv .venv-docs
+          .venv-docs/bin/python -m pip install --requirement requirements-docs.txt
+      - name: Build strict HTML
+        run: .venv-docs/bin/python scripts/docs.py html
+      - name: Check API inventory coverage
+        run: .venv-docs/bin/python scripts/check_docs_api.py docs/_build/html/objects.inv
+      - name: Build strict EPUB
+        run: .venv-docs/bin/python scripts/docs.py epub
+      - name: Upload HTML preview
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: documentation-html
+          path: docs/_build/html/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload EPUB
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: documentation-epub
+          path: docs/_build/epub/*.epub
+          if-no-files-found: error
+          retention-days: 14
+      - name: Package site for manual GitHub Pages publishing
+        if: github.event_name == 'workflow_dispatch' && inputs.publish == true
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: docs/_build/html
+
+  examples:
+    name: Execute documentation examples
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.14"
+      - name: Install Rust toolchain
+        run: rustup toolchain install "$RUST_VERSION" --profile minimal --no-self-update
+      - name: Create documentation environment and install extension build tools
+        run: |
+          python -m venv .venv-docs
+          .venv-docs/bin/python -m pip install --requirement requirements-docs.txt 'maturin>=1.7,<2'
+      - name: Build and install one native extension wheel
+        run: |
+          .venv-docs/bin/maturin build --locked --out target/docs-wheels
+          .venv-docs/bin/python -m pip install --no-deps target/docs-wheels/*.whl
+        env:
+          RUSTUP_TOOLCHAIN: ${{ env.RUST_VERSION }}
+      - name: Run Sphinx doctests
+        run: .venv-docs/bin/python scripts/docs.py doctest
+        env:
+          RUSTUP_TOOLCHAIN: ${{ env.RUST_VERSION }}
+
+  deploy:
+    name: Deploy GitHub Pages site
+    if: github.event_name == 'workflow_dispatch' && inputs.publish == true && github.ref == 'refs/heads/master'
+    needs: [build, examples]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: github-pages
+      cancel-in-progress: false
+    steps:
+      - name: Deploy validated site
+        id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

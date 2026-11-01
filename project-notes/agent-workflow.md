@@ -44,6 +44,21 @@ the complete [release guide](releasing.md). Do not create or push release tags,
 publish releases, or publish packages as part of an ordinary implementation
 task unless the task explicitly requests that action.
 
+## Documentation
+
+For public documentation changes, follow the
+[documentation maintenance guide](../docs/contributing.md). Use its separate
+Python 3.14 environment and pinned requirements to build the pages locally:
+
+```sh
+uv venv --python 3.14 .venv-docs
+uv pip install --python .venv-docs/bin/python -r requirements-docs.txt
+.venv-docs/bin/python scripts/docs.py all
+```
+
+The `all` command builds strict HTML, EPUB, and single-page HTML. The guide
+explains how to install a native wheel into `.venv-docs` and run doctests.
+
 ## Packaging
 
 The native codec sources and root Cargo lockfile are included in the source

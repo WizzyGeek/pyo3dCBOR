@@ -1,5 +1,6 @@
 /target/
 /.venv/
+/.venv-docs/
 /vendor/
 __pycache__/
 *.pyc
@@ -8,3 +9,4 @@ __pycache__/
 *.so
 /dist/
 /wheelhouse/
+/docs/_build/
