@@ -47,7 +47,7 @@ jobs:
           echo "commit_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
       - name: Find successful build artifact for this tag commit
         id: lookup
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         env:
           ARTIFACT_NAME: ${{ steps.tag.outputs.artifact_name }}
           TAG_SHA: ${{ steps.tag.outputs.commit_sha }}
