@@ -1,0 +1,371 @@
+{
+  "audit": {
+    "all_pair_fingerprints_match": true,
+    "all_worker_artifact_hashes_match": true,
+    "errors": [],
+    "pair_direction_counts": {
+      "guard:integer_width_boundaries/encode": {
+        "candidate_faster_pairs": 7,
+        "candidate_slower_pairs": 2,
+        "ties": 0
+      },
+      "guard:scalar_bool_false/encode": {
+        "candidate_faster_pairs": 1,
+        "candidate_slower_pairs": 8,
+        "ties": 0
+      },
+      "guard:scalar_int_23/encode": {
+        "candidate_faster_pairs": 0,
+        "candidate_slower_pairs": 9,
+        "ties": 0
+      },
+      "guard:scalar_short_text/encode": {
+        "candidate_faster_pairs": 0,
+        "candidate_slower_pairs": 9,
+        "ties": 0
+      },
+      "map:1000:reverse/encode": {
+        "candidate_faster_pairs": 9,
+        "candidate_slower_pairs": 0,
+        "ties": 0
+      },
+      "map:1000:shuffled/encode": {
+        "candidate_faster_pairs": 9,
+        "candidate_slower_pairs": 0,
+        "ties": 0
+      },
+      "map:1000:sorted/encode": {
+        "candidate_faster_pairs": 9,
+        "candidate_slower_pairs": 0,
+        "ties": 0
+      },
+      "map:100:reverse/encode": {
+        "candidate_faster_pairs": 9,
+        "candidate_slower_pairs": 0,
+        "ties": 0
+      },
+      "map:100:shuffled/encode": {
+        "candidate_faster_pairs": 9,
+        "candidate_slower_pairs": 0,
+        "ties": 0
+      },
+      "map:100:sorted/encode": {
+        "candidate_faster_pairs": 9,
+        "candidate_slower_pairs": 0,
+        "ties": 0
+      }
+    },
+    "raw_pair_count": 90,
+    "unique_case_operation_pairs": 10
+  },
+  "baseline": {
+    "build_command": "CARGO_BUILD_JOBS=2 CARGO_TARGET_DIR=/tmp/dcbor-opt-medium-20261101/baseline/target /home/wizzygeek/code/AIdCBOR/.venv/bin/maturin build --release --locked --interpreter /usr/bin/python3 --out /tmp/dcbor-opt-medium-20261101/baseline/wheels (cwd=/tmp/dcbor-opt-medium-20261101/baseline/source)",
+    "build_environment": {
+      "CARGO_BUILD_JOBS": "2",
+      "CARGO_TARGET_DIR": "/tmp/dcbor-opt-medium-20261101/baseline/target",
+      "RUSTFLAGS": null,
+      "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+      "maturin": "maturin 1.14.1",
+      "python": "3.14.7",
+      "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+      "target": "x86_64-unknown-linux-gnu, LLVM 22.1.8"
+    },
+    "dep_info_file": "/tmp/dcbor-opt-medium-20261101/baseline/target/release/lib_dcbor.d",
+    "dep_info_uses_isolated_source": true,
+    "matches_archived_baseline_sha256": true,
+    "package_extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+    "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+    "source_checkout": "/tmp/dcbor-opt-medium-20261101/baseline/source",
+    "source_files": {
+      "src/direct_encode.rs": {
+        "sha256": "0a2b5aed802b510553dc8308be641b2fe03c73fbad3debfd4998a6abb82aba5b"
+      },
+      "src/lib.rs": {
+        "sha256": "a9b40af8c8f8cf0a6e58407f1d9446b25057de032b42e1ae7fd15d9d22cf5621"
+      }
+    },
+    "source_head": "b3771f6397d757147ad4c47d606bfc5e142e5c32",
+    "temporary_paths_are_historical": true,
+    "wheel_sha256": "52bcfde3daf8f527aa3e186b624b9f1896a3595548b3563b971197ec540aa517"
+  },
+  "candidate": {
+    "artifact_origin": "copied from the main source-owner release build after the source owner confirmed its hash matches the isolated map-only artifact from the 2026-10-19 capture",
+    "package_extension_sha256": "096b3dd665b49dad205f1e2a6d784998f9ef06e29cbc71b79826e965b89f9f29",
+    "package_files_sha256": {
+      "dcbor/__init__.py": "f1b390fadb0a3a3f972335947be61ab771edc8bccaccd4f11e6f649f2c857070",
+      "dcbor/__init__.pyi": "119238a998c542b3e3b70da8875414b7eb8754193f30ecf8c4c6acc7e5e9ce10",
+      "dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so": "096b3dd665b49dad205f1e2a6d784998f9ef06e29cbc71b79826e965b89f9f29",
+      "dcbor/py.typed": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "release_artifact_sha256": "096b3dd665b49dad205f1e2a6d784998f9ef06e29cbc71b79826e965b89f9f29",
+    "source_files_sha256": {
+      "src/direct_encode.rs": "db615c8188323158ce207568b04334c2c97ae694e2bb55cdf036a09fcba7a9fd",
+      "src/lib.rs": "a9b40af8c8f8cf0a6e58407f1d9446b25057de032b42e1ae7fd15d9d22cf5621"
+    },
+    "source_head": "b3771f6397d757147ad4c47d606bfc5e142e5c32",
+    "temporary_paths_are_historical": true
+  },
+  "capture_ended_at_utc": "2026-11-01T18:29:53.895596+00:00",
+  "capture_started_at_utc": "2026-11-01T18:29:39.401618+00:00",
+  "case_settings": {
+    "guard:integer_width_boundaries/encode": {
+      "rounds": 1000,
+      "warmup": 200
+    },
+    "guard:scalar_bool_false/encode": {
+      "rounds": 50000,
+      "warmup": 2000
+    },
+    "guard:scalar_int_23/encode": {
+      "rounds": 50000,
+      "warmup": 2000
+    },
+    "guard:scalar_short_text/encode": {
+      "rounds": 50000,
+      "warmup": 2000
+    },
+    "map:1000:reverse/encode": {
+      "rounds": 100,
+      "warmup": 20
+    },
+    "map:1000:shuffled/encode": {
+      "rounds": 100,
+      "warmup": 20
+    },
+    "map:1000:sorted/encode": {
+      "rounds": 100,
+      "warmup": 20
+    },
+    "map:100:reverse/encode": {
+      "rounds": 500,
+      "warmup": 20
+    },
+    "map:100:shuffled/encode": {
+      "rounds": 500,
+      "warmup": 20
+    },
+    "map:100:sorted/encode": {
+      "rounds": 500,
+      "warmup": 20
+    }
+  },
+  "decision_status": "superseded by selected v2; historical map gains were accompanied by 14\u201320% scalar/text slowdowns.",
+  "driver": "benchmarks/optimization_cycle/paired_bench_medium_map_20261101.py",
+  "driver_sha256": "b2a56e43e10f91f89b664a38d9b309e2e5e4095f4f1782086e64a493ca023bf2",
+  "driver_version": "focused-map-medium-confirm-v1",
+  "method": {
+    "baseline_candidate_order_alternates": true,
+    "case_and_operation_constructed_in_each_worker": true,
+    "correctness_fingerprints_match": true,
+    "profiler_active": false,
+    "repetitions_per_case_operation": 9,
+    "serial_fresh_processes": true,
+    "timing_excludes_import_fixture_construction_correctness_and_warmup": true
+  },
+  "purpose": "Isolated confirmation of medium-size map behavior for the map-only Entry v1 candidate, with non-target controls.",
+  "raw_json": "map_medium_20261101.json",
+  "raw_json_sha256": "0cab70cb200a055456f69c46d38b376859fc425af60f76d452dcae55ce15987b",
+  "source_head_at_run": "b3771f6397d757147ad4c47d606bfc5e142e5c32",
+  "summaries": {
+    "guard:integer_width_boundaries/encode": {
+      "baseline_mad_ns_per_operation": 55.625,
+      "baseline_median_ns_per_operation": 19969.286,
+      "candidate_mad_ns_per_operation": 149.81199999999808,
+      "candidate_median_ns_per_operation": 19805.788,
+      "paired_change_mad_percent": 0.9529556665551997,
+      "paired_change_median_percent": -1.2163792437859922,
+      "paired_changes_percent": [
+        0.11489644647284525,
+        -2.169334910341192,
+        -2.078576941961252,
+        0.49427416774661115,
+        -1.2163792437859922,
+        -0.3337607373971263,
+        -2.767669784634974,
+        -0.14266608652599988,
+        -1.7892836095208309
+      ],
+      "repetitions": 9
+    },
+    "guard:scalar_bool_false/encode": {
+      "baseline_mad_ns_per_operation": 1.5829800000000063,
+      "baseline_median_ns_per_operation": 85.11762,
+      "candidate_mad_ns_per_operation": 0.7291599999999931,
+      "candidate_median_ns_per_operation": 97.42582,
+      "paired_change_mad_percent": 2.8842082318906836,
+      "paired_change_median_percent": 14.036247724031758,
+      "paired_changes_percent": [
+        13.05451921954932,
+        -2.390726175963931,
+        10.862665222495483,
+        14.036247724031758,
+        14.795315518617148,
+        15.451697643037665,
+        19.524273864689977,
+        16.920455955922442,
+        9.996543415668334
+      ],
+      "repetitions": 9
+    },
+    "guard:scalar_int_23/encode": {
+      "baseline_mad_ns_per_operation": 0.7095200000000119,
+      "baseline_median_ns_per_operation": 91.91384,
+      "candidate_mad_ns_per_operation": 0.733380000000011,
+      "candidate_median_ns_per_operation": 110.75794,
+      "paired_change_mad_percent": 2.040690765206609,
+      "paired_change_median_percent": 20.028477490629506,
+      "paired_changes_percent": [
+        19.31346694680558,
+        22.069168255836114,
+        22.885927631392057,
+        12.709702346932783,
+        20.028477490629506,
+        20.435125652967034,
+        13.806251174866624,
+        14.568510270061786,
+        21.261940297200187
+      ],
+      "repetitions": 9
+    },
+    "guard:scalar_short_text/encode": {
+      "baseline_mad_ns_per_operation": 1.85248,
+      "baseline_median_ns_per_operation": 111.14128,
+      "candidate_mad_ns_per_operation": 0.3210200000000043,
+      "candidate_median_ns_per_operation": 132.58948,
+      "paired_change_mad_percent": 0.6160106193396686,
+      "paired_change_median_percent": 19.21377907470565,
+      "paired_changes_percent": [
+        17.32901002674838,
+        18.59776845536598,
+        19.20081707407948,
+        21.163453078358785,
+        19.007638096164726,
+        19.21377907470565,
+        22.381463300327418,
+        19.703105712458214,
+        37.133666522417116
+      ],
+      "repetitions": 9
+    },
+    "map:1000:reverse/encode": {
+      "baseline_mad_ns_per_operation": 1829.9599999999919,
+      "baseline_median_ns_per_operation": 164292.64,
+      "candidate_mad_ns_per_operation": 1626.2700000000186,
+      "candidate_median_ns_per_operation": 155796.63,
+      "paired_change_mad_percent": 1.1250144891926546,
+      "paired_change_median_percent": -5.267052968172692,
+      "paired_changes_percent": [
+        -3.3442121379262724,
+        -6.415009861198973,
+        -5.270294549278887,
+        -4.8101148840550945,
+        -4.142038478980037,
+        -6.369682780677222,
+        -1.7417593617422455,
+        -5.267052968172692,
+        -6.992907647725244
+      ],
+      "repetitions": 9
+    },
+    "map:1000:shuffled/encode": {
+      "baseline_mad_ns_per_operation": 586.609999999986,
+      "baseline_median_ns_per_operation": 301669.26,
+      "candidate_mad_ns_per_operation": 477.0,
+      "candidate_median_ns_per_operation": 233044.12,
+      "paired_change_mad_percent": 0.3582703808009313,
+      "paired_change_median_percent": -22.781565693459736,
+      "paired_changes_percent": [
+        -21.99735964455013,
+        -22.781565693459736,
+        -22.06013800958263,
+        -23.139836074260668,
+        -22.597957736853992,
+        -23.82852911569251,
+        -22.385166460439475,
+        -22.959887498908504,
+        -22.895531351122745
+      ],
+      "repetitions": 9
+    },
+    "map:1000:sorted/encode": {
+      "baseline_mad_ns_per_operation": 1195.8600000000442,
+      "baseline_median_ns_per_operation": 276496.52,
+      "candidate_mad_ns_per_operation": 1609.2399999999907,
+      "candidate_median_ns_per_operation": 208365.11,
+      "paired_change_mad_percent": 0.18209175775934838,
+      "paired_change_median_percent": -24.82305649756874,
+      "paired_changes_percent": [
+        -24.11255726334407,
+        -25.204832418491108,
+        -24.999816448897516,
+        -22.10206917709877,
+        -24.82305649756874,
+        -24.64096473980939,
+        -24.980773008812562,
+        -24.852230996309476,
+        -22.600208244083507
+      ],
+      "repetitions": 9
+    },
+    "map:100:reverse/encode": {
+      "baseline_mad_ns_per_operation": 69.13000000000102,
+      "baseline_median_ns_per_operation": 15347.246,
+      "candidate_mad_ns_per_operation": 52.3799999999992,
+      "candidate_median_ns_per_operation": 14964.946,
+      "paired_change_mad_percent": 0.6298428946516887,
+      "paired_change_median_percent": -1.3134922650574254,
+      "paired_changes_percent": [
+        -2.2894270411772832,
+        -1.0006433506932977,
+        -3.121407471382709,
+        -0.7750388705921041,
+        -1.9690706354952958,
+        -1.2406385684663457,
+        -1.3134922650574254,
+        -3.268018372151793,
+        -0.6836493704057367
+      ],
+      "repetitions": 9
+    },
+    "map:100:shuffled/encode": {
+      "baseline_mad_ns_per_operation": 36.20799999999872,
+      "baseline_median_ns_per_operation": 20812.626,
+      "candidate_mad_ns_per_operation": 141.64800000000105,
+      "candidate_median_ns_per_operation": 16467.636,
+      "paired_change_mad_percent": 0.3908116492064799,
+      "paired_change_median_percent": -21.198155226604353,
+      "paired_changes_percent": [
+        -21.48856217188042,
+        -22.43121808904196,
+        -20.343081660662865,
+        -21.198155226604353,
+        -20.196115569462503,
+        -21.323660958432843,
+        -21.09873659884405,
+        -21.588966875810833,
+        -20.624942381601528
+      ],
+      "repetitions": 9
+    },
+    "map:100:sorted/encode": {
+      "baseline_mad_ns_per_operation": 77.88799999999901,
+      "baseline_median_ns_per_operation": 20711.254,
+      "candidate_mad_ns_per_operation": 81.61399999999776,
+      "candidate_median_ns_per_operation": 17004.348,
+      "paired_change_mad_percent": 0.22983976997918987,
+      "paired_change_median_percent": -18.111940480603096,
+      "paired_changes_percent": [
+        -18.92839680291736,
+        -18.472542480102273,
+        -14.643710129768095,
+        -18.111940480603096,
+        -18.00029358033173,
+        -18.341780250582286,
+        -18.14703935130938,
+        -17.81304875400822,
+        -18.025609782331454
+      ],
+      "repetitions": 9
+    }
+  }
+}

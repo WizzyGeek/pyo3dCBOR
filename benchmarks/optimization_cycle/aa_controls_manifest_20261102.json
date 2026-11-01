@@ -1,0 +1,152 @@
+{
+  "artifact": {
+    "baseline_role_package": {
+      "artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+      "artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+      "package_extension": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+      "package_extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+      "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package"
+    },
+    "baseline_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+    "baseline_source_head": "b3771f6397d757147ad4c47d606bfc5e142e5c32",
+    "baseline_source_head_only": "No candidate source variant is claimed; both roles are copies of this baseline artifact.",
+    "candidate_role_package": {
+      "artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+      "artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+      "package_extension": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+      "package_extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+      "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package"
+    },
+    "candidate_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+    "hashes_equal": true,
+    "temporary_paths_are_historical": true
+  },
+  "audit": {
+    "case_operation_count": 4,
+    "errors": [],
+    "pair_fingerprints_equal": true,
+    "raw_pair_count": 36,
+    "same_extension_and_artifact_hash_in_every_worker": true
+  },
+  "capture_ended_at_utc": "2026-11-01T18:35:14.336578+00:00",
+  "capture_started_at_utc": "2026-11-01T18:35:08.928571+00:00",
+  "case_settings": {
+    "guard:integer_width_boundaries/encode": {
+      "rounds": 1000,
+      "warmup": 200
+    },
+    "guard:scalar_bool_false/encode": {
+      "rounds": 50000,
+      "warmup": 2000
+    },
+    "guard:scalar_int_23/encode": {
+      "rounds": 50000,
+      "warmup": 2000
+    },
+    "guard:scalar_short_text/encode": {
+      "rounds": 50000,
+      "warmup": 2000
+    }
+  },
+  "decision": "A/A effects are small and mixed; they do not account for the stable v1 scalar/text slowdowns.",
+  "driver": "benchmarks/optimization_cycle/paired_bench_aa_controls_20261102.py",
+  "driver_sha256": "1105f1e5775edb52e2cc0a81f03017fca98e653eb99c8c1ce53204114edefdfc",
+  "driver_version": "same-artifact-aa-controls-v1",
+  "method": {
+    "baseline_candidate_order_alternates": true,
+    "correctness_fingerprints_match": true,
+    "fresh_processes_serial": true,
+    "profile": "aa_controls",
+    "profiler_active": false,
+    "repetitions_per_case_operation": 9,
+    "suite": "same_artifact_aa",
+    "timing_excludes_import_fixture_creation_correctness_and_warmup": true
+  },
+  "purpose": "A/A sanity control to quantify fresh-process role/path and harness variation using the same original baseline binary in both roles.",
+  "raw_json": "aa_controls_20261102.json",
+  "raw_json_sha256": "eaf5fc5442ff1ce62a9fa89a78a5aea59d9999168cc4299e5fc9215644b5bb5f",
+  "source_head_at_run": "b3771f6397d757147ad4c47d606bfc5e142e5c32",
+  "source_variant_claims": false,
+  "summaries": {
+    "guard:integer_width_boundaries/encode": {
+      "baseline_mad_ns_per_operation": 148.9910000000018,
+      "baseline_median_ns_per_operation": 19954.809,
+      "candidate_mad_ns_per_operation": 94.82900000000154,
+      "candidate_median_ns_per_operation": 19771.554,
+      "paired_change_mad_percent": 0.3699623124660545,
+      "paired_change_median_percent": -0.463382639138743,
+      "paired_changes_percent": [
+        -0.17299967110674386,
+        -1.4739773742408757,
+        -3.262140596885277,
+        6.876367496175972,
+        -0.6502338571807931,
+        -0.463382639138743,
+        -0.3900795670301327,
+        -1.4966494094144633,
+        -0.09342032667268851
+      ],
+      "repetitions": 9
+    },
+    "guard:scalar_bool_false/encode": {
+      "baseline_mad_ns_per_operation": 0.44604000000001065,
+      "baseline_median_ns_per_operation": 86.23472,
+      "candidate_mad_ns_per_operation": 1.5900000000000034,
+      "candidate_median_ns_per_operation": 86.18464,
+      "paired_change_mad_percent": 1.6178790505922525,
+      "paired_change_median_percent": 1.6349801083283655,
+      "paired_changes_percent": [
+        -1.2297672565391382,
+        -1.9614502687793856,
+        3.252859158920618,
+        2.730532514905737,
+        1.9005353923905233,
+        -7.97132004468134,
+        1.7608684761775795,
+        1.6349801083283655,
+        -2.8179421563150786
+      ],
+      "repetitions": 9
+    },
+    "guard:scalar_int_23/encode": {
+      "baseline_mad_ns_per_operation": 0.8968799999999959,
+      "baseline_median_ns_per_operation": 93.3862,
+      "candidate_mad_ns_per_operation": 1.0581999999999994,
+      "candidate_median_ns_per_operation": 91.61526,
+      "paired_change_mad_percent": 1.1030339497093644,
+      "paired_change_median_percent": -3.440384001031793,
+      "paired_changes_percent": [
+        -4.543417950741158,
+        -3.8069382486655146,
+        -1.772553118126663,
+        5.4828236832977995,
+        0.5031561071825896,
+        -3.756411659325287,
+        -3.440384001031793,
+        0.2335328225328226,
+        -4.148328621086539
+      ],
+      "repetitions": 9
+    },
+    "guard:scalar_short_text/encode": {
+      "baseline_mad_ns_per_operation": 2.511160000000004,
+      "baseline_median_ns_per_operation": 113.13784,
+      "candidate_mad_ns_per_operation": 0.7231600000000071,
+      "candidate_median_ns_per_operation": 110.12556,
+      "paired_change_mad_percent": 1.0997463489977322,
+      "paired_change_median_percent": -1.0223874761713492,
+      "paired_changes_percent": [
+        -3.0517817911319467,
+        -0.59246105912244,
+        -4.703853233768118,
+        0.07735887282638299,
+        -1.00480612257291,
+        -5.043904653708298,
+        -0.8022113578869283,
+        -10.290926961801205,
+        -1.0223874761713492
+      ],
+      "repetitions": 9
+    }
+  }
+}

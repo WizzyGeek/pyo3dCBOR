@@ -66,6 +66,7 @@ The active benchmark capture uses dCBOR 0.1.1 at source commit `df70782`.
 | Guide | Covers |
 | --- | --- |
 | [Python API](docs/python-api.md) | `dumps()`, `loads()`, `load()`, supported values, maps, dates, errors, and limits |
+| [Encoding architecture](docs/encoding.md) | Native codec design and accepted performance changes |
 | [Benchmark reports](docs/benchmarks.md) | Size, latency, and workload profiles |
 | [Development and CI](docs/development.md) | Build/test commands and CI matrix |
 | [Release guide](docs/releasing.md) | GitHub release process and assets |

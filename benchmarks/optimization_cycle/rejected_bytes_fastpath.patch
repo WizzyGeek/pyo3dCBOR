@@ -1,0 +1,44 @@
+diff --git a/src/lib.rs b/src/lib.rs
+index ad18c2c..b47e8cd 100644
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -72,6 +72,39 @@ pub(crate) fn python_integer_parts(obj: &Bound<'_, PyAny>) -> PyResult<(u8, u64)
+ /// `dcbor.CBORTag` for arbitrary tagged values.
+ #[pyfunction]
+ fn dumps(py: Python<'_>, obj: &Bound<'_, PyAny>) -> PyResult<Py<PyBytes>> {
++    if obj.is_exact_instance_of::<PyBytes>() {
++        let bytes = obj.cast::<PyBytes>()?;
++        let payload = bytes.as_bytes();
++        let payload_len = u64::try_from(payload.len()).map_err(|_| {
++            pyo3::exceptions::PyOverflowError::new_err(
++                "encoded CBOR bytes exceed Python's maximum bytes size",
++            )
++        })?;
++        let header_len = direct_wire::header_len(payload_len);
++        let output_len = payload.len().checked_add(header_len).ok_or_else(|| {
++            pyo3::exceptions::PyOverflowError::new_err(
++                "encoded CBOR bytes exceed Python's maximum bytes size",
++            )
++        })?;
++        let output_capacity = isize::try_from(output_len).map_err(|_| {
++            pyo3::exceptions::PyOverflowError::new_err(
++                "encoded CBOR bytes exceed Python's maximum bytes size",
++            )
++        })? as usize;
++
++        // The direct writer emits the shortest byte-string header and exactly
++        // its payload. This item has depth zero and no map-key accounting, so
++        // trusted-output preflight adds no validation for this branch.
++        // Use the writer API because PyBytes::new_with zero-fills the complete
++        // output before the payload copy.
++        let output = PyBytes::new_with_writer(py, output_capacity, |writer| {
++            direct_wire::write_header_to(2, payload_len, writer)?;
++            writer.write_all(payload)?;
++            Ok(())
++        })?;
++        return Ok(output.unbind());
++    }
++
+     let mut data = Vec::new();
+     direct_encode::encode_into(
+         py,

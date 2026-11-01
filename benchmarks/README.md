@@ -16,6 +16,8 @@ The current active capture uses dCBOR 0.1.1 at source commit `df70782`.
   normalization, and Unicode normalization workloads.
 - [Native decoder paired profile](native_decoder/README.md): decode and encode
   controls against the preserved pre-migration package.
+- [Bounded encoding optimization cycle](optimization_cycle/README.md): isolated
+  A/B evidence for the accepted map-staging change and rejected bytes fast path.
 - [v0.2 performance review](../docs/reviews/V0_2_PERFORMANCE_REVIEW.md): native
   instruction/counter evidence, copy audit, and proposed optimization experiments.
 

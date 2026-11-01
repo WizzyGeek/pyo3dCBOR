@@ -1,0 +1,457 @@
+{
+  "artifact_hashes_asserted_before_workers": true,
+  "audit": {
+    "all_extension_hashes_match_artifacts": true,
+    "all_pair_fingerprints_match": true,
+    "case_operation_count": 14,
+    "errors": [],
+    "raw_pair_count": 126,
+    "role_order_alternates": true
+  },
+  "baseline_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+  "baseline_build_and_package": {
+    "artifact_path": "/tmp/dcbor-opt-v2-20261102/baseline/target/lib_dcbor.so",
+    "artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+    "package_extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+    "package_files_origin": "baseline CPython 3.14 wheel; extension replaced with the hash-verified role artifact",
+    "package_files_sha256": {
+      "dcbor-0.1.1.dist-info/METADATA": "556c3b610bed86ec53b5c027af5309c7db6699504c51cc580739a91819eb110f",
+      "dcbor-0.1.1.dist-info/RECORD": "df6ce327fbe53225c11b512ed2d1e4cb62fa7b616fa2cf82f02a5f4c529ff6e3",
+      "dcbor-0.1.1.dist-info/WHEEL": "a65e6191f837563628fd5d887ff8e66852fc0a7262cee311de0e94b93fd7b6dd",
+      "dcbor-0.1.1.dist-info/licenses/LICENSE": "d2c043c3d4bfc59d9898cc60366d4a8d26a677d152148859477dd02be24d2acc",
+      "dcbor-0.1.1.dist-info/sboms/dcbor-py.cyclonedx.json": "01331adc1ea7bb02c225f4b4fbb44e5d99f35a6d286d154656e629e310cf0896",
+      "dcbor/__init__.py": "f1b390fadb0a3a3f972335947be61ab771edc8bccaccd4f11e6f649f2c857070",
+      "dcbor/__init__.pyi": "119238a998c542b3e3b70da8875414b7eb8754193f30ecf8c4c6acc7e5e9ce10",
+      "dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+      "dcbor/py.typed": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "package_root": "/tmp/dcbor-opt-v2-20261102/baseline/package",
+    "source_sha256": {
+      "src/direct_encode.rs": "0a2b5aed802b510553dc8308be641b2fe03c73fbad3debfd4998a6abb82aba5b",
+      "src/lib.rs": "a9b40af8c8f8cf0a6e58407f1d9446b25057de032b42e1ae7fd15d9d22cf5621"
+    }
+  },
+  "baseline_build_provenance": {
+    "build_command": "CARGO_BUILD_JOBS=2 CARGO_TARGET_DIR=<baseline-temp-target> maturin build --release --locked --interpreter <python3.14> --out <baseline-temp-wheels> (cwd=<baseline-temp-source>)",
+    "build_target": "/tmp/dcbor-opt-medium-20261101/baseline/target",
+    "dep_info": "/tmp/dcbor-opt-medium-20261101/baseline/target/release/lib_dcbor.d",
+    "dep_info_uses_isolated_source": true,
+    "matches_archived_baseline_sha256": true,
+    "source_snapshot": "/tmp/dcbor-opt-medium-20261101/baseline/source"
+  },
+  "build_environment": {
+    "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+    "maturin": "1.14.1",
+    "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+    "python": "3.14.7",
+    "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+    "target": "x86_64-unknown-linux-gnu, LLVM 22.1.8"
+  },
+  "candidate_artifact_sha256": "05bfff7c3a75ff67cb8f438fbd3a48fe58c53cffadd1a819eda2de0645b09025",
+  "candidate_build_and_package": {
+    "artifact_path": "/tmp/dcbor-opt-v2-20261102/candidate/target/lib_dcbor.so",
+    "artifact_sha256": "05bfff7c3a75ff67cb8f438fbd3a48fe58c53cffadd1a819eda2de0645b09025",
+    "package_extension_sha256": "05bfff7c3a75ff67cb8f438fbd3a48fe58c53cffadd1a819eda2de0645b09025",
+    "package_files_origin": "baseline CPython 3.14 wheel; extension replaced with the hash-verified role artifact",
+    "package_files_sha256": {
+      "dcbor-0.1.1.dist-info/METADATA": "556c3b610bed86ec53b5c027af5309c7db6699504c51cc580739a91819eb110f",
+      "dcbor-0.1.1.dist-info/RECORD": "df6ce327fbe53225c11b512ed2d1e4cb62fa7b616fa2cf82f02a5f4c529ff6e3",
+      "dcbor-0.1.1.dist-info/WHEEL": "a65e6191f837563628fd5d887ff8e66852fc0a7262cee311de0e94b93fd7b6dd",
+      "dcbor-0.1.1.dist-info/licenses/LICENSE": "d2c043c3d4bfc59d9898cc60366d4a8d26a677d152148859477dd02be24d2acc",
+      "dcbor-0.1.1.dist-info/sboms/dcbor-py.cyclonedx.json": "01331adc1ea7bb02c225f4b4fbb44e5d99f35a6d286d154656e629e310cf0896",
+      "dcbor/__init__.py": "f1b390fadb0a3a3f972335947be61ab771edc8bccaccd4f11e6f649f2c857070",
+      "dcbor/__init__.pyi": "119238a998c542b3e3b70da8875414b7eb8754193f30ecf8c4c6acc7e5e9ce10",
+      "dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so": "05bfff7c3a75ff67cb8f438fbd3a48fe58c53cffadd1a819eda2de0645b09025",
+      "dcbor/py.typed": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "package_root": "/tmp/dcbor-opt-v2-20261102/candidate/package",
+    "source_sha256": {
+      "src/direct_encode.rs": "35b5b484519f92d70b0d118b2d7e3a1c2d27c982d1fee353815a469cf1d723ba",
+      "src/lib.rs": "a9b40af8c8f8cf0a6e58407f1d9446b25057de032b42e1ae7fd15d9d22cf5621"
+    }
+  },
+  "candidate_build_provenance": {
+    "artifact_origin": "copied from the completed source-owner v2 main release build; no build was run in the evidence lane",
+    "source_mapping_fixed_by_build_owner": {
+      "src/direct_encode.rs": "35b5b484519f92d70b0d118b2d7e3a1c2d27c982d1fee353815a469cf1d723ba",
+      "src/lib.rs": "a9b40af8c8f8cf0a6e58407f1d9446b25057de032b42e1ae7fd15d9d22cf5621"
+    },
+    "workspace_artifact_sha256": "05bfff7c3a75ff67cb8f438fbd3a48fe58c53cffadd1a819eda2de0645b09025"
+  },
+  "capture_ended_at_utc": "2026-11-01T18:38:15.632361+00:00",
+  "capture_started_at_utc": "2026-11-01T18:37:37.189272+00:00",
+  "case_settings": {
+    "guard:integer_width_boundaries/encode": {
+      "rounds": 1000,
+      "warmup": 200
+    },
+    "guard:scalar_bool_false/encode": {
+      "rounds": 50000,
+      "warmup": 2000
+    },
+    "guard:scalar_int_23/encode": {
+      "rounds": 50000,
+      "warmup": 2000
+    },
+    "guard:scalar_short_text/encode": {
+      "rounds": 50000,
+      "warmup": 2000
+    },
+    "map:10000:reverse/encode": {
+      "rounds": 100,
+      "warmup": 20
+    },
+    "map:10000:shuffled/encode": {
+      "rounds": 100,
+      "warmup": 20
+    },
+    "map:10000:sorted/encode": {
+      "rounds": 100,
+      "warmup": 20
+    },
+    "map:1000:reverse/encode": {
+      "rounds": 100,
+      "warmup": 20
+    },
+    "map:1000:shuffled/encode": {
+      "rounds": 100,
+      "warmup": 20
+    },
+    "map:1000:sorted/encode": {
+      "rounds": 100,
+      "warmup": 20
+    },
+    "map:100:reverse/encode": {
+      "rounds": 500,
+      "warmup": 20
+    },
+    "map:100:shuffled/encode": {
+      "rounds": 500,
+      "warmup": 20
+    },
+    "map:100:sorted/encode": {
+      "rounds": 500,
+      "warmup": 20
+    },
+    "map:nfc_collisions/encode": {
+      "rounds": 500,
+      "warmup": 50
+    }
+  },
+  "case_values": {
+    "guard:integer_width_boundaries/encode": "The driver constructs 32 repetitions of the documented signed and unsigned width-boundary integer list.",
+    "guard:scalar_bool_false/encode": false,
+    "guard:scalar_int_23/encode": 23,
+    "guard:scalar_short_text/encode": "x"
+  },
+  "decision_status": "selected; measured map workloads improve about 4\u201332%, with an accepted one-character text (`x`) cost of +7.44% (about 7 ns/op). Scope claims only to the tested cases.",
+  "driver": "benchmarks/optimization_cycle/paired_bench_map_v2_20261102.py",
+  "driver_sha256": "b15bd03d730fba36a18ab4ae782055923a636a9ed62b1cf444ee8e8d941bc8ae",
+  "driver_version": "focused-map-v2-confirm-v1",
+  "method": {
+    "baseline_candidate_order_alternates": true,
+    "candidate_source_hashes_read_from_live_checkout": false,
+    "one_case_operation_per_worker": true,
+    "profiler_active": false,
+    "repetitions_per_case_operation": 9,
+    "serial_fresh_processes": true,
+    "timing_excludes_import_fixture_creation_correctness_and_warmup": true
+  },
+  "purpose": "Matched isolated A/B of the shared-body map Entry v2 implementation, with map sizes, NFC collisions, and non-target controls.",
+  "raw_json": "map_v2_20261102.json",
+  "raw_json_sha256": "7d00b6f7bbd8046ad613bfdc3b840a7a664ae74cca6950c7190c33155316d268",
+  "source_hashes_from_build_owner_mapping": true,
+  "source_head_at_run": "b3771f6397d757147ad4c47d606bfc5e142e5c32",
+  "source_sha256_by_variant": {
+    "baseline": {
+      "src/direct_encode.rs": "0a2b5aed802b510553dc8308be641b2fe03c73fbad3debfd4998a6abb82aba5b",
+      "src/lib.rs": "a9b40af8c8f8cf0a6e58407f1d9446b25057de032b42e1ae7fd15d9d22cf5621"
+    },
+    "candidate": {
+      "src/direct_encode.rs": "35b5b484519f92d70b0d118b2d7e3a1c2d27c982d1fee353815a469cf1d723ba",
+      "src/lib.rs": "a9b40af8c8f8cf0a6e58407f1d9446b25057de032b42e1ae7fd15d9d22cf5621"
+    }
+  },
+  "summaries": {
+    "guard:integer_width_boundaries/encode": {
+      "baseline_mad_ns_per_operation": 173.67699999999968,
+      "baseline_median_ns_per_operation": 20395.689,
+      "candidate_mad_ns_per_operation": 162.0450000000019,
+      "candidate_median_ns_per_operation": 20247.189,
+      "paired_change_mad_percent": 1.634444138764335,
+      "paired_change_median_percent": -0.538222952917744,
+      "paired_changes_percent": [
+        -0.19463274257341956,
+        -2.8535581837303425,
+        -0.538222952917744,
+        -0.728095040084209,
+        -0.1635940341864206,
+        1.3818821876247833,
+        1.3525366499772318,
+        -3.4723835531739855,
+        -2.172667091682079
+      ],
+      "repetitions": 9
+    },
+    "guard:scalar_bool_false/encode": {
+      "baseline_mad_ns_per_operation": 0.4272200000000055,
+      "baseline_median_ns_per_operation": 84.1494,
+      "candidate_mad_ns_per_operation": 0.5456199999999995,
+      "candidate_median_ns_per_operation": 84.15138,
+      "paired_change_mad_percent": 0.7336978848667242,
+      "paired_change_median_percent": -0.15905475489004228,
+      "paired_changes_percent": [
+        1.9503365348736423,
+        -2.8835142135171465,
+        0.4686015700110291,
+        -0.8927526397567664,
+        4.442633373627269,
+        0.0442893388586052,
+        -2.6131776149504238,
+        -0.7817762218150115,
+        -0.15905475489004228
+      ],
+      "repetitions": 9
+    },
+    "guard:scalar_int_23/encode": {
+      "baseline_mad_ns_per_operation": 0.9824600000000032,
+      "baseline_median_ns_per_operation": 89.30408,
+      "candidate_mad_ns_per_operation": 0.9656200000000013,
+      "candidate_median_ns_per_operation": 87.93632,
+      "paired_change_mad_percent": 2.063984580948197,
+      "paired_change_median_percent": -1.8400306473765116,
+      "paired_changes_percent": [
+        1.0486725563252364,
+        -2.400554055973858,
+        -3.0065611108809898,
+        -11.545358825831952,
+        -0.1406873897935812,
+        -30.1067396587417,
+        -1.8400306473765116,
+        0.22395393357168558,
+        3.10000166117248
+      ],
+      "repetitions": 9
+    },
+    "guard:scalar_short_text/encode": {
+      "baseline_mad_ns_per_operation": 1.1633999999999958,
+      "baseline_median_ns_per_operation": 109.95976,
+      "candidate_mad_ns_per_operation": 0.5095599999999934,
+      "candidate_median_ns_per_operation": 117.38094,
+      "paired_change_mad_percent": 0.6429379959106853,
+      "paired_change_median_percent": 7.441681912926246,
+      "paired_changes_percent": [
+        8.65054634531759,
+        6.6303170071413176,
+        8.084619908836931,
+        7.824967763115098,
+        7.441681912926246,
+        1.3095939737153284,
+        6.978185285587624,
+        7.442505102700303,
+        5.153798448888014
+      ],
+      "repetitions": 9
+    },
+    "map:10000:reverse/encode": {
+      "baseline_mad_ns_per_operation": 2259.0499999998137,
+      "baseline_median_ns_per_operation": 1681131.35,
+      "candidate_mad_ns_per_operation": 9211.550000000047,
+      "candidate_median_ns_per_operation": 1561866.35,
+      "paired_change_mad_percent": 0.4799421379253719,
+      "paired_change_median_percent": -7.219005763606578,
+      "paired_changes_percent": [
+        -6.20596321784882,
+        -7.642267214872889,
+        -7.69894790153195,
+        -7.219005763606578,
+        -6.675571977564443,
+        -6.841568325025083,
+        -6.8980398919511465,
+        -9.168883603858768,
+        -9.893595736187033
+      ],
+      "repetitions": 9
+    },
+    "map:10000:shuffled/encode": {
+      "baseline_mad_ns_per_operation": 40805.60999999987,
+      "baseline_median_ns_per_operation": 4023439.75,
+      "candidate_mad_ns_per_operation": 36714.310000000056,
+      "candidate_median_ns_per_operation": 2983707.38,
+      "paired_change_mad_percent": 0.5889567423937763,
+      "paired_change_median_percent": -26.016150499825287,
+      "paired_changes_percent": [
+        -26.605107242219063,
+        -26.016150499825287,
+        -25.75984908760053,
+        -26.71019889363977,
+        -25.78825151438665,
+        -25.867794084957808,
+        -29.67145464965647,
+        -29.797422124047344,
+        -24.671355647863248
+      ],
+      "repetitions": 9
+    },
+    "map:10000:sorted/encode": {
+      "baseline_mad_ns_per_operation": 9401.810000000056,
+      "baseline_median_ns_per_operation": 3135087.72,
+      "candidate_mad_ns_per_operation": 12142.479999999981,
+      "candidate_median_ns_per_operation": 2142857.87,
+      "paired_change_mad_percent": 0.14429144447097997,
+      "paired_change_median_percent": -31.557968983518247,
+      "paired_changes_percent": [
+        -31.557968983518247,
+        -31.261880289588838,
+        -32.313584175212576,
+        -31.561972345273347,
+        -31.528597915400557,
+        -31.711395530360786,
+        -31.521318898984063,
+        -30.953093701505008,
+        -31.702260427989227
+      ],
+      "repetitions": 9
+    },
+    "map:1000:reverse/encode": {
+      "baseline_mad_ns_per_operation": 792.1900000000023,
+      "baseline_median_ns_per_operation": 166100.45,
+      "candidate_mad_ns_per_operation": 879.6499999999942,
+      "candidate_median_ns_per_operation": 155530.53,
+      "paired_change_mad_percent": 0.8741193779549077,
+      "paired_change_median_percent": -5.943939345137239,
+      "paired_changes_percent": [
+        -19.398027897702953,
+        -4.652514257453277,
+        -7.19543533418181,
+        -5.943939345137239,
+        -5.798724153287937,
+        -5.943507326103048,
+        -6.818058723092147,
+        -1.5773173860533451,
+        -6.72505112023114
+      ],
+      "repetitions": 9
+    },
+    "map:1000:shuffled/encode": {
+      "baseline_mad_ns_per_operation": 1032.25,
+      "baseline_median_ns_per_operation": 306311.51,
+      "candidate_mad_ns_per_operation": 957.2000000000116,
+      "candidate_median_ns_per_operation": 232361.13,
+      "paired_change_mad_percent": 0.49955496759523754,
+      "paired_change_median_percent": -24.288016386675515,
+      "paired_changes_percent": [
+        -23.778390651456927,
+        -23.332468823040088,
+        -24.310870190735002,
+        -22.679559037191066,
+        -24.142213918112322,
+        -24.787571354270753,
+        -24.358193463784914,
+        -24.810274055165095,
+        -24.288016386675515
+      ],
+      "repetitions": 9
+    },
+    "map:1000:sorted/encode": {
+      "baseline_mad_ns_per_operation": 930.9500000000116,
+      "baseline_median_ns_per_operation": 285684.93,
+      "candidate_mad_ns_per_operation": 944.570000000007,
+      "candidate_median_ns_per_operation": 202680.89,
+      "paired_change_mad_percent": 0.5690122617670106,
+      "paired_change_median_percent": -28.91281916135673,
+      "paired_changes_percent": [
+        -29.202070093198117,
+        -29.721213746799847,
+        -28.91281916135673,
+        -28.722693988998195,
+        -29.154170206857156,
+        -26.62598061525996,
+        -29.495959062313847,
+        -28.34380689958972,
+        -27.813751341725457
+      ],
+      "repetitions": 9
+    },
+    "map:100:reverse/encode": {
+      "baseline_mad_ns_per_operation": 128.32400000000052,
+      "baseline_median_ns_per_operation": 15298.554,
+      "candidate_mad_ns_per_operation": 33.341999999998734,
+      "candidate_median_ns_per_operation": 14747.996,
+      "paired_change_mad_percent": 0.9488327177403773,
+      "paired_change_median_percent": -3.812414327620617,
+      "paired_changes_percent": [
+        2.330082590448823,
+        -3.9159153230857724,
+        -6.396245592250816,
+        -2.74531118651814,
+        -3.081630144775871,
+        -4.761247045360994,
+        -4.235707505428299,
+        -3.812414327620617,
+        -2.6954766012117104
+      ],
+      "repetitions": 9
+    },
+    "map:100:shuffled/encode": {
+      "baseline_mad_ns_per_operation": 60.79599999999846,
+      "baseline_median_ns_per_operation": 21092.174,
+      "candidate_mad_ns_per_operation": 60.41400000000067,
+      "candidate_median_ns_per_operation": 17219.494,
+      "paired_change_mad_percent": 0.5851900259585605,
+      "paired_change_median_percent": -18.36074365781356,
+      "paired_changes_percent": [
+        -18.208597664790794,
+        -21.407214432557918,
+        -18.94593368377212,
+        -16.65751050644423,
+        -18.36074365781356,
+        -18.677890490225113,
+        -21.899958953558162,
+        -17.289542130263246,
+        -18.165894716263832
+      ],
+      "repetitions": 9
+    },
+    "map:100:sorted/encode": {
+      "baseline_mad_ns_per_operation": 149.84200000000055,
+      "baseline_median_ns_per_operation": 21211.698,
+      "candidate_mad_ns_per_operation": 155.61399999999776,
+      "candidate_median_ns_per_operation": 16838.476,
+      "paired_change_mad_percent": 0.269502125580523,
+      "paired_change_median_percent": -20.29276908372569,
+      "paired_changes_percent": [
+        -20.287207892924485,
+        -20.562271209306214,
+        -19.16414352110167,
+        -20.25048518037532,
+        -20.368603792562258,
+        -20.29276908372569,
+        -21.96871037207675,
+        -15.850583956079333,
+        -21.486240550189994
+      ],
+      "repetitions": 9
+    },
+    "map:nfc_collisions/encode": {
+      "baseline_mad_ns_per_operation": 200.85800000000017,
+      "baseline_median_ns_per_operation": 45272.672,
+      "candidate_mad_ns_per_operation": 246.362000000001,
+      "candidate_median_ns_per_operation": 39717.074,
+      "paired_change_mad_percent": 0.44020370485019455,
+      "paired_change_median_percent": -12.628308669962095,
+      "paired_changes_percent": [
+        -8.946892129205008,
+        -15.523837123965457,
+        -12.358689226435082,
+        -12.271416186789242,
+        -15.195307304570061,
+        -12.66525367015131,
+        -13.382367042959375,
+        -12.628308669962095,
+        -12.1881049651119
+      ],
+      "repetitions": 9
+    }
+  }
+}

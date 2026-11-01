@@ -11,7 +11,7 @@ use crate::{depth_err, python_integer_parts, scalars, CBORError, MAX_DEPTH};
 use pyo3::prelude::*;
 use pyo3::sync::critical_section::with_critical_section;
 use pyo3::types::{PyBool, PyByteArray, PyBytes, PyDict, PyFloat, PyInt, PyList, PyString, PyTuple};
-use std::collections::BTreeMap;
+use std::collections::{btree_map::Entry, BTreeMap};
 use unicode_normalization::{is_nfc, UnicodeNormalization};
 
 use crate::direct_wire::{self, FloatEncoding};
@@ -310,27 +310,44 @@ fn write_dict(
         let candidate_cost = candidate_budget.used() - candidate_base;
 
         let old_count = entries.len();
-        if let Some(old) = entries.remove(&encoded_key) {
-            budget.release(old.budget_cost);
-            drop(old);
-        } else {
-            let header_delta = direct_wire::header_len((old_count + 1) as u64)
-                - direct_wire::header_len(old_count as u64);
-            budget.wire_bytes(header_delta)?;
+        let mut entry = entries.entry(encoded_key);
+        match &mut entry {
+            Entry::Occupied(occupied) => {
+                // Keep the existing canonical key allocation and replace only
+                // its staged value. Release and drop the old entry before
+                // converting the replacement value, matching the previous
+                // remove-then-insert accounting and callback order.
+                let old = std::mem::replace(
+                    occupied.get_mut(),
+                    StagedEntry { value: Vec::new(), budget_cost: 0 },
+                );
+                budget.release(old.budget_cost);
+                drop(old);
+            }
+            Entry::Vacant(_) => {
+                let header_delta = direct_wire::header_len((old_count + 1) as u64)
+                    - direct_wire::header_len(old_count as u64);
+                budget.wire_bytes(header_delta)?;
+            }
         }
 
-        // This delta intentionally starts before committing the candidate
-        // key cost, so a later collision releases both key-cache and value
-        // accounting together.
+        // For a collision this cost covers the retained canonical key bytes;
+        // for a new key it covers the key being inserted. In both cases the
+        // value is staged only after the prior entry is released or the map
+        // header growth is charged.
         let before_entry = budget.used();
         budget.reserve(candidate_cost)?;
         let mut encoded_value = Vec::new();
         encode_into(py, &value, depth + 1, &mut encoded_value, budget)?;
         let entry_cost = budget.used() - before_entry;
-        entries.insert(
-            encoded_key,
-            StagedEntry { value: encoded_value, budget_cost: entry_cost },
-        );
+        let staged = StagedEntry { value: encoded_value, budget_cost: entry_cost };
+
+        match entry {
+            Entry::Occupied(mut occupied) => *occupied.get_mut() = staged,
+            Entry::Vacant(vacant) => {
+                vacant.insert(staged);
+            }
+        }
     }
 
     direct_wire::write_header(5, entries.len() as u64, out);

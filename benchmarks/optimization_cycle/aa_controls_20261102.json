@@ -1,0 +1,2947 @@
+{
+  "case_fingerprints": {
+    "guard:integer_width_boundaries/encode": {
+      "guard:integer_width_boundaries": {
+        "decoded_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+        "input_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+        "wire_bytes": 2435,
+        "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b"
+      }
+    },
+    "guard:scalar_bool_false/encode": {
+      "guard:scalar_bool_false": {
+        "decoded_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+        "input_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+        "wire_bytes": 1,
+        "wire_sha256": "2017ff3461395672aa0aa4f64894fd2f95a4b120e2690e8951656d79adc2eed2"
+      }
+    },
+    "guard:scalar_int_23/encode": {
+      "guard:scalar_int_23": {
+        "decoded_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+        "input_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+        "wire_bytes": 1,
+        "wire_sha256": "8f11b05da785e43e713d03774c6bd3405d99cd3024af334ffd68db663aa37034"
+      }
+    },
+    "guard:scalar_short_text/encode": {
+      "guard:scalar_short_text": {
+        "decoded_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+        "input_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+        "wire_bytes": 2,
+        "wire_sha256": "5e85370e555e95d27df68f93c0ccaa4edfc1da5e281b47a2ebba2649a13ea5f4"
+      }
+    }
+  },
+  "errors": [],
+  "method": {
+    "baseline_manifest": {
+      "artifact_hashes_equal": true,
+      "baseline_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+      "baseline_source_head": "b3771f6397d757147ad4c47d606bfc5e142e5c32",
+      "baseline_source_head_note": "baseline artifact provenance only; no candidate source variant is claimed",
+      "candidate_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+      "case_ids": [
+        "guard:scalar_bool_false/encode",
+        "guard:scalar_int_23/encode",
+        "guard:scalar_short_text/encode",
+        "guard:integer_width_boundaries/encode"
+      ],
+      "environment": {
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7"
+      },
+      "purpose": "same-artifact A/A control for four non-target encodes; both role packages are copies of the immutable baseline build",
+      "repetitions_per_case_operation": 9,
+      "roles": {
+        "baseline": {
+          "artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+          "artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+          "package_extension": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+          "package_extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+          "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package"
+        },
+        "candidate": {
+          "artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+          "artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+          "package_extension": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+          "package_extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+          "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package"
+        }
+      },
+      "source_variant_claims": false,
+      "status": "prepared; run authorized after source-owner build/tests completed"
+    },
+    "candidate_change_percent": "100 * (candidate / baseline - 1); negative is faster",
+    "case_isolation": "one fixture/operation per fresh worker process; only that case is constructed before timing",
+    "driver": "benchmarks/optimization_cycle/paired_bench_aa_controls_20261102.py",
+    "driver_sha256": "1105f1e5775edb52e2cc0a81f03017fca98e653eb99c8c1ce53204114edefdfc",
+    "driver_version": "same-artifact-aa-controls-v1",
+    "focus_profile": "aa_controls",
+    "no_profiler": true,
+    "process_policy": "fresh processes, strictly serial; baseline/candidate order alternates within each case-operation pair",
+    "repetitions_per_case_operation": 9,
+    "same_artifact_required": true,
+    "same_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+    "source_head_at_run": "b3771f6397d757147ad4c47d606bfc5e142e5c32",
+    "source_variant_claims": false,
+    "suite": "same_artifact_aa",
+    "timing_region": "selected operation loop only; imports, that case construction, correctness/wire checks, and warmups excluded"
+  },
+  "raw_pairs": [
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:scalar_bool_false": {
+            "decoded_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "input_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "wire_bytes": 1,
+            "wire_sha256": "2017ff3461395672aa0aa4f64894fd2f95a4b120e2690e8951656d79adc2eed2"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_bool_false": {
+            "encode": {
+              "ns_per_operation": 85.93496,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 3,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 0,
+        "selected_case": "guard:scalar_bool_false",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:08.928571+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:scalar_bool_false": {
+            "decoded_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "input_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "wire_bytes": 1,
+            "wire_sha256": "2017ff3461395672aa0aa4f64894fd2f95a4b120e2690e8951656d79adc2eed2"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_bool_false": {
+            "encode": {
+              "ns_per_operation": 84.87816,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 5,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 0,
+        "selected_case": "guard:scalar_bool_false",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:08.996666+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:scalar_bool_false",
+      "operation": "encode",
+      "repetition": 0,
+      "role_order": [
+        "baseline",
+        "candidate"
+      ]
+    },
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:scalar_bool_false": {
+            "decoded_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "input_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "wire_bytes": 1,
+            "wire_sha256": "2017ff3461395672aa0aa4f64894fd2f95a4b120e2690e8951656d79adc2eed2"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_bool_false": {
+            "encode": {
+              "ns_per_operation": 86.68076,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 9,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 1,
+        "selected_case": "guard:scalar_bool_false",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:09.129353+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:scalar_bool_false": {
+            "decoded_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "input_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "wire_bytes": 1,
+            "wire_sha256": "2017ff3461395672aa0aa4f64894fd2f95a4b120e2690e8951656d79adc2eed2"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_bool_false": {
+            "encode": {
+              "ns_per_operation": 84.98056,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 7,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 1,
+        "selected_case": "guard:scalar_bool_false",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:09.062941+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:scalar_bool_false",
+      "operation": "encode",
+      "repetition": 1,
+      "role_order": [
+        "candidate",
+        "baseline"
+      ]
+    },
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:scalar_bool_false": {
+            "decoded_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "input_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "wire_bytes": 1,
+            "wire_sha256": "2017ff3461395672aa0aa4f64894fd2f95a4b120e2690e8951656d79adc2eed2"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_bool_false": {
+            "encode": {
+              "ns_per_operation": 86.03754,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 11,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 2,
+        "selected_case": "guard:scalar_bool_false",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:09.198956+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:scalar_bool_false": {
+            "decoded_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "input_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "wire_bytes": 1,
+            "wire_sha256": "2017ff3461395672aa0aa4f64894fd2f95a4b120e2690e8951656d79adc2eed2"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_bool_false": {
+            "encode": {
+              "ns_per_operation": 88.83622,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 13,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 2,
+        "selected_case": "guard:scalar_bool_false",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:09.267522+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:scalar_bool_false",
+      "operation": "encode",
+      "repetition": 2,
+      "role_order": [
+        "baseline",
+        "candidate"
+      ]
+    },
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:scalar_bool_false": {
+            "decoded_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "input_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "wire_bytes": 1,
+            "wire_sha256": "2017ff3461395672aa0aa4f64894fd2f95a4b120e2690e8951656d79adc2eed2"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_bool_false": {
+            "encode": {
+              "ns_per_operation": 87.77482,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 17,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 3,
+        "selected_case": "guard:scalar_bool_false",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:09.410852+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:scalar_bool_false": {
+            "decoded_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "input_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "wire_bytes": 1,
+            "wire_sha256": "2017ff3461395672aa0aa4f64894fd2f95a4b120e2690e8951656d79adc2eed2"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_bool_false": {
+            "encode": {
+              "ns_per_operation": 90.17154,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 15,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 3,
+        "selected_case": "guard:scalar_bool_false",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:09.336651+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:scalar_bool_false",
+      "operation": "encode",
+      "repetition": 3,
+      "role_order": [
+        "candidate",
+        "baseline"
+      ]
+    },
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:scalar_bool_false": {
+            "decoded_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "input_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "wire_bytes": 1,
+            "wire_sha256": "2017ff3461395672aa0aa4f64894fd2f95a4b120e2690e8951656d79adc2eed2"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_bool_false": {
+            "encode": {
+              "ns_per_operation": 84.57722,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 19,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 4,
+        "selected_case": "guard:scalar_bool_false",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:09.510689+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:scalar_bool_false": {
+            "decoded_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "input_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "wire_bytes": 1,
+            "wire_sha256": "2017ff3461395672aa0aa4f64894fd2f95a4b120e2690e8951656d79adc2eed2"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_bool_false": {
+            "encode": {
+              "ns_per_operation": 86.18464,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 21,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 4,
+        "selected_case": "guard:scalar_bool_false",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:09.583122+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:scalar_bool_false",
+      "operation": "encode",
+      "repetition": 4,
+      "role_order": [
+        "baseline",
+        "candidate"
+      ]
+    },
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:scalar_bool_false": {
+            "decoded_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "input_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "wire_bytes": 1,
+            "wire_sha256": "2017ff3461395672aa0aa4f64894fd2f95a4b120e2690e8951656d79adc2eed2"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_bool_false": {
+            "encode": {
+              "ns_per_operation": 91.92204,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 25,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 5,
+        "selected_case": "guard:scalar_bool_false",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:09.723079+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:scalar_bool_false": {
+            "decoded_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "input_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "wire_bytes": 1,
+            "wire_sha256": "2017ff3461395672aa0aa4f64894fd2f95a4b120e2690e8951656d79adc2eed2"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_bool_false": {
+            "encode": {
+              "ns_per_operation": 84.59464,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 23,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 5,
+        "selected_case": "guard:scalar_bool_false",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:09.653206+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:scalar_bool_false",
+      "operation": "encode",
+      "repetition": 5,
+      "role_order": [
+        "candidate",
+        "baseline"
+      ]
+    },
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:scalar_bool_false": {
+            "decoded_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "input_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "wire_bytes": 1,
+            "wire_sha256": "2017ff3461395672aa0aa4f64894fd2f95a4b120e2690e8951656d79adc2eed2"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_bool_false": {
+            "encode": {
+              "ns_per_operation": 86.23472,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 27,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 6,
+        "selected_case": "guard:scalar_bool_false",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:09.790104+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:scalar_bool_false": {
+            "decoded_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "input_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "wire_bytes": 1,
+            "wire_sha256": "2017ff3461395672aa0aa4f64894fd2f95a4b120e2690e8951656d79adc2eed2"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_bool_false": {
+            "encode": {
+              "ns_per_operation": 87.7532,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 29,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 6,
+        "selected_case": "guard:scalar_bool_false",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:09.860332+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:scalar_bool_false",
+      "operation": "encode",
+      "repetition": 6,
+      "role_order": [
+        "baseline",
+        "candidate"
+      ]
+    },
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:scalar_bool_false": {
+            "decoded_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "input_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "wire_bytes": 1,
+            "wire_sha256": "2017ff3461395672aa0aa4f64894fd2f95a4b120e2690e8951656d79adc2eed2"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_bool_false": {
+            "encode": {
+              "ns_per_operation": 88.11728,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 33,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 7,
+        "selected_case": "guard:scalar_bool_false",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:10.013022+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:scalar_bool_false": {
+            "decoded_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "input_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "wire_bytes": 1,
+            "wire_sha256": "2017ff3461395672aa0aa4f64894fd2f95a4b120e2690e8951656d79adc2eed2"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_bool_false": {
+            "encode": {
+              "ns_per_operation": 89.55798,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 31,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 7,
+        "selected_case": "guard:scalar_bool_false",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:09.941161+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:scalar_bool_false",
+      "operation": "encode",
+      "repetition": 7,
+      "role_order": [
+        "candidate",
+        "baseline"
+      ]
+    },
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:scalar_bool_false": {
+            "decoded_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "input_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "wire_bytes": 1,
+            "wire_sha256": "2017ff3461395672aa0aa4f64894fd2f95a4b120e2690e8951656d79adc2eed2"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_bool_false": {
+            "encode": {
+              "ns_per_operation": 85.96202,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 35,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 8,
+        "selected_case": "guard:scalar_bool_false",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:10.089394+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:scalar_bool_false": {
+            "decoded_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "input_sha256": "c02c0b965e023abee808f2b548d8d5193a8b5229be6f3121a6f16e2d41a449b3",
+            "wire_bytes": 1,
+            "wire_sha256": "2017ff3461395672aa0aa4f64894fd2f95a4b120e2690e8951656d79adc2eed2"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_bool_false": {
+            "encode": {
+              "ns_per_operation": 83.53966,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 37,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 8,
+        "selected_case": "guard:scalar_bool_false",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:10.165081+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:scalar_bool_false",
+      "operation": "encode",
+      "repetition": 8,
+      "role_order": [
+        "baseline",
+        "candidate"
+      ]
+    },
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:scalar_int_23": {
+            "decoded_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "input_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "wire_bytes": 1,
+            "wire_sha256": "8f11b05da785e43e713d03774c6bd3405d99cd3024af334ffd68db663aa37034"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_int_23": {
+            "encode": {
+              "ns_per_operation": 98.64952,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 39,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 0,
+        "selected_case": "guard:scalar_int_23",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:10.240875+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:scalar_int_23": {
+            "decoded_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "input_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "wire_bytes": 1,
+            "wire_sha256": "8f11b05da785e43e713d03774c6bd3405d99cd3024af334ffd68db663aa37034"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_int_23": {
+            "encode": {
+              "ns_per_operation": 94.16746,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 41,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 0,
+        "selected_case": "guard:scalar_int_23",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:10.314986+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:scalar_int_23",
+      "operation": "encode",
+      "repetition": 0,
+      "role_order": [
+        "baseline",
+        "candidate"
+      ]
+    },
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:scalar_int_23": {
+            "decoded_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "input_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "wire_bytes": 1,
+            "wire_sha256": "8f11b05da785e43e713d03774c6bd3405d99cd3024af334ffd68db663aa37034"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_int_23": {
+            "encode": {
+              "ns_per_operation": 93.77352,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 45,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 1,
+        "selected_case": "guard:scalar_int_23",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:10.459044+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:scalar_int_23": {
+            "decoded_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "input_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "wire_bytes": 1,
+            "wire_sha256": "8f11b05da785e43e713d03774c6bd3405d99cd3024af334ffd68db663aa37034"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_int_23": {
+            "encode": {
+              "ns_per_operation": 90.20362,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 43,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 1,
+        "selected_case": "guard:scalar_int_23",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:10.385944+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:scalar_int_23",
+      "operation": "encode",
+      "repetition": 1,
+      "role_order": [
+        "candidate",
+        "baseline"
+      ]
+    },
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:scalar_int_23": {
+            "decoded_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "input_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "wire_bytes": 1,
+            "wire_sha256": "8f11b05da785e43e713d03774c6bd3405d99cd3024af334ffd68db663aa37034"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_int_23": {
+            "encode": {
+              "ns_per_operation": 93.3862,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 47,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 2,
+        "selected_case": "guard:scalar_int_23",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:10.534300+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:scalar_int_23": {
+            "decoded_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "input_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "wire_bytes": 1,
+            "wire_sha256": "8f11b05da785e43e713d03774c6bd3405d99cd3024af334ffd68db663aa37034"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_int_23": {
+            "encode": {
+              "ns_per_operation": 91.73088,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 49,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 2,
+        "selected_case": "guard:scalar_int_23",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:10.605231+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:scalar_int_23",
+      "operation": "encode",
+      "repetition": 2,
+      "role_order": [
+        "baseline",
+        "candidate"
+      ]
+    },
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:scalar_int_23": {
+            "decoded_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "input_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "wire_bytes": 1,
+            "wire_sha256": "8f11b05da785e43e713d03774c6bd3405d99cd3024af334ffd68db663aa37034"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_int_23": {
+            "encode": {
+              "ns_per_operation": 92.78066,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 53,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 3,
+        "selected_case": "guard:scalar_int_23",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:10.754643+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:scalar_int_23": {
+            "decoded_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "input_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "wire_bytes": 1,
+            "wire_sha256": "8f11b05da785e43e713d03774c6bd3405d99cd3024af334ffd68db663aa37034"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_int_23": {
+            "encode": {
+              "ns_per_operation": 97.86766,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 51,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 3,
+        "selected_case": "guard:scalar_int_23",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:10.680128+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:scalar_int_23",
+      "operation": "encode",
+      "repetition": 3,
+      "role_order": [
+        "candidate",
+        "baseline"
+      ]
+    },
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:scalar_int_23": {
+            "decoded_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "input_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "wire_bytes": 1,
+            "wire_sha256": "8f11b05da785e43e713d03774c6bd3405d99cd3024af334ffd68db663aa37034"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_int_23": {
+            "encode": {
+              "ns_per_operation": 91.1566,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 55,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 4,
+        "selected_case": "guard:scalar_int_23",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:10.823812+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:scalar_int_23": {
+            "decoded_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "input_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "wire_bytes": 1,
+            "wire_sha256": "8f11b05da785e43e713d03774c6bd3405d99cd3024af334ffd68db663aa37034"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_int_23": {
+            "encode": {
+              "ns_per_operation": 91.61526,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 57,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 4,
+        "selected_case": "guard:scalar_int_23",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:10.896094+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:scalar_int_23",
+      "operation": "encode",
+      "repetition": 4,
+      "role_order": [
+        "baseline",
+        "candidate"
+      ]
+    },
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:scalar_int_23": {
+            "decoded_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "input_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "wire_bytes": 1,
+            "wire_sha256": "8f11b05da785e43e713d03774c6bd3405d99cd3024af334ffd68db663aa37034"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_int_23": {
+            "encode": {
+              "ns_per_operation": 93.02974,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 61,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 5,
+        "selected_case": "guard:scalar_int_23",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:11.032431+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:scalar_int_23": {
+            "decoded_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "input_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "wire_bytes": 1,
+            "wire_sha256": "8f11b05da785e43e713d03774c6bd3405d99cd3024af334ffd68db663aa37034"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_int_23": {
+            "encode": {
+              "ns_per_operation": 89.53516,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 59,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 5,
+        "selected_case": "guard:scalar_int_23",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:10.964882+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:scalar_int_23",
+      "operation": "encode",
+      "repetition": 5,
+      "role_order": [
+        "candidate",
+        "baseline"
+      ]
+    },
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:scalar_int_23": {
+            "decoded_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "input_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "wire_bytes": 1,
+            "wire_sha256": "8f11b05da785e43e713d03774c6bd3405d99cd3024af334ffd68db663aa37034"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_int_23": {
+            "encode": {
+              "ns_per_operation": 94.28308,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 63,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 6,
+        "selected_case": "guard:scalar_int_23",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:11.101957+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:scalar_int_23": {
+            "decoded_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "input_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "wire_bytes": 1,
+            "wire_sha256": "8f11b05da785e43e713d03774c6bd3405d99cd3024af334ffd68db663aa37034"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_int_23": {
+            "encode": {
+              "ns_per_operation": 91.03938,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 65,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 6,
+        "selected_case": "guard:scalar_int_23",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:11.172483+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:scalar_int_23",
+      "operation": "encode",
+      "repetition": 6,
+      "role_order": [
+        "baseline",
+        "candidate"
+      ]
+    },
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:scalar_int_23": {
+            "decoded_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "input_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "wire_bytes": 1,
+            "wire_sha256": "8f11b05da785e43e713d03774c6bd3405d99cd3024af334ffd68db663aa37034"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_int_23": {
+            "encode": {
+              "ns_per_operation": 91.2163,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 69,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 7,
+        "selected_case": "guard:scalar_int_23",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:11.314011+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:scalar_int_23": {
+            "decoded_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "input_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "wire_bytes": 1,
+            "wire_sha256": "8f11b05da785e43e713d03774c6bd3405d99cd3024af334ffd68db663aa37034"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_int_23": {
+            "encode": {
+              "ns_per_operation": 91.42932,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 67,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 7,
+        "selected_case": "guard:scalar_int_23",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:11.246074+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:scalar_int_23",
+      "operation": "encode",
+      "repetition": 7,
+      "role_order": [
+        "candidate",
+        "baseline"
+      ]
+    },
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:scalar_int_23": {
+            "decoded_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "input_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "wire_bytes": 1,
+            "wire_sha256": "8f11b05da785e43e713d03774c6bd3405d99cd3024af334ffd68db663aa37034"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_int_23": {
+            "encode": {
+              "ns_per_operation": 96.68424,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 71,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 8,
+        "selected_case": "guard:scalar_int_23",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:11.379784+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:scalar_int_23": {
+            "decoded_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "input_sha256": "4a17bbdf83f42a8e342d573b588c257edf6fb9c56a034919167bfd743794d583",
+            "wire_bytes": 1,
+            "wire_sha256": "8f11b05da785e43e713d03774c6bd3405d99cd3024af334ffd68db663aa37034"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_int_23": {
+            "encode": {
+              "ns_per_operation": 92.67346,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 73,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 8,
+        "selected_case": "guard:scalar_int_23",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:11.447226+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:scalar_int_23",
+      "operation": "encode",
+      "repetition": 8,
+      "role_order": [
+        "baseline",
+        "candidate"
+      ]
+    },
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:scalar_short_text": {
+            "decoded_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "input_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "wire_bytes": 2,
+            "wire_sha256": "5e85370e555e95d27df68f93c0ccaa4edfc1da5e281b47a2ebba2649a13ea5f4"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_short_text": {
+            "encode": {
+              "ns_per_operation": 113.13784,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 75,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 0,
+        "selected_case": "guard:scalar_short_text",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:11.516193+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:scalar_short_text": {
+            "decoded_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "input_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "wire_bytes": 2,
+            "wire_sha256": "5e85370e555e95d27df68f93c0ccaa4edfc1da5e281b47a2ebba2649a13ea5f4"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_short_text": {
+            "encode": {
+              "ns_per_operation": 109.68512,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 77,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 0,
+        "selected_case": "guard:scalar_short_text",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:11.585555+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:scalar_short_text",
+      "operation": "encode",
+      "repetition": 0,
+      "role_order": [
+        "baseline",
+        "candidate"
+      ]
+    },
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:scalar_short_text": {
+            "decoded_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "input_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "wire_bytes": 2,
+            "wire_sha256": "5e85370e555e95d27df68f93c0ccaa4edfc1da5e281b47a2ebba2649a13ea5f4"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_short_text": {
+            "encode": {
+              "ns_per_operation": 110.62668,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 81,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 1,
+        "selected_case": "guard:scalar_short_text",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:11.727073+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:scalar_short_text": {
+            "decoded_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "input_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "wire_bytes": 2,
+            "wire_sha256": "5e85370e555e95d27df68f93c0ccaa4edfc1da5e281b47a2ebba2649a13ea5f4"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_short_text": {
+            "encode": {
+              "ns_per_operation": 109.97126,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 79,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 1,
+        "selected_case": "guard:scalar_short_text",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:11.659867+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:scalar_short_text",
+      "operation": "encode",
+      "repetition": 1,
+      "role_order": [
+        "candidate",
+        "baseline"
+      ]
+    },
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:scalar_short_text": {
+            "decoded_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "input_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "wire_bytes": 2,
+            "wire_sha256": "5e85370e555e95d27df68f93c0ccaa4edfc1da5e281b47a2ebba2649a13ea5f4"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_short_text": {
+            "encode": {
+              "ns_per_operation": 117.38504,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 83,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 2,
+        "selected_case": "guard:scalar_short_text",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:11.797596+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:scalar_short_text": {
+            "decoded_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "input_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "wire_bytes": 2,
+            "wire_sha256": "5e85370e555e95d27df68f93c0ccaa4edfc1da5e281b47a2ebba2649a13ea5f4"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_short_text": {
+            "encode": {
+              "ns_per_operation": 111.86342,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 85,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 2,
+        "selected_case": "guard:scalar_short_text",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:11.869456+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:scalar_short_text",
+      "operation": "encode",
+      "repetition": 2,
+      "role_order": [
+        "baseline",
+        "candidate"
+      ]
+    },
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:scalar_short_text": {
+            "decoded_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "input_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "wire_bytes": 2,
+            "wire_sha256": "5e85370e555e95d27df68f93c0ccaa4edfc1da5e281b47a2ebba2649a13ea5f4"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_short_text": {
+            "encode": {
+              "ns_per_operation": 110.85994,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 89,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 3,
+        "selected_case": "guard:scalar_short_text",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:12.009198+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:scalar_short_text": {
+            "decoded_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "input_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "wire_bytes": 2,
+            "wire_sha256": "5e85370e555e95d27df68f93c0ccaa4edfc1da5e281b47a2ebba2649a13ea5f4"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_short_text": {
+            "encode": {
+              "ns_per_operation": 110.9457,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 87,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 3,
+        "selected_case": "guard:scalar_short_text",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:11.938604+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:scalar_short_text",
+      "operation": "encode",
+      "repetition": 3,
+      "role_order": [
+        "candidate",
+        "baseline"
+      ]
+    },
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:scalar_short_text": {
+            "decoded_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "input_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "wire_bytes": 2,
+            "wire_sha256": "5e85370e555e95d27df68f93c0ccaa4edfc1da5e281b47a2ebba2649a13ea5f4"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_short_text": {
+            "encode": {
+              "ns_per_operation": 111.97384,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 91,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 4,
+        "selected_case": "guard:scalar_short_text",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:12.082658+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:scalar_short_text": {
+            "decoded_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "input_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "wire_bytes": 2,
+            "wire_sha256": "5e85370e555e95d27df68f93c0ccaa4edfc1da5e281b47a2ebba2649a13ea5f4"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_short_text": {
+            "encode": {
+              "ns_per_operation": 110.84872,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 93,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 4,
+        "selected_case": "guard:scalar_short_text",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:12.151580+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:scalar_short_text",
+      "operation": "encode",
+      "repetition": 4,
+      "role_order": [
+        "baseline",
+        "candidate"
+      ]
+    },
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:scalar_short_text": {
+            "decoded_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "input_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "wire_bytes": 2,
+            "wire_sha256": "5e85370e555e95d27df68f93c0ccaa4edfc1da5e281b47a2ebba2649a13ea5f4"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_short_text": {
+            "encode": {
+              "ns_per_operation": 115.68022,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 97,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 5,
+        "selected_case": "guard:scalar_short_text",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:12.293788+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:scalar_short_text": {
+            "decoded_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "input_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "wire_bytes": 2,
+            "wire_sha256": "5e85370e555e95d27df68f93c0ccaa4edfc1da5e281b47a2ebba2649a13ea5f4"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_short_text": {
+            "encode": {
+              "ns_per_operation": 109.84542,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 95,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 5,
+        "selected_case": "guard:scalar_short_text",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:12.222397+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:scalar_short_text",
+      "operation": "encode",
+      "repetition": 5,
+      "role_order": [
+        "candidate",
+        "baseline"
+      ]
+    },
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:scalar_short_text": {
+            "decoded_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "input_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "wire_bytes": 2,
+            "wire_sha256": "5e85370e555e95d27df68f93c0ccaa4edfc1da5e281b47a2ebba2649a13ea5f4"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_short_text": {
+            "encode": {
+              "ns_per_operation": 124.88978,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 99,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 6,
+        "selected_case": "guard:scalar_short_text",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:12.364309+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:scalar_short_text": {
+            "decoded_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "input_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "wire_bytes": 2,
+            "wire_sha256": "5e85370e555e95d27df68f93c0ccaa4edfc1da5e281b47a2ebba2649a13ea5f4"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_short_text": {
+            "encode": {
+              "ns_per_operation": 123.8879,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 101,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 6,
+        "selected_case": "guard:scalar_short_text",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:12.433947+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:scalar_short_text",
+      "operation": "encode",
+      "repetition": 6,
+      "role_order": [
+        "baseline",
+        "candidate"
+      ]
+    },
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:scalar_short_text": {
+            "decoded_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "input_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "wire_bytes": 2,
+            "wire_sha256": "5e85370e555e95d27df68f93c0ccaa4edfc1da5e281b47a2ebba2649a13ea5f4"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_short_text": {
+            "encode": {
+              "ns_per_operation": 121.84364,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 105,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 7,
+        "selected_case": "guard:scalar_short_text",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:12.574343+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:scalar_short_text": {
+            "decoded_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "input_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "wire_bytes": 2,
+            "wire_sha256": "5e85370e555e95d27df68f93c0ccaa4edfc1da5e281b47a2ebba2649a13ea5f4"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_short_text": {
+            "encode": {
+              "ns_per_operation": 109.3048,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 103,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 7,
+        "selected_case": "guard:scalar_short_text",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:12.503491+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:scalar_short_text",
+      "operation": "encode",
+      "repetition": 7,
+      "role_order": [
+        "candidate",
+        "baseline"
+      ]
+    },
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:scalar_short_text": {
+            "decoded_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "input_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "wire_bytes": 2,
+            "wire_sha256": "5e85370e555e95d27df68f93c0ccaa4edfc1da5e281b47a2ebba2649a13ea5f4"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_short_text": {
+            "encode": {
+              "ns_per_operation": 111.2631,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 107,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 8,
+        "selected_case": "guard:scalar_short_text",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:12.646195+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:scalar_short_text": {
+            "decoded_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "input_sha256": "33f391a4060ee453d56cd984f5e8946a3dd36cfbba93cbcf7b57c9cfbdf42948",
+            "wire_bytes": 2,
+            "wire_sha256": "5e85370e555e95d27df68f93c0ccaa4edfc1da5e281b47a2ebba2649a13ea5f4"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:scalar_short_text": {
+            "encode": {
+              "ns_per_operation": 110.12556,
+              "rounds": 50000,
+              "warmup": 2000
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 109,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 8,
+        "selected_case": "guard:scalar_short_text",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:12.713478+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:scalar_short_text",
+      "operation": "encode",
+      "repetition": 8,
+      "role_order": [
+        "baseline",
+        "candidate"
+      ]
+    },
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:integer_width_boundaries": {
+            "decoded_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "input_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "wire_bytes": 2435,
+            "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:integer_width_boundaries": {
+            "encode": {
+              "ns_per_operation": 19805.818,
+              "rounds": 1000,
+              "warmup": 200
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 111,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 0,
+        "selected_case": "guard:integer_width_boundaries",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:12.801333+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:integer_width_boundaries": {
+            "decoded_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "input_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "wire_bytes": 2435,
+            "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:integer_width_boundaries": {
+            "encode": {
+              "ns_per_operation": 19771.554,
+              "rounds": 1000,
+              "warmup": 200
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 113,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 0,
+        "selected_case": "guard:integer_width_boundaries",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:12.890620+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:integer_width_boundaries",
+      "operation": "encode",
+      "repetition": 0,
+      "role_order": [
+        "baseline",
+        "candidate"
+      ]
+    },
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:integer_width_boundaries": {
+            "decoded_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "input_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "wire_bytes": 2435,
+            "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:integer_width_boundaries": {
+            "encode": {
+              "ns_per_operation": 19981.65,
+              "rounds": 1000,
+              "warmup": 200
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 117,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 1,
+        "selected_case": "guard:integer_width_boundaries",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:13.069982+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:integer_width_boundaries": {
+            "decoded_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "input_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "wire_bytes": 2435,
+            "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:integer_width_boundaries": {
+            "encode": {
+              "ns_per_operation": 19687.125,
+              "rounds": 1000,
+              "warmup": 200
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 115,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 1,
+        "selected_case": "guard:integer_width_boundaries",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:12.979205+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:integer_width_boundaries",
+      "operation": "encode",
+      "repetition": 1,
+      "role_order": [
+        "candidate",
+        "baseline"
+      ]
+    },
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:integer_width_boundaries": {
+            "decoded_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "input_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "wire_bytes": 2435,
+            "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:integer_width_boundaries": {
+            "encode": {
+              "ns_per_operation": 20146.25,
+              "rounds": 1000,
+              "warmup": 200
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 119,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 2,
+        "selected_case": "guard:integer_width_boundaries",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:13.161168+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:integer_width_boundaries": {
+            "decoded_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "input_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "wire_bytes": 2435,
+            "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:integer_width_boundaries": {
+            "encode": {
+              "ns_per_operation": 19489.051,
+              "rounds": 1000,
+              "warmup": 200
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 121,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 2,
+        "selected_case": "guard:integer_width_boundaries",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:13.249620+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:integer_width_boundaries",
+      "operation": "encode",
+      "repetition": 2,
+      "role_order": [
+        "baseline",
+        "candidate"
+      ]
+    },
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:integer_width_boundaries": {
+            "decoded_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "input_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "wire_bytes": 2435,
+            "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:integer_width_boundaries": {
+            "encode": {
+              "ns_per_operation": 19954.809,
+              "rounds": 1000,
+              "warmup": 200
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 125,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 3,
+        "selected_case": "guard:integer_width_boundaries",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:13.433859+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:integer_width_boundaries": {
+            "decoded_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "input_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "wire_bytes": 2435,
+            "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:integer_width_boundaries": {
+            "encode": {
+              "ns_per_operation": 21326.975,
+              "rounds": 1000,
+              "warmup": 200
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 123,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 3,
+        "selected_case": "guard:integer_width_boundaries",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:13.343650+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:integer_width_boundaries",
+      "operation": "encode",
+      "repetition": 3,
+      "role_order": [
+        "candidate",
+        "baseline"
+      ]
+    },
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:integer_width_boundaries": {
+            "decoded_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "input_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "wire_bytes": 2435,
+            "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:integer_width_boundaries": {
+            "encode": {
+              "ns_per_operation": 19928.83,
+              "rounds": 1000,
+              "warmup": 200
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 127,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 4,
+        "selected_case": "guard:integer_width_boundaries",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:13.524204+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:integer_width_boundaries": {
+            "decoded_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "input_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "wire_bytes": 2435,
+            "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:integer_width_boundaries": {
+            "encode": {
+              "ns_per_operation": 19799.246,
+              "rounds": 1000,
+              "warmup": 200
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 129,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 4,
+        "selected_case": "guard:integer_width_boundaries",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:13.614634+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:integer_width_boundaries",
+      "operation": "encode",
+      "repetition": 4,
+      "role_order": [
+        "baseline",
+        "candidate"
+      ]
+    },
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:integer_width_boundaries": {
+            "decoded_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "input_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "wire_bytes": 2435,
+            "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:integer_width_boundaries": {
+            "encode": {
+              "ns_per_operation": 19768.328,
+              "rounds": 1000,
+              "warmup": 200
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 133,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 5,
+        "selected_case": "guard:integer_width_boundaries",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:13.796745+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:integer_width_boundaries": {
+            "decoded_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "input_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "wire_bytes": 2435,
+            "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:integer_width_boundaries": {
+            "encode": {
+              "ns_per_operation": 19676.725,
+              "rounds": 1000,
+              "warmup": 200
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 131,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 5,
+        "selected_case": "guard:integer_width_boundaries",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:13.704968+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:integer_width_boundaries",
+      "operation": "encode",
+      "repetition": 5,
+      "role_order": [
+        "candidate",
+        "baseline"
+      ]
+    },
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:integer_width_boundaries": {
+            "decoded_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "input_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "wire_bytes": 2435,
+            "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:integer_width_boundaries": {
+            "encode": {
+              "ns_per_operation": 19779.298,
+              "rounds": 1000,
+              "warmup": 200
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 135,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 6,
+        "selected_case": "guard:integer_width_boundaries",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:13.886911+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:integer_width_boundaries": {
+            "decoded_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "input_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "wire_bytes": 2435,
+            "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:integer_width_boundaries": {
+            "encode": {
+              "ns_per_operation": 19702.143,
+              "rounds": 1000,
+              "warmup": 200
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 137,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 6,
+        "selected_case": "guard:integer_width_boundaries",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:13.974241+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:integer_width_boundaries",
+      "operation": "encode",
+      "repetition": 6,
+      "role_order": [
+        "baseline",
+        "candidate"
+      ]
+    },
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:integer_width_boundaries": {
+            "decoded_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "input_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "wire_bytes": 2435,
+            "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:integer_width_boundaries": {
+            "encode": {
+              "ns_per_operation": 20211.213,
+              "rounds": 1000,
+              "warmup": 200
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 141,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 7,
+        "selected_case": "guard:integer_width_boundaries",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:14.158113+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:integer_width_boundaries": {
+            "decoded_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "input_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "wire_bytes": 2435,
+            "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:integer_width_boundaries": {
+            "encode": {
+              "ns_per_operation": 19908.722,
+              "rounds": 1000,
+              "warmup": 200
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 139,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 7,
+        "selected_case": "guard:integer_width_boundaries",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:14.064486+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:integer_width_boundaries",
+      "operation": "encode",
+      "repetition": 7,
+      "role_order": [
+        "candidate",
+        "baseline"
+      ]
+    },
+    {
+      "baseline": {
+        "case_fingerprints": {
+          "guard:integer_width_boundaries": {
+            "decoded_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "input_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "wire_bytes": 2435,
+            "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/baseline/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:integer_width_boundaries": {
+            "encode": {
+              "ns_per_operation": 19969.958,
+              "rounds": 1000,
+              "warmup": 200
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/baseline/package",
+        "pid": 143,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/baseline/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 8,
+        "selected_case": "guard:integer_width_boundaries",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:14.246989+00:00",
+        "suite": "focused_confirm",
+        "variant": "baseline"
+      },
+      "candidate": {
+        "case_fingerprints": {
+          "guard:integer_width_boundaries": {
+            "decoded_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "input_sha256": "62523200d4b4fe312707eddedeff1eec4700a2a68fcf0f633b0dda7fe28a590c",
+            "wire_bytes": 2435,
+            "wire_sha256": "6471484050db5344b0710f65f4abfa2b5d5779ce201b69edfe9fbd2f6d99af8b"
+          }
+        },
+        "extension_path": "/tmp/dcbor-opt-aa-20261102/candidate/package/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+        "extension_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "focus_profile": "aa_controls",
+        "measurements": {
+          "guard:integer_width_boundaries": {
+            "encode": {
+              "ns_per_operation": 19951.302,
+              "rounds": 1000,
+              "warmup": 200
+            }
+          }
+        },
+        "package_root": "/tmp/dcbor-opt-aa-20261102/candidate/package",
+        "pid": 145,
+        "platform": "Linux-7.2.4-200.fc44.x86_64-x86_64-with-glibc2.43",
+        "python": "3.14.7",
+        "release_artifact": "/tmp/dcbor-opt-aa-20261102/candidate/target/lib_dcbor.so",
+        "release_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+        "repetition": 8,
+        "selected_case": "guard:integer_width_boundaries",
+        "selected_operation": "encode",
+        "started_at_utc": "2026-11-01T18:35:14.336578+00:00",
+        "suite": "focused_confirm",
+        "variant": "candidate"
+      },
+      "case_id": "guard:integer_width_boundaries",
+      "operation": "encode",
+      "repetition": 8,
+      "role_order": [
+        "baseline",
+        "candidate"
+      ]
+    }
+  ],
+  "summaries": {
+    "guard:integer_width_boundaries/encode": {
+      "baseline_mad_ns_per_operation": 148.9910000000018,
+      "baseline_median_ns_per_operation": 19954.809,
+      "candidate_mad_ns_per_operation": 94.82900000000154,
+      "candidate_median_ns_per_operation": 19771.554,
+      "paired_change_mad_percent": 0.3699623124660545,
+      "paired_change_median_percent": -0.463382639138743,
+      "paired_changes_percent": [
+        -0.17299967110674386,
+        -1.4739773742408757,
+        -3.262140596885277,
+        6.876367496175972,
+        -0.6502338571807931,
+        -0.463382639138743,
+        -0.3900795670301327,
+        -1.4966494094144633,
+        -0.09342032667268851
+      ],
+      "repetitions": 9
+    },
+    "guard:scalar_bool_false/encode": {
+      "baseline_mad_ns_per_operation": 0.44604000000001065,
+      "baseline_median_ns_per_operation": 86.23472,
+      "candidate_mad_ns_per_operation": 1.5900000000000034,
+      "candidate_median_ns_per_operation": 86.18464,
+      "paired_change_mad_percent": 1.6178790505922525,
+      "paired_change_median_percent": 1.6349801083283655,
+      "paired_changes_percent": [
+        -1.2297672565391382,
+        -1.9614502687793856,
+        3.252859158920618,
+        2.730532514905737,
+        1.9005353923905233,
+        -7.97132004468134,
+        1.7608684761775795,
+        1.6349801083283655,
+        -2.8179421563150786
+      ],
+      "repetitions": 9
+    },
+    "guard:scalar_int_23/encode": {
+      "baseline_mad_ns_per_operation": 0.8968799999999959,
+      "baseline_median_ns_per_operation": 93.3862,
+      "candidate_mad_ns_per_operation": 1.0581999999999994,
+      "candidate_median_ns_per_operation": 91.61526,
+      "paired_change_mad_percent": 1.1030339497093644,
+      "paired_change_median_percent": -3.440384001031793,
+      "paired_changes_percent": [
+        -4.543417950741158,
+        -3.8069382486655146,
+        -1.772553118126663,
+        5.4828236832977995,
+        0.5031561071825896,
+        -3.756411659325287,
+        -3.440384001031793,
+        0.2335328225328226,
+        -4.148328621086539
+      ],
+      "repetitions": 9
+    },
+    "guard:scalar_short_text/encode": {
+      "baseline_mad_ns_per_operation": 2.511160000000004,
+      "baseline_median_ns_per_operation": 113.13784,
+      "candidate_mad_ns_per_operation": 0.7231600000000071,
+      "candidate_median_ns_per_operation": 110.12556,
+      "paired_change_mad_percent": 1.0997463489977322,
+      "paired_change_median_percent": -1.0223874761713492,
+      "paired_changes_percent": [
+        -3.0517817911319467,
+        -0.59246105912244,
+        -4.703853233768118,
+        0.07735887282638299,
+        -1.00480612257291,
+        -5.043904653708298,
+        -0.8022113578869283,
+        -10.290926961801205,
+        -1.0223874761713492
+      ],
+      "repetitions": 9
+    }
+  }
+}

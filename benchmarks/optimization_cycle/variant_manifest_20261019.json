@@ -1,0 +1,198 @@
+{
+  "aa_controls_followup": {
+    "baseline_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+    "candidate_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+    "candidate_source_sha256_field_present": false,
+    "case_operations": 4,
+    "driver": "paired_bench_aa_controls_20261102.py",
+    "driver_sha256": "1105f1e5775edb52e2cc0a81f03017fca98e653eb99c8c1ce53204114edefdfc",
+    "interpretation": "Small mixed same-artifact effects; not enough to explain the v1 scalar/text changes.",
+    "manifest": "aa_controls_manifest_20261102.json",
+    "raw_json": "aa_controls_20261102.json",
+    "raw_pairs": 36,
+    "source_variant_claims": false,
+    "v2_ab_timing": "not run; awaiting parent go-ahead"
+  },
+  "build_policy": "sequential release wheel builds, CARGO_BUILD_JOBS=2, --locked, same isolated CARGO_TARGET_DIR",
+  "built_variants": {
+    "bytes_only": {
+      "build_command": "CARGO_BUILD_JOBS=2 CARGO_TARGET_DIR=/tmp/dcbor-opt-variants-fnb_gqq0/target maturin build --release --locked --interpreter /home/wizzygeek/code/AIdCBOR/.venv/bin/python --out /tmp/dcbor-opt-variants-fnb_gqq0/wheels/bytes_only (cwd=/tmp/dcbor-opt-variants-fnb_gqq0/source)",
+      "build_dep_info_contains_isolated_source": true,
+      "build_environment": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_TARGET_DIR": "/tmp/dcbor-opt-variants-fnb_gqq0/target",
+        "RUSTFLAGS": null,
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+        "maturin": "maturin 1.14.1",
+        "python": "3.14.7",
+        "rustc": "1.98.1 (48a229cea 2026-09-01)",
+        "target": "x86_64-unknown-linux-gnu, LLVM 22.1.8"
+      },
+      "extension_artifact_match": true,
+      "package_extension_path": "/tmp/dcbor-opt-variants-fnb_gqq0/bytes_only/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+      "package_extension_sha256": "797838661d4463d88d09d0f23cc055f3656a700f7632af6eeb53ca3a6614448e",
+      "package_root": "/tmp/dcbor-opt-variants-fnb_gqq0/bytes_only/python",
+      "release_artifact_path": "/tmp/dcbor-opt-variants-fnb_gqq0/bytes_only/target/release/lib_dcbor.so",
+      "release_artifact_sha256": "797838661d4463d88d09d0f23cc055f3656a700f7632af6eeb53ca3a6614448e",
+      "source_files": {
+        "src/direct_encode.rs": {
+          "relation": "HEAD baseline",
+          "sha256": "0a2b5aed802b510553dc8308be641b2fe03c73fbad3debfd4998a6abb82aba5b"
+        },
+        "src/lib.rs": {
+          "diff_from_head_sha256": "ae9764abb7c12ec5d17cf4aaf5fb9f740514e6e04298a792ab2a0346a902efbd",
+          "sha256": "401113e38c55b04e82e11504af50dd55e2ef011a3e57815dabb62223a4c23451"
+        }
+      },
+      "source_head": "b3771f6397d757147ad4c47d606bfc5e142e5c32",
+      "wheel_sha256": "ada1562f6e0b4c240fa05b995bee829011d11b3b93afa06e6b92ad28c9c9dc9c"
+    },
+    "map_only": {
+      "build_command": "CARGO_BUILD_JOBS=2 CARGO_TARGET_DIR=/tmp/dcbor-opt-variants-fnb_gqq0/target maturin build --release --locked --interpreter /home/wizzygeek/code/AIdCBOR/.venv/bin/python --out /tmp/dcbor-opt-variants-fnb_gqq0/wheels/map_only (cwd=/tmp/dcbor-opt-variants-fnb_gqq0/source)",
+      "build_dep_info_contains_isolated_source": true,
+      "build_environment": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_TARGET_DIR": "/tmp/dcbor-opt-variants-fnb_gqq0/target",
+        "RUSTFLAGS": null,
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+        "maturin": "maturin 1.14.1",
+        "python": "3.14.7",
+        "rustc": "1.98.1 (48a229cea 2026-09-01)",
+        "target": "x86_64-unknown-linux-gnu, LLVM 22.1.8"
+      },
+      "extension_artifact_match": true,
+      "package_extension_path": "/tmp/dcbor-opt-variants-fnb_gqq0/map_only/python/dcbor/_dcbor.cpython-314-x86_64-linux-gnu.so",
+      "package_extension_sha256": "096b3dd665b49dad205f1e2a6d784998f9ef06e29cbc71b79826e965b89f9f29",
+      "package_root": "/tmp/dcbor-opt-variants-fnb_gqq0/map_only/python",
+      "release_artifact_path": "/tmp/dcbor-opt-variants-fnb_gqq0/map_only/target/release/lib_dcbor.so",
+      "release_artifact_sha256": "096b3dd665b49dad205f1e2a6d784998f9ef06e29cbc71b79826e965b89f9f29",
+      "source_files": {
+        "src/direct_encode.rs": {
+          "diff_from_head_sha256": "d571d06029a6c4619ce6080fb92f0ce1bef8a91305340d69f95b641cf2f3898a",
+          "sha256": "db615c8188323158ce207568b04334c2c97ae694e2bb55cdf036a09fcba7a9fd"
+        },
+        "src/lib.rs": {
+          "relation": "HEAD baseline",
+          "sha256": "a9b40af8c8f8cf0a6e58407f1d9446b25057de032b42e1ae7fd15d9d22cf5621"
+        }
+      },
+      "source_head": "b3771f6397d757147ad4c47d606bfc5e142e5c32",
+      "wheel_sha256": "8cb49942dd7f7c8947081402266e44fa756ab5190d1a4673809fa3c54a562662"
+    }
+  },
+  "captured_shared_checkout_source_hashes": {
+    "src/direct_encode.rs": "db615c8188323158ce207568b04334c2c97ae694e2bb55cdf036a09fcba7a9fd",
+    "src/lib.rs": "401113e38c55b04e82e11504af50dd55e2ef011a3e57815dabb62223a4c23451"
+  },
+  "final_decision": {
+    "bytes_patch": {
+      "path": "rejected_bytes_fastpath.patch",
+      "sha256": "ae9764abb7c12ec5d17cf4aaf5fb9f740514e6e04298a792ab2a0346a902efbd"
+    },
+    "global_claims": "No global fastest or broad no-regression claim; results apply only to measured profiles and controls.",
+    "map_v1": "superseded by selected v2; historical map gains were accompanied by 14\u201320% scalar/text slowdowns.",
+    "map_v2": "selected; measured map workloads improve about 4\u201332%, with an accepted one-character text (`x`) cost of +7.44% (about 7 ns/op). Scope claims only to the tested cases.",
+    "top_level_bytes_fast_path": "rejected; large top-level bytes gains came with roughly 10% bool and small-integer primitive costs.",
+    "v1_patch": {
+      "path": "map_entry_v1.patch",
+      "sha256": "d571d06029a6c4619ce6080fb92f0ce1bef8a91305340d69f95b641cf2f3898a"
+    }
+  },
+  "head_source_hashes": {
+    "src/direct_encode.rs": "0a2b5aed802b510553dc8308be641b2fe03c73fbad3debfd4998a6abb82aba5b",
+    "src/lib.rs": "a9b40af8c8f8cf0a6e58407f1d9446b25057de032b42e1ae7fd15d9d22cf5621"
+  },
+  "measurement_driver_sha256": "5abf29b98bc530ae61a2233c61f368df34880af16adc893c83c0281b45926873",
+  "measurement_json": {
+    "bytes_only": "benchmarks/optimization_cycle/bytes_only_20261019.json",
+    "map_only": "benchmarks/optimization_cycle/map_only_20261019.json"
+  },
+  "medium_map_followup": {
+    "baseline_artifact_sha256": "ca06f077c3ca1f2a72270b6d5799bc851a7612dec4728e6407839fe95aa1a94",
+    "candidate_artifact_sha256": "096b3dd665b49dad205f1e2a6d784998f9ef06e29cbc71b79826e965b89f9f29",
+    "candidate_source_sha256": {
+      "src/direct_encode.rs": "db615c8188323158ce207568b04334c2c97ae694e2bb55cdf036a09fcba7a9fd",
+      "src/lib.rs": "a9b40af8c8f8cf0a6e58407f1d9446b25057de032b42e1ae7fd15d9d22cf5621"
+    },
+    "case_operations": 10,
+    "decision_status": "superseded by selected v2; historical map gains were accompanied by 14\u201320% scalar/text slowdowns.",
+    "driver": "paired_bench_medium_map_20261101.py",
+    "driver_sha256": "b2a56e43e10f91f89b664a38d9b309e2e5e4095f4f1782086e64a493ca023bf2",
+    "manifest": "map_medium_manifest_20261101.json",
+    "raw_json": "map_medium_20261101.json",
+    "raw_pairs": 90,
+    "v1_status": "superseded by selected v2; historical map gains were accompanied by 14\u201320% scalar/text slowdowns."
+  },
+  "pinned_baseline": "/tmp/dcbor-opt-cycle-3w27af12",
+  "pinned_baseline_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+  "pinned_baseline_manifest": "/tmp/dcbor-opt-cycle-3w27af12/baseline_manifest.json",
+  "provenance_correction": {
+    "basis": "Each built_variants entry records source hashes and relation to HEAD; worker records independently tie package extension hashes to release artifact hashes.",
+    "bytes_only_json_candidate_source_hashes": {
+      "src/direct_encode.rs": "0a2b5aed802b510553dc8308be641b2fe03c73fbad3debfd4998a6abb82aba5b",
+      "src/lib.rs": "401113e38c55b04e82e11504af50dd55e2ef011a3e57815dabb62223a4c23451"
+    },
+    "historical_shared_checkout_hashes_field": "captured_shared_checkout_source_hashes",
+    "map_only_json_candidate_source_hashes": {
+      "src/direct_encode.rs": "db615c8188323158ce207568b04334c2c97ae694e2bb55cdf036a09fcba7a9fd",
+      "src/lib.rs": "a9b40af8c8f8cf0a6e58407f1d9446b25057de032b42e1ae7fd15d9d22cf5621"
+    },
+    "raw_pairs_edited": false,
+    "reason": "The focused raw JSON top-level candidate_source_sha256 was taken from the shared checkout after both source edits, rather than from the isolated source variant used for each candidate artifact.",
+    "variant_source_hashes_are_from": "built_variants.*.source_files"
+  },
+  "purpose": "isolated single-optimization A/B release builds",
+  "shared_temporary_target": "/tmp/dcbor-opt-variants-fnb_gqq0/target",
+  "source_checkout": "/tmp/dcbor-opt-variants-fnb_gqq0/source",
+  "source_head": "b3771f6397d757147ad4c47d606bfc5e142e5c32",
+  "v2_followup": {
+    "baseline_artifact_sha256": "ca06f077c3ca1f2a72270b06d5799bc851a7612dec4728e6407839fe95aa1a94",
+    "build_and_test_validation": {
+      "focused_behavior_checks": 60,
+      "python_suite": 1626,
+      "rust_library_suite": 3,
+      "rustc": "1.98.1"
+    },
+    "candidate_artifact_sha256": "05bfff7c3a75ff67cb8f438fbd3a48fe58c53cffadd1a819eda2de0645b09025",
+    "case_operations": 14,
+    "decision_status": "selected; measured map workloads improve about 4\u201332%, with an accepted one-character text (`x`) cost of +7.44% (about 7 ns/op). Scope claims only to the tested cases.",
+    "driver": "paired_bench_map_v2_20261102.py",
+    "driver_sha256": "b15bd03d730fba36a18ab4ae782055923a636a9ed62b1cf444ee8e8d941bc8ae",
+    "manifest": "map_v2_manifest_20261102.json",
+    "pairs": 126,
+    "raw_json": "map_v2_20261102.json",
+    "residual_control": "short-text encode +7.44% median; MAD 0.64%; 9/9 pairs slower",
+    "source_sha256_by_variant": {
+      "baseline": {
+        "src/direct_encode.rs": "0a2b5aed802b510553dc8308be641b2fe03c73fbad3debfd4998a6abb82aba5b",
+        "src/lib.rs": "a9b40af8c8f8cf0a6e58407f1d9446b25057de032b42e1ae7fd15d9d22cf5621"
+      },
+      "candidate": {
+        "src/direct_encode.rs": "35b5b484519f92d70b0d118b2d7e3a1c2d27c982d1fee353815a469cf1d723ba",
+        "src/lib.rs": "a9b40af8c8f8cf0a6e58407f1d9446b25057de032b42e1ae7fd15d9d22cf5621"
+      }
+    }
+  },
+  "variants": {
+    "bytes_only": {
+      "src/direct_encode.rs": {
+        "relation": "HEAD baseline",
+        "sha256": "0a2b5aed802b510553dc8308be641b2fe03c73fbad3debfd4998a6abb82aba5b"
+      },
+      "src/lib.rs": {
+        "relation": "current shared candidate",
+        "sha256": "401113e38c55b04e82e11504af50dd55e2ef011a3e57815dabb62223a4c23451"
+      }
+    },
+    "map_only": {
+      "src/direct_encode.rs": {
+        "relation": "current shared candidate",
+        "sha256": "db615c8188323158ce207568b04334c2c97ae694e2bb55cdf036a09fcba7a9fd"
+      },
+      "src/lib.rs": {
+        "relation": "HEAD baseline",
+        "sha256": "a9b40af8c8f8cf0a6e58407f1d9446b25057de032b42e1ae7fd15d9d22cf5621"
+      }
+    }
+  }
+}

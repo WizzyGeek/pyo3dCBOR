@@ -92,6 +92,14 @@ former slowdown. The profile also found a slower integer-width encode control,
 which is tracked separately as
 [BUG_007](requirements/BUG_007_integer_encode_regression.md).
 
+## Bounded encoder optimization cycle
+
+The [optimization-cycle report](../benchmarks/optimization_cycle/README.md)
+records the isolated map-staging A/B results, the accepted v2 text-control
+tradeoff, and the rejected top-level bytes experiment. These development
+measurements use separate fresh-process pairs and a focused workload set; they
+do not change the scope of the shared codec comparisons above.
+
 ## Reports and reproduction
 
 - [Encoded size](../benchmarks/encoded_size/README.md)
@@ -99,5 +107,6 @@ which is tracked separately as
 - [Latency](../benchmarks/latency/README.md)
 - [dCBOR profile](../benchmarks/profile/README.md)
 - [Native decoder paired profile](../benchmarks/native_decoder/README.md)
+- [Bounded encoding optimization cycle](../benchmarks/optimization_cycle/README.md)
 - [Benchmark index and commands](../benchmarks/README.md)
 - [Codec and format landscape](competitive-landscape.md)

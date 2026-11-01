@@ -64,6 +64,62 @@ GIL release. Current `dumps()` is not a streaming API. Threading and
 vectorization are deferred; consider them only if profiling isolates a
 substantial Rust-owned payload phase.
 
+## FEAT_008 bounded encoding optimization PM acceptance
+
+**Accepted and complete — 2026-11-02, Codex GPT-6 (PM).** The selected v2
+staging-map change uses one `BTreeMap::entry(encoded_key)` lookup per Python
+dictionary entry. It preserves canonical key ordering, last-normalized-key
+wins for Python `dict`, `CBORMap` duplicate rejection, callback order and
+single value conversion, and the existing header and key-budget accounting.
+The development version remains `0.1.1`.
+
+The v2 candidate used `src/direct_encode.rs` SHA-256
+`35b5b484519f92d70b0d118b2d7e3a1c2d27c982d1fee353815a469cf1d723ba` with
+baseline `src/lib.rs` SHA-256
+`a9b40af8c8f8cf0a6e58407f1d9446b25057de032b42e1ae7fd15d9d22cf5621`. Its
+release artifact and loaded extension both have SHA-256
+`05bfff7c3a75ff67cb8f438fbd3a48fe58c53cffadd1a819eda2de0645b09025`.
+Matched A/B measurements used nine alternating fresh-process pairs for each
+of 14 map and control cases; input, wire, and decoded-result fingerprints
+matched. Across sorted, reverse, and shuffled maps from 100 to 10,000 entries,
+paired median changes (medians of per-pair candidate/baseline ratios) ranged
+from −31.56% to −3.81%; 64 NFC-colliding keys had a paired median change of
+−12.63%.
+
+For one-character text `"x"`, the separately calculated baseline and
+candidate medians were 109.96 ns and 117.38 ns per encode, a 7.42 ns absolute
+difference. Its paired median change (median of per-pair candidate/baseline
+ratios) was +7.44%, and the candidate was slower in all nine pairs. The
+`False`, integer 23, and integer-boundary controls were near parity; their
+paired median changes were −0.16%, −1.84%, and −0.54% respectively.
+The PM accepted the measured text cost as a scoped tradeoff for these map
+results. A same-artifact A/A control produced small, mixed paired median
+changes, including −1.02% for `"x"`, which did not reproduce the larger v1
+control slowdowns.
+
+A bounded native-code comparison found the scalar source path and relevant
+native Rust code/counts unchanged, along with a small PyO3 wrapper difference.
+It did not establish a cause for the measured text increase; the increase is
+recorded as a workload result without a mechanism claim. The
+[optimization-cycle report](../benchmarks/optimization_cycle/README.md)
+contains the per-case medians, MADs, raw samples, source/build provenance, and
+capture limitations.
+
+Validation passed 1,626 Python tests and 3 Rust library tests on 2026-11-02
+with Python 3.14.7 and Rust 1.98.1. The local environment did not have the
+Rust 1.90.0 toolchain pinned in CI, so that toolchain was not used for this
+validation. The separate top-level immutable-`bytes` fast path was rejected:
+its target byte-string timings improved, but tiny `bool` and integer-23
+controls had paired median changes of about +9% to +10%. The v1 map prototype
+was superseded after its `False`, integer-23, and short-text controls had
+paired median slowdowns of 14% to 20%.
+
+This acceptance covers the listed workloads and the explicit `"x"` cost; it
+makes no universal performance claim. Trusted-output post-encode scan removal
+remains deferred. No package version change or release was made. The separate
+[BUG_007 integer-width investigation](requirements/BUG_007_integer_encode_regression.md)
+remains open.
+
 ## FEAT_006 native decoder PM acceptance
 
 **FEAT_006 accepted and complete — 2026-10-18, Codex GPT-6 (PM).** The native
